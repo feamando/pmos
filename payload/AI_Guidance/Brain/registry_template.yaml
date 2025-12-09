@@ -1,0 +1,16 @@
+# Entity Registry
+# Maps semantic aliases to Brain files.
+
+# People
+{{ USER_NAME }}:
+  - {{ USER_NAME }}
+  - {{ USER_ROLE }}
+  - Me
+  - Myself
+  - path: Brain/Entities/{{ USER_NAME_UNDERSCORE }}.md
+
+# Projects
+Example Project:
+  - Example Project
+  - Demo
+  - path: Brain/Projects/Example_Project.md
