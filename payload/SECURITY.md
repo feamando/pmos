@@ -13,15 +13,15 @@ This document outlines security best practices and configuration requirements fo
 
 ### Compromised Credentials Found (Now Fixed)
 
-**URGENT ACTION REQUIRED**: The following credentials were found hardcoded in the repository and have been removed:
+**URGENT ACTION REQUIRED**: Hardcoded credentials were found in the repository and have been removed:
 
 1. **Jira API Token** (File: `AI_Guidance/Tools/jira_mcp/config.json`)
    - Account: `nikita.gorshkov@hellofresh.com`
-   - Token: `ATATT3xFfGF0ilko2GNAn6UQ4p-1Gh3spUE2HJeblBKCF8pixI1sNBpCfGF2-7LBDHqA1YsZwwrbzWPGm-c_f09geWHgFnTzM3dYUEAEB7lnRtbtAyInx188-Rz-p9Mgy865kluyC5yhDp6H6cryZeX2MezTWbLgRlsfLtQGLOvhZRpMMR0zADs=CE0F2120`
+   - Token: `[REDACTED - COMPROMISED]`
    - **ACTION**: This token must be rotated immediately in Atlassian
 
 2. **Google API Key** (File: `AI_Guidance/Tools/meeting_prep/config.json`)
-   - Key: `AIzaSyAr3TR7GkqY0iLt9P8r1ugWwxfX55Aj6Rw`
+   - Key: `[REDACTED - COMPROMISED]`
    - **ACTION**: This key must be rotated immediately in Google Cloud Console
 
 ## 🛡️ Security Configuration
