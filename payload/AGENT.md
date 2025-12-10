@@ -1,8 +1,11 @@
 # AGENT.md - AI Agent Entry Point
 
+> **🔴 SECURITY FIRST: READ `AI_Guidance/Rules/SECURITY_RULES.md` BEFORE ANY ACTIONS**
+
 > **For comprehensive operational guidelines, refer to: `AI_Guidance/Rules/AI_AGENTS_GUIDE.md`**
 
 ## High-Level Goals
+- **🔒 SECURITY**: Follow zero-tolerance security policy in all operations
 - Manage Product Management documentation via CLI & Markdown.
 - Maintain a "Single Source of Truth" in `Products/`, `Team/`, `Reporting/`.
 - **Adopt Nikita Gorshkov's communication style & workflow as defined in `AI_Guidance/Rules/NGO.md`.**
