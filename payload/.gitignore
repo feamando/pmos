@@ -1,0 +1,9 @@
+GDrive Sync/
+AI_Guidance/Core_Context/NGO Context/
+AI_Guidance/Tools/gdrive_mcp/token.json
+
+AI_Guidance/Tools/daily_context/state.json
+
+# Security: Ignore config files that may contain API keys
+AI_Guidance/Tools/jira_mcp/config.json
+AI_Guidance/Tools/meeting_prep/config.json

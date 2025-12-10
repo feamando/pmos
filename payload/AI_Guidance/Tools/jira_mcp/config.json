@@ -1,5 +1,5 @@
 {
   "url": "https://hellofresh.atlassian.net/",
-  "username": "ADD_YOUR_EMAIL_HERE",
-  "api_token": "ADD_YOUR_TOKEN_HERE"
+  "username": "nikita.gorshkov@hellofresh.com",
+  "api_token": "REPLACE_WITH_YOUR_JIRA_API_TOKEN"
 }

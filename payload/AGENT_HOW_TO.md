@@ -104,6 +104,22 @@ This tool is the bridge between the Git-based knowledge base and upstream docume
 
 There is no global build or test harness; the primary workflows are editing Markdown and running small Python utilities. Below are the key commands Warp is expected to use.
 
+### 3.3 Security Guidelines for AI Agents
+
+**CRITICAL SECURITY NOTICE:** AI agents must follow these security protocols:
+
+1. **Never expose API keys**: Do not include API keys, tokens, or credentials in any output or documentation
+2. **Use placeholder values**: When documenting configuration, always use `REPLACE_WITH_YOUR_*` placeholders
+3. **Warn about security risks**: If asked to work with API configuration, remind users about security best practices
+4. **Never store credentials**: Do not create files that contain real API keys or tokens
+5. **Follow least privilege**: Only request the minimum permissions needed for each task
+
+**Forbidden actions:**
+- Reading or displaying real API keys from config files
+- Creating new config files with hardcoded credentials
+- Committing config files to version control
+- Sharing credentials between different services
+
 ### 4.1 Environment setup
 
 Python dependencies are module-local rather than centralized.
