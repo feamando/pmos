@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Secrets
+.secrets/
+*.json
+!*.json.example
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Virtual environment
+venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Python cache
+.pytest_cache/
+
+# Node
+node_modules/
+
+# Git
+.git/
+
+# Personal files
+*.bak
+*.swp
