@@ -1,0 +1,20 @@
+# PM-OS Core Dependencies
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Jira Integration
+jira>=3.5.0
+
+# AI Summarization
+google-generativeai>=0.3.0
+
+# Google Drive Integration (optional)
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+google-api-python-client>=2.0.0
+
+# Google Calendar Integration (optional)
+# Uses same google-api-python-client
+
+# MCP Server (optional)
+mcp>=0.1.0

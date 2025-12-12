@@ -1,0 +1,42 @@
+squads:
+  - name: "Market Innovation"
+    jira_project: "MIO"
+    jira_board_id: "8541"
+    tribe: "New Ventures"
+    github_repos:
+      - repo: "hellofresh/web"
+        pr_prefix: "MIO-"
+        paths: ["*"]
+
+  - name: "Factor Form"
+    jira_project: "RTEVMS"
+    jira_board_id: "3398"
+    tribe: "New Ventures"
+    github_repos:
+      - repo: "hellofresh/web"
+        pr_prefix: "RTEVMS-"
+        paths: ["/app/data-access/checkout", "/app/data-access/products", "/app/whitelabels/factor"]
+      - repo: "hellofresh/rte-manufacturing-service"
+        pr_prefix: "RTEVMS-"
+        paths: ["*"]
+
+  - name: "Good Chop"
+    jira_project: "GOC"
+    jira_board_id: "4046"
+    tribe: "New Ventures"
+    github_repos:
+      - repo: "hellofresh/web"
+        pr_prefix: "GOC-"
+        paths: ["/app/data-access/customer-delivery-plan", "/app/data-access/pre-checkout", "/app/whitelabels/goodchop"]
+      - repo: "hellofresh/plan-order-creator"
+        pr_prefix: "GOC-"
+        paths: ["*"]
+
+  - name: "The Pets Table"
+    jira_project: "TPT"
+    jira_board_id: "1836"
+    tribe: "New Ventures"
+    github_repos:
+      - repo: "hellofresh/web"
+        pr_prefix: "TPT-"
+        paths: ["/app/data-access/nutritional-meal-plan", "/app/data-access/nutritional-profile", "/app/whitelabels/thepetstable"]
