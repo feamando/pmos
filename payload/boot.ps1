@@ -1,8 +1,34 @@
 # boot.ps1 - Boots up necessary context and docs for the agent
 
-# 0. Git Sync
+# 0. Environment Setup
 Write-Host "========================================="
-Write-Host "PHASE 0: GIT SYNC (PULL)"
+Write-Host "PHASE 0: ENVIRONMENT SETUP"
+Write-Host "========================================="
+
+# Create .secrets directory if it doesn't exist
+if (-not (Test-Path ".secrets")) {
+    New-Item -ItemType Directory -Path ".secrets" -Force | Out-Null
+    Write-Host "Created .secrets directory."
+}
+
+# Load .env variables
+if (Test-Path ".env") {
+    Write-Host "Loading environment variables from .env..."
+    Get-Content ".env" | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -notmatch "^#" -and $line -match "^([^=]+)=(.*)$") {
+            $name = $matches[1].Trim()
+            $value = $matches[2].Trim()
+            [System.Environment]::SetEnvironmentVariable($name, $value)
+        }
+    }
+} else {
+    Write-Warning ".env file not found. Some tools may rely on default config files."
+}
+
+# 0.1 Git Sync
+Write-Host "========================================="
+Write-Host "PHASE 0.1: GIT SYNC (PULL)"
 Write-Host "========================================="
 try {
     git pull origin main
@@ -81,7 +107,7 @@ Write-Host "========================================="
 
 try {
     if (Test-Path ".\update-context.ps1") {
-        & ".\update-context.ps1" -TimeFrame "24h" -ErrorAction Stop
+        & ".\update-context.ps1" -ErrorAction Stop
         Write-Host "`n"
     } else {
         Write-Warning "update-context.ps1 not found in current directory."

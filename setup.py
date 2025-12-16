@@ -143,6 +143,24 @@ def main():
     
     # 4. Install Deps
     install_dependencies()
+
+    # 5. Environment Setup
+    print("\n--- Environment Setup ---")
+    env_example = TARGET_DIR / ".env.example"
+    env_target = TARGET_DIR / ".env"
+    
+    if env_example.exists() and not env_target.exists():
+        shutil.copy2(env_example, env_target)
+        print("Created .env from .env.example")
+        print("IMPORTANT: Please edit .env to add your API keys and configuration.")
+    elif env_target.exists():
+        print(".env already exists. Skipping creation.")
+    
+    # Create .secrets directory
+    secrets_dir = TARGET_DIR / ".secrets"
+    if not secrets_dir.exists():
+        secrets_dir.mkdir()
+        print("Created .secrets directory for Google credentials.")
     
     print("\n========================================")
     print("       Installation Complete!           ")

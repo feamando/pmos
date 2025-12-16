@@ -24,7 +24,7 @@ try {
     Write-Host "Git: Pulling latest changes for update-context.ps1" -ForegroundColor DarkGray
     git pull origin main
 } catch {
-    Write-Warning "Git pull failed in update-context.ps1. Continuing with local version. Error: $_"
+    Write-Warning "Git pull failed in update-context.ps1. Continuing with local version. Error: $_ "
 }
 
 $ContextDir = Join-Path $PSScriptRoot "AI_Guidance\Core_Context"
@@ -143,14 +143,43 @@ if (Test-Path $JiraConfig) {
         Invoke-Expression $JiraCmd | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
         
     } catch {
-        Write-Warning "Failed to fetch Jira data: $_"
+        Write-Warning "Failed to fetch Jira data: $_ "
     }
 } else {
     Write-Warning "Jira config not found at $JiraConfig"
 }
 
-# C. Meeting Prep
-Write-Host "3. Generating Meeting Pre-Reads..." -ForegroundColor Yellow
+# C. GitHub
+Write-Host "3. Fetching GitHub Updates..." -ForegroundColor Yellow
+$GithubScript = Join-Path $PSScriptRoot "AI_Guidance\Tools\github_brain_sync.py"
+$GithubTempFile = Join-Path $TempDir "github_raw.md"
+
+if (Test-Path $GithubScript) {
+    try {
+        # Run sync and output to temp file
+        $GithubCmd = "python `"$GithubScript``" --output `"$GithubTempFile`""
+        Invoke-Expression $GithubCmd
+        
+        # Append to main Raw Data file
+        if (Test-Path $GithubTempFile) {
+            "" | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            "============================================================" | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            "## GITHUB UPDATES" | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            "============================================================" | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            "" | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            
+            Get-Content $GithubTempFile | Out-File -FilePath $RawDataFile -Append -Encoding UTF8
+            Remove-Item $GithubTempFile
+        }
+    } catch {
+        Write-Warning "Failed to fetch GitHub data: $_"
+    }
+} else {
+    Write-Warning "GitHub script not found at $GithubScript"
+}
+
+# D. Meeting Prep
+Write-Host "4. Generating Meeting Pre-Reads..." -ForegroundColor Yellow
 $MeetingPrepScript = Join-Path $PSScriptRoot "AI_Guidance\Tools\meeting_prep\meeting_prep.py"
 if (Test-Path $MeetingPrepScript) {
     try {
@@ -158,7 +187,7 @@ if (Test-Path $MeetingPrepScript) {
         $MeetingCmd = "python `"$MeetingPrepScript`" --hours 24 --upload"
         Invoke-Expression $MeetingCmd
     } catch {
-        Write-Warning "Failed to generate meeting pre-reads: $_"
+        Write-Warning "Failed to generate meeting pre-reads: $_ "
     }
 } else {
     Write-Warning "Meeting prep script not found at $MeetingPrepScript"
@@ -181,7 +210,7 @@ if (Test-Path $RawDataFile) {
     #     $UploadCmd = "python `"$GdriveScript`" --cli upload `"$RawDataFile`""
     #     Invoke-Expression $UploadCmd
     # } catch {
-    #     Write-Warning "Failed to upload raw data to GDrive: $_"
+    #     Write-Warning "Failed to upload raw data to GDrive: $_ "
     # }
 
     # Git Commit & Push
@@ -191,11 +220,24 @@ if (Test-Path $RawDataFile) {
         git commit -m "Context update: Added raw data for $DateStr"
         git push origin main
     } catch {
-        Write-Warning "Failed to git push raw data: $_"
+        Write-Warning "Failed to git push raw data: $_ "
     }
 }
 
-# --- 6. Output Instructions for Agent ---
+# --- 6. Building Synapses ---
+Write-Host "6. Building Synapses (Relationships)..." -ForegroundColor Yellow
+$SynapseScript = Join-Path $PSScriptRoot "AI_Guidance\Tools\synapse_builder.py"
+if (Test-Path $SynapseScript) {
+    try {
+        python $SynapseScript
+    } catch {
+        Write-Warning "Failed to build synapses: $_ "
+    }
+} else {
+    Write-Warning "Synapse builder script not found at $SynapseScript"
+}
+
+# --- 7. Output Instructions for Agent ---
 Write-Host "===============================================================" -ForegroundColor Green
 Write-Host "READY FOR SYNTHESIS" -ForegroundColor Green
 Write-Host "==============================================================="

@@ -1,46 +1,85 @@
-# PM-OS: The AI-Native Product Operating System
+# PM-OS: Product Management Operating System
 
-**A Git-backed, CLI-managed framework for Product Management, designed for AI collaboration.**
+A Git-backed, CLI-managed, AI-augmented system for Product Management documentation and workflows.
 
-This repository contains the installer for the PM-OS system. It separates the "Operating System" (Workflows, Agents, Templates) from the "Instance Data" (Your specific Products, Teams, and Plans).
+**Version:** 1.2 (December 2025)
 
-## Prerequisites
+## Overview
 
-*   **Python 3.8+**
-*   **Git**
-*   **PowerShell** (Windows) or ability to adapt scripts to Bash (Linux/Mac).
-*   **Google Cloud Console Access** (For Drive Integration).
+PM-OS replaces Google Drive/Notion with a structured Markdown-first system designed for use with AI agents (Claude Code, Warp, etc.). It provides:
 
-## Installation
+- **Semantic Knowledge Graph (Brain):** Entity-oriented memory with bi-directional relationships (Synapses).
+- **Deep Research PRDs:** Generate comprehensive Product Requirements Documents using Google's Deep Research API.
+- **Contextual Mirroring:** Automatically syncs technical context (READMEs) from GitHub into Brain Project files.
+- **Automated Workflows:** Daily context updates, meeting prep, and brain maintenance via simple CLI commands.
+- **Jira & GitHub Sync:** Automated tracking of epics, blockers, PRs, and commits.
 
-1.  **Clone this repo** (or copy the folder) to your desired workspace.
-2.  **Run the Installer:**
-    ```bash
-    python setup.py
-    ```
-3.  **Follow the prompts.** The wizard will ask for your Name, Role, and Team to customize the AI Persona.
+## New in v1.2
 
-## Post-Installation Setup
+- **Synapses (Relationships):** Typed, bi-directional links between Brain entities (e.g., `owner` <-> `owns`) enforced by `synapse_builder.py`.
+- **Deep Research Integration:** `/prd` command generates high-quality specs by researching the web and internal docs.
+- **Technical Context Mirror:** `github_brain_sync.py` now fetches repo READMEs to enrich Project documentation.
+- **Slack Integration:** Foundations for Slack-based context fetching.
+- **Enhanced Boot:** Faster, safer boot sequence with Git sync and auto-configuration.
 
-1.  **Google Drive Integration:**
-    *   Go to Google Cloud Console.
-    *   Create a project -> Enable Drive API.
-    *   Create OAuth Desktop Credentials -> Download `credentials.json`.
-    *   Place it in: `AI_Guidance/Tools/gdrive_mcp/credentials.json`.
+## Quick Start
 
-2.  **Start the System:**
-    ```powershell
-    ./boot.ps1
-    ```
+### 1. Install Dependencies
 
-## Architecture
+```bash
+pip install -r requirements.txt
+```
 
-*   **`AI_Guidance/`**: The Core. Rules, Brain, and Tools.
-*   **`Products/`**: Your documentation.
-*   **`Planning/`**: Meeting prep and OKRs.
-*   **`Reporting/`**: Updates.
+### 2. Configure Environment
 
-## AI Agent Integration
+Copy `.env.example` to `.env` and fill in your API keys:
 
-This system is optimized for use with **Claude Code** or **Gemini CLI**.
-After installation, point your agent to `CLAUDE_INSTALL.md` or `AGENT.md` to bootstrap its understanding.
+```bash
+cp .env.example .env
+```
+
+Required keys:
+- `GEMINI_API_KEY` (for context synthesis and meeting prep)
+- `JIRA_API_TOKEN` & `JIRA_SERVER`
+- `GITHUB_TOKEN` (optional, for repo sync)
+
+### 3. Initialize (Daily)
+
+Run the boot script to sync git, load context, and prepare your session:
+
+```powershell
+.\boot.ps1
+```
+
+### 4. Update Context (Continuous)
+
+Fetch latest emails, docs, and tickets:
+
+```powershell
+.\update-context.ps1
+```
+
+## Directory Structure
+
+- `AI_Guidance/`: **The Core.** Rules, Templates (`Frameworks/`), and Business Context.
+  - `Brain/`: The Knowledge Graph.
+    - `Entities/`: People, Teams.
+    - `Projects/`: Initiatives.
+    - `Architecture/`: Systems.
+  - `Tools/`: Python scripts for automation.
+- `Products/`: Product documentation source of truth.
+- `Planning/`: OKRs, Meeting Prep.
+
+## Tools
+
+| Tool | Command | Description |
+|------|---------|-------------|
+| **Deep Research** | `/prd <topic>` | Generate a PRD using deep research. |
+| **Brain Search** | `search-brain.ps1 <query>` | Context-aware search of the Brain. |
+| **Context Update** | `.\update-context.ps1` | Fetch GDocs/Jira/GitHub and synthesize daily context. |
+| **Synapse Builder** | `python AI_Guidance/Tools/synapse_builder.py` | Refresh bi-directional Brain links. |
+| **Meeting Prep** | `python AI_Guidance/Tools/meeting_prep/meeting_prep.py` | Generate pre-reads for upcoming meetings. |
+
+## License
+
+Internal Use Only.

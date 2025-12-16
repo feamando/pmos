@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "google-drive": {
+      "command": "python",
+      "args": ["C:\\Users\\feama\\CascadeProjects\\Documents\\AI_Guidance\\Tools\\gdrive_mcp\\server.py"]
+    }
+  }
+}

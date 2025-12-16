@@ -1,8 +1,22 @@
-google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
-python-docx
-jira
-python-dateutil
-pyyaml
-jinja2
+# PM-OS Core Dependencies
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Jira Integration
+jira>=3.5.0
+
+# AI Summarization & Deep Research
+google-generativeai>=0.8.0
+google-genai>=0.2.0
+
+# Google Drive & Calendar Integration
+google-auth>=2.0.0
+google-auth-oauthlib>=1.0.0
+google-auth-httplib2>=0.1.0
+google-api-python-client>=2.0.0
+
+# Slack Integration
+slack-sdk>=3.0.0
+
+# MCP Server
+mcp>=0.1.0

@@ -61,6 +61,8 @@ python daily_context_updater.py --output context.md
 ## Output
 
 The script generates a raw text report containing:
+- Generative AI model used: `gemini-3-pro-preview`
+
 - Index of modified Documents and Emails.
 - Full content of documents.
 - Full text content of emails (promotional emails are filtered out).
