@@ -57,6 +57,20 @@ def get_gemini_config():
         "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
     }
 
+def get_deep_research_config():
+    """Return dictionary with Deep Research configuration."""
+    return {
+        "api_key": os.getenv("GEMINI_DEEP_RESEARCH_API_KEY") or os.getenv("GEMINI_API_KEY"),
+        "agent": os.getenv("DEEP_RESEARCH_AGENT", "deep-research-pro-preview-12-2025"),
+        "file_store_id": os.getenv("GEMINI_FILE_STORE_ID"),
+    }
+
+def get_statsig_config():
+    """Return dictionary with Statsig configuration."""
+    return {
+        "api_key": os.getenv("STATSIG_CONSOLE_API_KEY")
+    }
+
 def ensure_dependencies():
     """Check if python-dotenv is installed."""
     if load_dotenv is None:

@@ -379,6 +379,32 @@ class MeetingManager:
         print(f"  No GDrive notes found for: {meeting_title}", file=sys.stderr)
         return None
 
+    def find_similar_interviews(self, role_name: str) -> str:
+        """Find past interview notes for similar roles."""
+        query = (f"name contains 'Interview' and name contains '{role_name}' "
+                 f"and mimeType = 'application/vnd.google-apps.document' "
+                 f"and trashed = false")
+        
+        try:
+            results = self.drive.files().list(
+                q=query,
+                orderBy='createdTime desc',
+                pageSize=3,
+                fields="files(id, name)"
+            ).execute()
+            
+            files = results.get('files', [])
+            content = ""
+            for f in files:
+                text = self.read_gdrive_file(f['id'])
+                # Extract Q&A section if possible, otherwise first 1000 chars
+                content += f"### Past Interview: {f['name']}\n{text[:1000]}...\n\n"
+            
+            return content
+        except Exception as e:
+            print(f"  Error searching similar interviews: {e}", file=sys.stderr)
+            return ""
+
     def _get_or_create_drive_folder(self, folder_name: str) -> str:
         """Find or create a folder in Drive Root."""
         query = f"name = '{folder_name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
@@ -472,7 +498,8 @@ class MeetingManager:
             })
 
         meeting_type = 'other'
-        if len(participants) == 1: meeting_type = '1on1'
+        if 'virtual interview' in summary: meeting_type = 'interview'
+        elif len(participants) == 1: meeting_type = '1on1'
         elif external_count > 0: meeting_type = 'external'
         elif any(w in summary for w in ['standup', 'sync', 'daily']): meeting_type = 'standup'
         elif any(w in summary for w in ['review', 'retro', 'demo']): meeting_type = 'review'
@@ -640,7 +667,33 @@ class MeetingManager:
                     context['context_summary'] = match.group(1)[:1500]
 
         # Past Meeting Notes (GDrive) - Enhanced search
-        if classified['meeting_type'] in ['1on1', 'standup', 'review', 'planning', 'external']:
+        if classified['meeting_type'] == 'interview':
+            # 1. Load Frameworks
+            framework_dir = os.path.join(AI_GUIDANCE_DIR, 'Frameworks')
+            try:
+                pcf_path = os.path.join(framework_dir, 'Product_Career_Framework.md')
+                if os.path.exists(pcf_path):
+                    with open(pcf_path, 'r', encoding='utf-8') as f:
+                        context['career_framework'] = f.read()
+                        
+                dna_path = os.path.join(framework_dir, 'HelloFresh_DNA.md')
+                if os.path.exists(dna_path):
+                    with open(dna_path, 'r', encoding='utf-8') as f:
+                        context['hf_dna'] = f.read()
+            except Exception:
+                pass
+
+            # 2. Find Similar Interviews (Role based)
+            # Title format often: Virtual Interview - [Name] | [Role]
+            parts = classified['summary'].split('|')
+            role = parts[-1].strip() if len(parts) > 1 else classified['summary']
+            # Clean role (remove brackets etc)
+            role = re.sub(r'\[.*?\]', '', role).strip()
+            
+            print(f"  Searching for past interviews for role: {role}", file=sys.stderr)
+            context['past_notes'] = self.find_similar_interviews(role)
+            
+        elif classified['meeting_type'] in ['1on1', 'standup', 'review', 'planning', 'external']:
             notes_file = self.search_gdrive_notes_enhanced(classified['summary'], classified['participants'])
             if notes_file:
                 print(f"  Found past notes in GDrive: {notes_file['name']}", file=sys.stderr)
@@ -722,6 +775,30 @@ class MeetingManager:
         else:
             jira_str = "No recent Jira issues found (or --with-jira not enabled)."
 
+        # Interview Context
+        frameworks_str = ""
+        if context.get('career_framework'):
+            frameworks_str += f"## Product Career Framework\n{context['career_framework']}\n\n"
+        if context.get('hf_dna'):
+            frameworks_str += f"## HelloFresh DNA\n{context['hf_dna']}\n\n"
+
+        # Instructions
+        if classified['meeting_type'] == 'interview':
+            instructions_block = """
+1. **Context / Role** - Brief on the role and team context.
+2. **Assessment Criteria** - Key skills/traits to assess based on the Career Framework and HF DNA provided.
+3. **Suggested Questions** - 5-7 targeted questions. Use the 'Past Interviews' to find proven questions for this role. Ensure questions target the assessment criteria.
+4. **Candidate Profile** - Brief bio if available from participants list.
+"""
+        else:
+            instructions_block = """
+1. **Context / Why** - Meeting purpose, incorporating project context and past discussions
+2. **Participant Notes** - Role-specific preparation points for each participant, include their pending action items
+3. **Last Meeting Recap** - Key decisions/outcomes from past notes (if available)
+4. **Agenda Suggestions** - Time-boxed agenda items (total ~30-50 min), specific to current context
+5. **Key Questions** - Specific questions informed by projects, action items, and recent context
+"""
+
         prompt = f"""Generate a meeting pre-read for: {classified['summary']}
 Meeting Type: {classified['meeting_type']}
 
@@ -731,10 +808,13 @@ Meeting Type: {classified['meeting_type']}
 ## Related Projects
 {projects_str}
 
+## Frameworks (For Interviews)
+{frameworks_str}
+
 ## Recent Context (Key Decisions from Daily Context)
 {context['context_summary']}
 
-## Past Meeting Notes (from GDrive)
+## Past Meeting Notes / Past Interviews (from GDrive)
 {context['past_notes'] if context['past_notes'] else 'No past notes found.'}
 
 ## Previous Series History (from local files)
@@ -748,12 +828,7 @@ Meeting Type: {classified['meeting_type']}
 
 ---
 Generate a comprehensive pre-read with these sections:
-
-1. **Context / Why** - Meeting purpose, incorporating project context and past discussions
-2. **Participant Notes** - Role-specific preparation points for each participant, include their pending action items
-3. **Last Meeting Recap** - Key decisions/outcomes from past notes (if available)
-4. **Agenda Suggestions** - Time-boxed agenda items (total ~30-50 min), specific to current context
-5. **Key Questions** - Specific questions informed by projects, action items, and recent context
+{instructions_block}
 
 Important:
 - Use participant roles correctly (from the participant context)
@@ -943,6 +1018,7 @@ Output clean Markdown.
                 fileId=file_id,
                 media_body=media
             ).execute()
+            self._set_permissions(file_id)
             return files[0]['webViewLink']
         else:
             # Create
@@ -956,7 +1032,26 @@ Output clean Markdown.
                 media_body=media,
                 fields='id, webViewLink'
             ).execute()
+            file_id = file.get('id')
+            self._set_permissions(file_id)
             return file.get('webViewLink')
+
+    def _set_permissions(self, file_id: str):
+        """Grant Edit access to entire HelloFresh domain."""
+        try:
+            permission = {
+                'type': 'domain',
+                'role': 'writer',
+                'domain': 'hellofresh.com'
+            }
+            self.drive.permissions().create(
+                fileId=file_id,
+                body=permission,
+                fields='id'
+            ).execute()
+            print(f"  Permissions set: Edit access for hellofresh.com", file=sys.stderr)
+        except Exception as e:
+            print(f"  Warning: Could not set permissions: {e}", file=sys.stderr)
 
     def link_to_calendar(self, event_id: str, link: str):
         """Append pre-read link to calendar event description."""

@@ -117,6 +117,60 @@ def extract_key_updates(context_content: str, entity_id: str) -> List[str]:
     return updates[:3]  # Max 3 updates per entity
 
 
+def update_section(file_path: str, section_header: str, new_content: str, dry_run: bool = False) -> bool:
+    """
+    Replace the content of a specific markdown section with new content.
+    If the section doesn't exist, it is appended to the end (before Changelog if present).
+    
+    Args:
+        file_path: Relative path to Brain file.
+        section_header: Header title (e.g. "Current State" for "## Current State").
+        new_content: The new text content for the section.
+        dry_run: If True, only print changes.
+    """
+    full_path = os.path.join(BRAIN_DIR, file_path)
+    
+    if not os.path.exists(full_path):
+        return False
+        
+    with open(full_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+        
+    header_pattern = f"(## {re.escape(section_header)}\\n)"
+    # Pattern to find content until next header or end of file
+    # Non-greedy match until the next "## " or end of string
+    section_pattern = f"{header_pattern}(.*?)(?=\\n## |\\Z)"
+    
+    formatted_content = new_content.strip() + "\n"
+    
+    if re.search(header_pattern, content):
+        # Section exists, replace it
+        new_file_content = re.sub(
+            section_pattern, 
+            f"\\1{formatted_content}", 
+            content, 
+            flags=re.DOTALL
+        )
+    else:
+        # Section doesn't exist, insert it
+        # Try to insert before Changelog, otherwise at end
+        new_section_block = f"\n## {section_header}\n{formatted_content}"
+        
+        if "## Changelog" in content:
+            new_file_content = content.replace("## Changelog", f"{new_section_block}\n## Changelog")
+        else:
+            new_file_content = content.rstrip() + "\n" + new_section_block
+
+    if dry_run:
+        print(f"  [DRY-RUN] Would update section '{section_header}' in {file_path}")
+        return True
+        
+    with open(full_path, 'w', encoding='utf-8') as f:
+        f.write(new_file_content)
+        
+    return True
+
+
 def append_changelog_entry(file_path: str, date: str, message: str, dry_run: bool = False) -> bool:
     """
     Append a changelog entry to a Brain file.
@@ -188,8 +242,32 @@ def main():
         default=2,
         help='Minimum mentions required to trigger update (default: 2)'
     )
+    parser.add_argument(
+        '--section',
+        type=str,
+        help='Section header to update (e.g. "Current State")'
+    )
+    parser.add_argument(
+        '--content',
+        type=str,
+        help='New content for the section'
+    )
+    parser.add_argument(
+        '--file',
+        type=str,
+        help='Specific Brain file path to update (required for --section)'
+    )
 
     args = parser.parse_args()
+
+    # Mode: Single Section Update
+    if args.section and args.content and args.file:
+        success = update_section(args.file, args.section, args.content, args.dry_run)
+        if success:
+            print(f"Updated section '{args.section}' in {args.file}")
+        else:
+            print(f"Failed to update {args.file}")
+        return
 
     # Load registry
     registry = load_registry()

@@ -68,7 +68,8 @@ def run_gh_api(endpoint: str, jq_filter: Optional[str] = None) -> Optional[Any]:
         cmd.extend(['--jq', jq_filter])
 
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        # Explicitly set UTF-8 encoding to avoid Windows cp1252 issues
+        result = subprocess.run(cmd, capture_output=True, encoding='utf-8', timeout=30)
         if result.returncode != 0:
             if "404" not in result.stderr and "Not Found" not in result.stderr:
                 print(f"  Warning: gh api error for {endpoint}: {result.stderr[:100]}")
@@ -619,6 +620,99 @@ Keep the summary concise and actionable."""
         return None
 
 
+def fetch_repo_file(repo: str, filepath: str) -> Optional[str]:
+    """Fetch raw content of a file from the repo (e.g., README.md)."""
+    # Use gh api to get file content (base64 encoded by default, or raw)
+    # media type raw gives the raw content
+    try:
+        cmd = [GH_PATH, 'api', f'repos/{repo}/contents/{filepath}', '-H', 'Accept: application/vnd.github.raw']
+        # Explicit UTF-8 encoding
+        result = subprocess.run(cmd, capture_output=True, encoding='utf-8', timeout=30)
+        if result.returncode == 0:
+            return result.stdout
+        return None
+    except Exception as e:
+        print(f"  Warning: Failed to fetch {filepath} from {repo}: {e}")
+        return None
+
+def update_project_technical_context(squad_name: str, context: str) -> bool:
+    """Update the Technical Context section in Brain/Projects/*.md."""
+    # Map Squad -> Project File
+    # Note: Market Innovation doesn't map 1:1 to a single project file yet
+    filename_map = {
+        'Good Chop': 'Projects/Good_Chop.md',
+        'The Pets Table': 'Projects/The_Pets_Table.md',
+        'Factor Form': 'Projects/Factor_Form.md',
+    }
+    
+    filename = filename_map.get(squad_name)
+    if not filename:
+        return False
+        
+    project_path = ROOT_DIR / "AI_Guidance" / "Brain" / filename
+    if not project_path.exists():
+        print(f"  Project file not found: {project_path}")
+        return False
+        
+    try:
+        with open(project_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+        # We want to replace or add "## Technical Context"
+        header = "## Technical Context"
+        date_str = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        
+        new_block = f"{header}\n*Auto-synced from GitHub: {date_str}*\n\n{context}\n"
+        
+        # Regex to find existing section
+        pattern = f"{re.escape(header)}.*?(?=\\n## |\\Z)"
+        
+        if re.search(pattern, content, re.DOTALL):
+            content = re.sub(pattern, new_block.strip(), content, flags=re.DOTALL)
+        else:
+            # Append before Changelog or at end
+            if "## Changelog" in content:
+                content = content.replace("## Changelog", f"{new_block.strip()}\n\n## Changelog")
+            else:
+                content = content.rstrip() + "\n\n" + new_block.strip()
+                
+        with open(project_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+            
+        return True
+    except Exception as e:
+        print(f"  Error updating project {filename}: {e}")
+        return False
+
+def summarize_readme_with_gemini(readme_content: str, repo_name: str) -> Optional[str]:
+    """Summarize a README for technical context."""
+    try:
+        import google.generativeai as genai
+    except ImportError:
+        return None
+        
+    gemini_config = config_loader.get_gemini_config()
+    api_key = gemini_config.get('api_key')
+    if not api_key:
+        return None
+        
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(gemini_config.get('model', 'gemini-2.5-flash'))
+    
+    prompt = f"""Summarize the following README.md for the repository '{repo_name}' into a concise 'Technical Context' section for a project documentation file.
+    Focus on: Tech stack, key architecture patterns, deployment, and core capabilities. 
+    Keep it under 200 words. Use bullet points.
+    
+    README Content:
+    {readme_content[:10000]} 
+    """
+    
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception:
+        return None
+
 def main():
     parser = argparse.ArgumentParser(
         description='Sync GitHub data to Brain for New Ventures squads'
@@ -642,6 +736,11 @@ def main():
         '--no-entities',
         action='store_true',
         help='Skip updating squad entity files'
+    )
+    parser.add_argument(
+        '--update-projects',
+        action='store_true',
+        help='Fetch READMEs and update Brain Project files (Technical Context)'
     )
     parser.add_argument(
         '--output',
@@ -671,6 +770,42 @@ def main():
 
     # Fetch data in parallel
     data = fetch_all_squads_parallel(squads)
+
+    # Project Updates (README Sync)
+    if args.update_projects:
+        print("\nUpdating Project Technical Contexts...")
+        for squad in squads:
+            squad_name = squad['name']
+            
+            # Find primary repo
+            repos = squad.get('github_repos', [])
+            if not repos: 
+                continue
+                
+            # Prefer 'web' repo or first one
+            primary_repo = repos[0].get('repo')
+            for r in repos:
+                if 'web' in r.get('repo', ''):
+                    primary_repo = r.get('repo')
+                    break
+            
+            if not primary_repo:
+                continue
+                
+            print(f"  Fetching README for {squad_name} ({primary_repo})...")
+            readme = fetch_repo_file(primary_repo, "README.md")
+            
+            if readme:
+                # Summarize
+                summary = summarize_readme_with_gemini(readme, primary_repo)
+                if not summary:
+                    # Fallback if no Gemini or error
+                    summary = f"**Repo:** [{primary_repo}](https://github.com/{primary_repo})\n\n(Gemini summary unavailable. Please check repo manually.)"
+                
+                if update_project_technical_context(squad_name, summary):
+                    print(f"  ✓ Updated project file for {squad_name}")
+            else:
+                print(f"  ✗ No README found for {primary_repo}")
 
     # Analyze files if requested
     if args.analyze_files:

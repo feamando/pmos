@@ -5,11 +5,17 @@ Brain Loader - Hot Topics Identification
 Scans context files for entity mentions and identifies relevant Brain files to load.
 Used during boot to give agents deeper semantic context.
 
+Now includes FPF/Quint Code reasoning awareness:
+- Scans Brain/Reasoning/ for decisions and hypotheses
+- Checks .quint/ for active reasoning cycles
+- Reports expiring evidence
+
 Usage:
     python brain_loader.py                          # Scan latest context, output hot topics
     python brain_loader.py --context FILE           # Scan specific context file
     python brain_loader.py --query "OTP launch"     # Search for specific terms
     python brain_loader.py --list-all               # List all registered entities
+    python brain_loader.py --reasoning              # Show FPF reasoning state
 """
 
 import os
@@ -19,6 +25,7 @@ import re
 from glob import glob
 from typing import Dict, List, Set, Tuple, Optional, Any
 from collections import defaultdict
+from datetime import datetime, timedelta
 
 # Try to import yaml, fall back to basic parsing if not available
 try:
@@ -33,6 +40,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BRAIN_DIR = os.path.join(os.path.dirname(BASE_DIR), "Brain")
 REGISTRY_FILE = os.path.join(BRAIN_DIR, "registry.yaml")
 CONTEXT_DIR = os.path.join(os.path.dirname(BASE_DIR), "Core_Context")
+QUINT_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), ".quint")
+REASONING_DIR = os.path.join(BRAIN_DIR, "Reasoning")
 
 
 def load_registry() -> Dict:
@@ -81,6 +90,204 @@ def build_alias_index(registry: Dict) -> Dict[str, Tuple[str, str, str]]:
     return index
 
 
+def index_experiments() -> Dict[str, Tuple[str, str, str]]:
+    """Scan Brain/Experiments folder and build index."""
+    index = {}
+    exp_dir = os.path.join(BRAIN_DIR, "Experiments")
+    if not os.path.exists(exp_dir):
+        return index
+        
+    for file_path in glob(os.path.join(exp_dir, "*.md")):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Extract ID from filename
+            filename = os.path.basename(file_path)
+            entity_id = filename.replace(".md", "")
+            
+            # Extract Title (Name)
+            match = re.search(r'^# (.+)$', content, re.MULTILINE)
+            name = match.group(1).strip() if match else entity_id
+            
+            # Add aliases: Name, ID
+            rel_path = f"Experiments/{filename}"
+            index[name.lower()] = ('experiments', entity_id, rel_path)
+            index[entity_id.lower()] = ('experiments', entity_id, rel_path)
+            
+            # Extract raw ID if filename has prefix
+            if entity_id.startswith("EXP-"):
+                raw_id = entity_id[4:]
+                index[raw_id.lower()] = ('experiments', entity_id, rel_path)
+
+        except Exception:
+            continue
+
+    return index
+
+
+def index_reasoning() -> Dict[str, Tuple[str, str, str]]:
+    """Scan Brain/Reasoning folder and build index for DRRs and hypotheses."""
+    index = {}
+
+    # Index Decisions (DRRs)
+    decisions_dir = os.path.join(REASONING_DIR, "Decisions")
+    if os.path.exists(decisions_dir):
+        for file_path in glob(os.path.join(decisions_dir, "*.md")):
+            try:
+                filename = os.path.basename(file_path)
+                if filename.startswith("."):
+                    continue
+                entity_id = filename.replace(".md", "")
+                rel_path = f"Reasoning/Decisions/{filename}"
+                index[entity_id.lower()] = ('reasoning', entity_id, rel_path)
+
+                # Add "drr" prefix alias
+                if entity_id.startswith("drr-"):
+                    short_id = entity_id[4:]
+                    index[short_id.lower()] = ('reasoning', entity_id, rel_path)
+            except Exception:
+                continue
+
+    # Index Hypotheses
+    hypotheses_dir = os.path.join(REASONING_DIR, "Hypotheses")
+    if os.path.exists(hypotheses_dir):
+        for file_path in glob(os.path.join(hypotheses_dir, "*.md")):
+            try:
+                filename = os.path.basename(file_path)
+                if filename.startswith("."):
+                    continue
+                entity_id = filename.replace(".md", "")
+                rel_path = f"Reasoning/Hypotheses/{filename}"
+                index[entity_id.lower()] = ('reasoning', entity_id, rel_path)
+            except Exception:
+                continue
+
+    return index
+
+
+def get_reasoning_state() -> Dict:
+    """
+    Get current FPF/Quint reasoning state.
+
+    Returns dict with:
+        - active_cycles: Number of active reasoning sessions
+        - total_drrs: Total Design Rationale Records
+        - l0_claims, l1_claims, l2_claims: Claims by assurance level
+        - expiring_evidence: List of evidence expiring within 14 days
+        - recent_decisions: List of recent DRRs (last 7 days)
+    """
+    state = {
+        "active_cycles": 0,
+        "total_drrs": 0,
+        "l0_claims": 0,
+        "l1_claims": 0,
+        "l2_claims": 0,
+        "expiring_evidence": [],
+        "recent_decisions": []
+    }
+
+    if not os.path.exists(QUINT_DIR):
+        return state
+
+    # Count active sessions
+    sessions_dir = os.path.join(QUINT_DIR, "sessions")
+    if os.path.exists(sessions_dir):
+        state["active_cycles"] = len([f for f in os.listdir(sessions_dir) if not f.startswith(".")])
+
+    # Count DRRs
+    drr_quint = os.path.join(QUINT_DIR, "decisions")
+    drr_brain = os.path.join(REASONING_DIR, "Decisions")
+
+    drr_count = 0
+    if os.path.exists(drr_quint):
+        drr_count += len([f for f in os.listdir(drr_quint) if f.endswith(".md")])
+    if os.path.exists(drr_brain):
+        drr_count += len([f for f in os.listdir(drr_brain) if f.endswith(".md") and not f.startswith(".")])
+    state["total_drrs"] = drr_count
+
+    # Count claims by level
+    knowledge_dir = os.path.join(QUINT_DIR, "knowledge")
+    if os.path.exists(knowledge_dir):
+        for level in ["L0", "L1", "L2"]:
+            level_dir = os.path.join(knowledge_dir, level)
+            if os.path.exists(level_dir):
+                count = len([f for f in os.listdir(level_dir) if f.endswith(".md")])
+                state[f"{level.lower()}_claims"] = count
+
+    # Check for expiring evidence (basic check - looks for valid_until in frontmatter)
+    evidence_dir = os.path.join(QUINT_DIR, "evidence")
+    if os.path.exists(evidence_dir) and HAS_YAML:
+        threshold = datetime.now() + timedelta(days=14)
+        for evidence_file in glob(os.path.join(evidence_dir, "*.md")):
+            try:
+                with open(evidence_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                if content.startswith("---"):
+                    parts = content.split("---", 2)
+                    if len(parts) >= 3:
+                        metadata = yaml.safe_load(parts[1]) or {}
+                        valid_until = metadata.get("valid_until")
+                        if valid_until:
+                            if isinstance(valid_until, str):
+                                expiry = datetime.strptime(valid_until, "%Y-%m-%d")
+                            else:
+                                expiry = valid_until
+                            if expiry <= threshold:
+                                state["expiring_evidence"].append({
+                                    "file": os.path.basename(evidence_file),
+                                    "expires": valid_until if isinstance(valid_until, str) else valid_until.strftime("%Y-%m-%d")
+                                })
+            except Exception:
+                continue
+
+    return state
+
+
+def format_reasoning_output(state: Dict) -> str:
+    """Format reasoning state for output."""
+    lines = []
+    lines.append("=" * 60)
+    lines.append("FPF REASONING STATE")
+    lines.append("=" * 60)
+    lines.append("")
+
+    lines.append("## CURRENT STATE")
+    lines.append("")
+    lines.append(f"  Active FPF Cycles: {state['active_cycles']}")
+    lines.append(f"  Total DRRs: {state['total_drrs']}")
+    lines.append("")
+
+    lines.append("## KNOWLEDGE LEVELS")
+    lines.append("")
+    lines.append(f"  L0 (Conjectures): {state['l0_claims']}")
+    lines.append(f"  L1 (Substantiated): {state['l1_claims']}")
+    lines.append(f"  L2 (Corroborated): {state['l2_claims']}")
+    lines.append("")
+
+    if state["expiring_evidence"]:
+        lines.append("## EXPIRING EVIDENCE (within 14 days)")
+        lines.append("")
+        for ev in state["expiring_evidence"]:
+            lines.append(f"  - {ev['file']} (expires: {ev['expires']})")
+        lines.append("")
+        lines.append("  Run `/q-decay` to refresh or waive.")
+        lines.append("")
+
+    lines.append("=" * 60)
+
+    if state["active_cycles"] > 0:
+        lines.append(f"STATUS: {state['active_cycles']} active reasoning cycle(s)")
+        lines.append("  Run `/q-status` for details")
+    else:
+        lines.append("STATUS: No active reasoning cycles")
+        lines.append("  Run `/q1-hypothesize <problem>` to start")
+
+    lines.append("=" * 60)
+
+    return "\n".join(lines)
+
+
 def get_latest_context_file() -> Optional[str]:
     """Find the most recent context file."""
     pattern = os.path.join(CONTEXT_DIR, "*-context.md")
@@ -94,9 +301,15 @@ def get_latest_context_file() -> Optional[str]:
     return files[-1]
 
 
-def scan_for_entities(text: str, alias_index: Dict[str, Tuple]) -> Dict[str, Dict]:
+def scan_for_entities(text: str, alias_index: Dict[str, Tuple], partial_match: bool = False) -> Dict[str, Dict]:
     """
     Scan text for entity mentions.
+    
+    Args:
+        text: Content to scan
+        alias_index: Dictionary of aliases to entities
+        partial_match: If True, matches if alias is IN text (good for short search queries). 
+                       If False, uses word boundaries (good for scanning long docs).
 
     Returns dict of matched entities with their details and match count.
     """
@@ -106,17 +319,26 @@ def scan_for_entities(text: str, alias_index: Dict[str, Tuple]) -> Dict[str, Dic
     text_lower = text.lower()
 
     for alias, (category, entity_id, file_path) in alias_index.items():
-        # Use word boundary matching for better precision
-        # Escape special regex characters in alias
-        escaped_alias = re.escape(alias)
-        pattern = r'\b' + escaped_alias + r'\b'
+        if partial_match:
+            # For search queries: simple substring check
+            # e.g. Query "OTP" matches alias "good-chop-otp"
+            if text_lower in alias or alias in text_lower:
+                 # Found a match
+                 matches[entity_id]['count'] += 1
+                 matches[entity_id]['category'] = category
+                 matches[entity_id]['file'] = file_path
+                 matches[entity_id]['matched_aliases'].add(alias)
+        else:
+            # For context scanning: Word boundary matching for precision
+            escaped_alias = re.escape(alias)
+            pattern = r'\b' + escaped_alias + r'\b'
 
-        found = re.findall(pattern, text_lower)
-        if found:
-            matches[entity_id]['count'] += len(found)
-            matches[entity_id]['category'] = category
-            matches[entity_id]['file'] = file_path
-            matches[entity_id]['matched_aliases'].add(alias)
+            found = re.findall(pattern, text_lower)
+            if found:
+                matches[entity_id]['count'] += len(found)
+                matches[entity_id]['category'] = category
+                matches[entity_id]['file'] = file_path
+                matches[entity_id]['matched_aliases'].add(alias)
 
     # Convert sets to lists for output
     for entity_id in matches:
@@ -144,7 +366,7 @@ def format_output(matches: Dict[str, Dict], verbose: bool = False) -> str:
     for entity_id, data in sorted_matches:
         by_category[data['category']].append((entity_id, data))
 
-    for category in ['projects', 'entities', 'architecture', 'decisions']:
+    for category in ['projects', 'entities', 'architecture', 'decisions', 'experiments', 'reasoning']:
         if category not in by_category:
             continue
 
@@ -266,7 +488,7 @@ def list_all_entities(registry: Dict) -> str:
     lines.append("=" * 60)
     lines.append("")
 
-    for category in ['projects', 'entities', 'architecture', 'decisions']:
+    for category in ['projects', 'entities', 'architecture', 'decisions', 'experiments']:
         if category not in registry or registry[category] is None:
             continue
 
@@ -327,6 +549,11 @@ def main():
         action='store_true',
         help='Output only the list of files to load (for scripting)'
     )
+    parser.add_argument(
+        '--reasoning',
+        action='store_true',
+        help='Show FPF reasoning state (active cycles, DRRs, evidence)'
+    )
 
     args = parser.parse_args()
 
@@ -334,6 +561,12 @@ def main():
     registry = load_registry()
     if not registry:
         sys.exit(1)
+
+    # Reasoning state mode
+    if args.reasoning:
+        state = get_reasoning_state()
+        print(format_reasoning_output(state))
+        return
 
     # List all entities mode
     if args.list_all:
@@ -349,6 +582,8 @@ def main():
 
     # Build alias index
     alias_index = build_alias_index(registry)
+    alias_index.update(index_experiments())
+    alias_index.update(index_reasoning())
 
     # Determine text to scan
     if args.query:
@@ -366,7 +601,8 @@ def main():
             text = f.read()
 
     # Scan for entities
-    matches = scan_for_entities(text, alias_index)
+    # Enable partial matching if using query mode
+    matches = scan_for_entities(text, alias_index, partial_match=bool(args.query))
 
     # Output
     if args.files_only:

@@ -12,6 +12,7 @@ Usage:
     python daily_context_updater.py --force      # Ignore last-run, pull last 7 days
     python daily_context_updater.py --output FILE  # Write to file instead of stdout
     python daily_context_updater.py --upload FILE  # Upload context file to GDrive
+    python daily_context_updater.py --reasoning  # Include FPF reasoning state
 """
 
 import os
@@ -28,6 +29,17 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 import io
+
+# --- Slack Integration ---
+try:
+    from slack_sdk import WebClient
+    from slack_sdk.errors import SlackApiError
+    SLACK_AVAILABLE = True
+except ImportError:
+    SLACK_AVAILABLE = False
+
+from dotenv import load_dotenv
+load_dotenv(override=True)
 
 # --- Configuration ---
 # Add common directory to path to import config_loader
@@ -57,7 +69,209 @@ DEFAULT_LOOKBACK_DAYS = 10
 # ~1500 tokens per doc, ~600 tokens per email. 
 # Prevents context window exhaustion when processing many files.
 DEFAULT_MAX_DOC_CHARS = 6000
-DEFAULT_MAX_EMAIL_CHARS = 2500 
+DEFAULT_MAX_EMAIL_CHARS = 2500
+SLACK_MAX_CHARS = 1000
+
+# FPF Reasoning paths
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+REASONING_DIR = os.path.join(REPO_ROOT, 'AI_Guidance', 'Brain', 'Reasoning')
+QUINT_DIR = os.path.join(REPO_ROOT, '.quint')
+
+
+def get_slack_client():
+    """Get authenticated Slack client."""
+    token = os.getenv("SLACK_BOT_TOKEN")
+    if not token:
+        return None
+    return WebClient(token=token)
+
+
+def fetch_slack_messages(client, since: datetime, processed_files: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Fetch Slack messages from channels the bot is in, since the given timestamp.
+    """
+    if not client:
+        return []
+
+    messages = []
+    try:
+        # Get channels the bot is in
+        response = client.users_conversations(types="public_channel,private_channel")
+        channels = response["channels"]
+        
+        oldest = str(since.timestamp())
+
+        for channel in channels:
+            channel_id = channel["id"]
+            channel_name = channel["name"]
+            
+            try:
+                result = client.conversations_history(
+                    channel=channel_id,
+                    oldest=oldest,
+                    limit=50
+                )
+                
+                for msg in result["messages"]:
+                    # Skip subtype messages (joins, leaves, etc) unless important
+                    if msg.get("subtype"):
+                        continue
+                        
+                    msg_id = f"slack_{channel_id}_{msg['ts']}"
+                    
+                    # Check if processed
+                    if msg_id in processed_files:
+                        continue
+                        
+                    msg["channel_name"] = channel_name
+                    msg["channel_id"] = channel_id
+                    msg["unique_id"] = msg_id
+                    
+                    # Resolve user name if possible (simple cache could be added)
+                    user_id = msg.get("user")
+                    if user_id:
+                        try:
+                            user_info = client.users_info(user=user_id)
+                            msg["user_name"] = user_info["user"]["real_name"]
+                        except:
+                            msg["user_name"] = user_id
+                    
+                    messages.append(msg)
+                    
+            except SlackApiError as e:
+                print(f"Warning: Could not fetch history for {channel_name}: {e}", file=sys.stderr)
+
+    except SlackApiError as e:
+        print(f"Warning: Slack API error: {e}", file=sys.stderr)
+        
+    return messages
+
+
+def get_reasoning_state() -> Dict[str, Any]:
+    """
+    Gather FPF reasoning state from Brain/Reasoning/ and .quint/ directories.
+    Returns summary of active cycles, DRRs, expiring evidence, and open hypotheses.
+    """
+    state = {
+        'active_cycles': [],
+        'drrs': [],
+        'expiring_evidence': [],
+        'open_hypotheses': [],
+        'quint_available': os.path.exists(QUINT_DIR)
+    }
+
+    today = datetime.now()
+    expiry_window = timedelta(days=7)  # Flag evidence expiring within 7 days
+
+    # Check Brain/Reasoning/Active/ for active cycles
+    active_dir = os.path.join(REASONING_DIR, 'Active')
+    if os.path.exists(active_dir):
+        for f in os.listdir(active_dir):
+            if f.endswith('.md'):
+                state['active_cycles'].append({
+                    'file': f,
+                    'path': os.path.join(active_dir, f)
+                })
+
+    # Check Brain/Reasoning/Decisions/ for DRRs
+    decisions_dir = os.path.join(REASONING_DIR, 'Decisions')
+    if os.path.exists(decisions_dir):
+        for f in os.listdir(decisions_dir):
+            if f.endswith('.md') and f.startswith('drr-'):
+                state['drrs'].append({
+                    'file': f,
+                    'path': os.path.join(decisions_dir, f)
+                })
+
+    # Check Brain/Reasoning/Evidence/ for expiring evidence
+    evidence_dir = os.path.join(REASONING_DIR, 'Evidence')
+    if os.path.exists(evidence_dir):
+        for f in os.listdir(evidence_dir):
+            if f.endswith('.md'):
+                filepath = os.path.join(evidence_dir, f)
+                try:
+                    with open(filepath, 'r') as ef:
+                        content = ef.read()
+                        # Look for expiry date pattern: "expires: YYYY-MM-DD" or "Expiry: YYYY-MM-DD"
+                        import re
+                        match = re.search(r'[Ee]xpir[ey]s?:\s*(\d{4}-\d{2}-\d{2})', content)
+                        if match:
+                            expiry_date = datetime.strptime(match.group(1), '%Y-%m-%d')
+                            if expiry_date <= today + expiry_window:
+                                state['expiring_evidence'].append({
+                                    'file': f,
+                                    'path': filepath,
+                                    'expiry': match.group(1)
+                                })
+                except Exception:
+                    pass
+
+    # Check Brain/Reasoning/Hypotheses/ for open hypotheses (L0/L1)
+    hypotheses_dir = os.path.join(REASONING_DIR, 'Hypotheses')
+    if os.path.exists(hypotheses_dir):
+        for f in os.listdir(hypotheses_dir):
+            if f.endswith('.md'):
+                filepath = os.path.join(hypotheses_dir, f)
+                try:
+                    with open(filepath, 'r') as hf:
+                        content = hf.read()
+                        # Check if hypothesis is still open (L0 or L1, not L2 or Invalid)
+                        if 'L2' not in content and 'Invalid' not in content:
+                            state['open_hypotheses'].append({
+                                'file': f,
+                                'path': filepath
+                            })
+                except Exception:
+                    pass
+
+    return state
+
+
+def format_reasoning_summary(reasoning_state: Dict[str, Any]) -> str:
+    """Format reasoning state for inclusion in context output."""
+    lines = []
+    lines.append("## FPF REASONING STATE")
+    lines.append("")
+
+    if not any([reasoning_state['active_cycles'], reasoning_state['drrs'],
+                reasoning_state['expiring_evidence'], reasoning_state['open_hypotheses']]):
+        lines.append("No active reasoning state found.")
+        lines.append("")
+        return "\n".join(lines)
+
+    # Active cycles
+    if reasoning_state['active_cycles']:
+        lines.append(f"### Active Cycles ({len(reasoning_state['active_cycles'])})")
+        for cycle in reasoning_state['active_cycles']:
+            lines.append(f"- {cycle['file']}")
+        lines.append("")
+
+    # DRRs
+    if reasoning_state['drrs']:
+        lines.append(f"### Design Rationale Records ({len(reasoning_state['drrs'])})")
+        for drr in reasoning_state['drrs']:
+            lines.append(f"- {drr['file']}")
+        lines.append("")
+
+    # Expiring evidence
+    if reasoning_state['expiring_evidence']:
+        lines.append(f"### Expiring Evidence ({len(reasoning_state['expiring_evidence'])} items expiring within 7 days)")
+        for ev in reasoning_state['expiring_evidence']:
+            lines.append(f"- {ev['file']} (expires: {ev['expiry']})")
+        lines.append("")
+
+    # Open hypotheses
+    if reasoning_state['open_hypotheses']:
+        lines.append(f"### Open Hypotheses ({len(reasoning_state['open_hypotheses'])} L0/L1 claims)")
+        for hyp in reasoning_state['open_hypotheses']:
+            lines.append(f"- {hyp['file']}")
+        lines.append("")
+
+    # Quint status
+    lines.append(f"**Quint Code:** {'Available' if reasoning_state['quint_available'] else 'Not initialized'}")
+    lines.append("")
+
+    return "\n".join(lines)
 
 
 def get_credentials():
@@ -418,15 +632,23 @@ def read_email_content(message: Dict[str, Any], max_chars: int = DEFAULT_MAX_EMA
         return f"[Error reading email: {e}]"
 
 
-def format_output(docs: List[Dict], doc_contents: Dict[str, str], 
-                  emails: List[Dict], email_contents: Dict[str, str]) -> str:
-    """Format docs and emails for Claude Code synthesis."""
+def format_output(docs: List[Dict], doc_contents: Dict[str, str],
+                  emails: List[Dict], email_contents: Dict[str, str],
+                  slack_messages: List[Dict],
+                  reasoning_state: Optional[Dict[str, Any]] = None) -> str:
+    """Format docs, emails, and slack messages for Claude Code synthesis."""
     lines = []
     lines.append("=" * 60)
     lines.append("DAILY CONTEXT UPDATE - RAW DATA")
     lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     lines.append(f"Documents found: {len(docs)}")
     lines.append(f"Emails found: {len(emails)}")
+    lines.append(f"Slack messages found: {len(slack_messages)}")
+    if reasoning_state:
+        active = len(reasoning_state.get('active_cycles', []))
+        drrs = len(reasoning_state.get('drrs', []))
+        expiring = len(reasoning_state.get('expiring_evidence', []))
+        lines.append(f"FPF State: {active} active cycles | {drrs} DRRs | {expiring} expiring evidence")
     lines.append("=" * 60)
     lines.append("")
 
@@ -452,6 +674,18 @@ def format_output(docs: List[Dict], doc_contents: Dict[str, str],
         date_str = datetime.fromtimestamp(date_ts).strftime('%Y-%m-%d')
         
         lines.append(f"- [EMAIL] {subject} | From: {sender} | Date: {date_str}")
+    lines.append("")
+
+    # --- Slack Index ---
+    lines.append("## SLACK INDEX")
+    lines.append("")
+    for msg in slack_messages:
+        ts = float(msg['ts'])
+        date_str = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
+        user = msg.get('user_name', msg.get('user', 'Unknown'))
+        channel = msg.get('channel_name', 'Unknown')
+        preview = msg.get('text', '').replace('\n', ' ')[:50]
+        lines.append(f"- [SLACK] {channel} | {user}: {preview}...")
     lines.append("")
 
     # --- Document Contents ---
@@ -494,19 +728,48 @@ def format_output(docs: List[Dict], doc_contents: Dict[str, str],
         lines.append("")
         lines.append("")
 
+    # --- Slack Contents ---
+    lines.append("=" * 60)
+    lines.append("## SLACK CONTENTS")
+    lines.append("=" * 60)
+    lines.append("")
+
+    for msg in slack_messages:
+        ts = float(msg['ts'])
+        date_str = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+        user = msg.get('user_name', msg.get('user', 'Unknown'))
+        channel = msg.get('channel_name', 'Unknown')
+        text = msg.get('text', '')
+        
+        lines.append("-" * 40)
+        lines.append(f"### SLACK: {channel} - {date_str}")
+        lines.append(f"User: {user}")
+        lines.append("-" * 40)
+        lines.append("")
+        lines.append(text)
+        lines.append("")
+        lines.append("")
+
+    # --- FPF Reasoning State (if included) ---
+    if reasoning_state:
+        lines.append("=" * 60)
+        lines.append(format_reasoning_summary(reasoning_state))
+
     lines.append("=" * 60)
     lines.append("END OF RAW DATA")
     lines.append("=" * 60)
     lines.append("")
-    
+
     # Calculate cutoff date (6 months ago)
     cutoff_date = (datetime.now() - timedelta(days=180)).strftime('%Y-%m-%d')
-    
+
     lines.append("Instructions for Claude Code:")
     lines.append("Synthesize the above into AI_Guidance/Core_Context/YYYY-MM-DD-context.md")
     lines.append(f"IMPORTANT: STRICTLY IGNORE any content, meeting notes, decisions, or updates dated before {cutoff_date} (6 months ago).")
     lines.append("Extract: Key decisions, action items, blockers, metrics, important dates (only recent).")
     lines.append("Format: NGO-style bullets, structured sections")
+    if reasoning_state:
+        lines.append("Include: FPF reasoning state summary (active cycles, expiring evidence, pending decisions)")
 
     return "\n".join(lines)
 
@@ -564,8 +827,33 @@ def main():
         action='store_true',
         help='Include Gemini summary with Jira sync (implies --jira)'
     )
+    parser.add_argument(
+        '--reasoning',
+        action='store_true',
+        help='Include FPF reasoning state (active cycles, DRRs, expiring evidence)'
+    )
+    parser.add_argument(
+        '--quick',
+        action='store_true',
+        help='Quick mode: GDocs only, skip Slack and Gmail for faster updates'
+    )
+    parser.add_argument(
+        '--no-slack',
+        action='store_true',
+        help='Skip Slack message fetching'
+    )
+    parser.add_argument(
+        '--no-gmail',
+        action='store_true',
+        help='Skip Gmail fetching'
+    )
 
     args = parser.parse_args()
+
+    # Quick mode implies no-slack and no-gmail
+    if args.quick:
+        args.no_slack = True
+        args.no_gmail = True
 
     # --- Upload Mode (standalone) ---
     if args.upload:
@@ -621,20 +909,37 @@ def main():
     docs = fetch_recent_docs(drive_service, since, processed_files)
     
     # --- Gmail ---
-    print("Connecting to Gmail...", file=sys.stderr)
-    gmail_service = get_gmail_service(creds)
-    
-    print("Fetching recent emails...", file=sys.stderr)
-    emails = fetch_recent_emails(gmail_service, since, processed_files)
+    emails = []
+    if not args.no_gmail:
+        print("Connecting to Gmail...", file=sys.stderr)
+        gmail_service = get_gmail_service(creds)
 
-    if not docs and not emails:
-        print("No new documents or emails found.", file=sys.stderr)
+        print("Fetching recent emails...", file=sys.stderr)
+        emails = fetch_recent_emails(gmail_service, since, processed_files)
+    else:
+        print("Skipping Gmail (--no-gmail or --quick)", file=sys.stderr)
+
+    # --- Slack ---
+    slack_messages = []
+    if not args.no_slack and SLACK_AVAILABLE:
+        print("Connecting to Slack...", file=sys.stderr)
+        slack_client = get_slack_client()
+        if slack_client:
+            print("Fetching recent Slack messages...", file=sys.stderr)
+            slack_messages = fetch_slack_messages(slack_client, since, processed_files)
+        else:
+            print("Slack token not found, skipping Slack fetch.", file=sys.stderr)
+    elif args.no_slack:
+        print("Skipping Slack (--no-slack or --quick)", file=sys.stderr)
+
+    if not docs and not emails and not slack_messages:
+        print("No new documents, emails, or Slack messages found.", file=sys.stderr)
         # Always update last_run even if no new docs, to advance the window
         state['last_run'] = datetime.now(timezone.utc)
         save_state(state)
         return
 
-    print(f"Found {len(docs)} document(s) and {len(emails)} email(s)", file=sys.stderr)
+    print(f"Found {len(docs)} document(s), {len(emails)} email(s), and {len(slack_messages)} Slack messages", file=sys.stderr)
 
     # Dry run
     if args.dry_run:
@@ -650,6 +955,12 @@ def main():
                 headers = email.get('payload', {}).get('headers', [])
                 subject = next((h['value'] for h in headers if h['name'] == 'Subject'), '(No Subject)')
                 print(f"  - {subject}")
+        if slack_messages:
+            print("\nSLACK:")
+            for msg in slack_messages:
+                ts = float(msg['ts'])
+                date_str = datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M')
+                print(f"  - [{msg.get('channel_name')}] {msg.get('user_name')}: {msg.get('text')[:30]}...")
         return
 
     # Read contents
@@ -677,9 +988,23 @@ def main():
         email_contents[email['id']] = read_email_content(email)
         # Emails don't have modifiedTime, so use internalDate
         processed_files[email['id']] = email.get('internalDate')
+    
+    # Slack messages are already fetched fully, just need to update state
+    for msg in slack_messages:
+        processed_files[msg['unique_id']] = msg['ts']
+
+    # Get reasoning state if requested
+    reasoning_state = None
+    if args.reasoning:
+        print("Gathering FPF reasoning state...", file=sys.stderr)
+        reasoning_state = get_reasoning_state()
+        active = len(reasoning_state.get('active_cycles', []))
+        drrs = len(reasoning_state.get('drrs', []))
+        expiring = len(reasoning_state.get('expiring_evidence', []))
+        print(f"  Active cycles: {active}, DRRs: {drrs}, Expiring evidence: {expiring}", file=sys.stderr)
 
     # Format output
-    output = format_output(docs, doc_contents, emails, email_contents)
+    output = format_output(docs, doc_contents, emails, email_contents, slack_messages, reasoning_state)
 
     # Write output
     if args.output:
