@@ -1,6 +1,6 @@
 # PRD Generator
 
-Generate or update a PRD using Deep Research, with optional FPF structured reasoning.
+Generate or update a PRD using Deep Research, with optional FPF structured reasoning or orthogonal challenge.
 
 ## Arguments
 $ARGUMENTS
@@ -11,9 +11,10 @@ The user wants to generate or update a PRD. Parse their request:
 
 ### Mode Selection
 
-Check if the user wants FPF reasoning:
+Check for flags:
 - **Standard mode:** `/prd <topic>` - Fast Deep Research generation
-- **FPF mode:** `/prd --fpf <topic>` or `/prd <topic> --fpf` - Structured reasoning with hypothesis evaluation
+- **FPF mode:** `/prd --fpf <topic>` - Structured reasoning with hypothesis evaluation
+- **Orthogonal mode:** `/prd --orthogonal <topic>` - 3-round Claude vs Gemini challenge
 
 ---
 
@@ -105,6 +106,35 @@ For complex PRDs requiring auditable decision-making:
 
 ---
 
+### Orthogonal Mode: 3-Round Challenge
+
+For high-stakes PRDs requiring rigorous validation across multiple perspectives:
+
+1. Run the orthogonal challenge system:
+   ```bash
+   python3 AI_Guidance/Tools/orthogonal_challenge.py --type prd --topic "$ARGUMENTS"
+   ```
+
+2. This will execute:
+   - **Round 1 (Claude):** Create initial PRD with research + FPF reasoning
+   - **Round 2 (Gemini):** Challenge assumptions, identify gaps, propose alternatives
+   - **Round 3 (Claude):** Resolve challenges, produce final PRD
+
+3. Wait for completion (5-15 minutes)
+
+4. Report outputs:
+   - Final PRD: `Brain/Reasoning/Orthogonal/<id>/v3_final.md`
+   - Challenge FAQ: Shows all challenges and resolutions
+   - DRR: Stored in `Brain/Reasoning/Decisions/`
+
+5. The final PRD includes:
+   - **Decision Rationale:** DRR reference with assurance levels
+   - **Challenge FAQ:** All challenges raised and how they were resolved
+   - **Confidence levels:** Per-section confidence assessments
+   - **Conditions for revisiting:** When to reconsider this PRD
+
+---
+
 ### For PRD Updates
 
 Parse file path and instructions:
@@ -127,6 +157,10 @@ python3 AI_Guidance/Tools/deep_research/prd_generator.py --setup
 - `/prd --fpf Architecture for multi-tenant subscription system`
 - `/prd --fpf Payment gateway migration strategy`
 
+**Orthogonal Mode (rigorous):**
+- `/prd --orthogonal New subscription model for Factor Form`
+- `/prd --orthogonal Cross-selling platform architecture`
+
 **Updates:**
 - `/prd Products/Good_Chop/OTP_PRD.md --update Add competitive analysis section`
 
@@ -134,5 +168,7 @@ python3 AI_Guidance/Tools/deep_research/prd_generator.py --setup
 
 - Standard mode: 2-5 minutes (Deep Research)
 - FPF mode: 15-30 minutes (full reasoning cycle)
+- Orthogonal mode: 10-20 minutes (3-round challenge)
 - Use FPF for architectural decisions with long-term consequences
+- Use Orthogonal for high-stakes PRDs requiring multi-perspective validation
 - DRRs are stored in `Brain/Reasoning/Decisions/`

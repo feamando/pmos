@@ -9,6 +9,7 @@ $ARGUMENTS
 
 - **Standard mode:** `/whitepaper <topic>` - Direct document generation
 - **FPF mode:** `/whitepaper --fpf <topic>` - Structured reasoning with hypothesis evaluation
+- **Orthogonal mode:** `/whitepaper --orthogonal <topic>` - 3-round Claude vs Gemini challenge
 
 ---
 
@@ -75,6 +76,30 @@ For strategic proposals requiring systematic option evaluation:
    ```
    /quint-sync --to-brain
    ```
+
+---
+
+## Orthogonal Mode: 3-Round Challenge
+
+For strategic proposals requiring rigorous multi-perspective validation:
+
+1. Run the orthogonal challenge system:
+   ```bash
+   python3 AI_Guidance/Tools/orthogonal_challenge.py --type prd --topic "$ARGUMENTS"
+   ```
+   Note: Uses PRD template which includes strategic proposal sections.
+
+2. This will execute:
+   - **Round 1 (Claude):** Create initial proposal with research + FPF reasoning
+   - **Round 2 (Gemini):** Challenge assumptions, stress-test strategy, propose alternatives
+   - **Round 3 (Claude):** Resolve challenges, produce final whitepaper
+
+3. Wait for completion (5-15 minutes)
+
+4. Report outputs:
+   - Final Whitepaper: `Brain/Reasoning/Orthogonal/<id>/v3_final.md`
+   - Challenge FAQ: Shows all challenges and resolutions
+   - DRR: Stored in `Brain/Reasoning/Decisions/`
 
 ---
 
@@ -180,5 +205,16 @@ For strategic proposals requiring systematic option evaluation:
 **FPF Mode:**
 - `/whitepaper --fpf Build vs. Buy decision for payment processing`
 - `/whitepaper --fpf Market expansion strategy for DACH region`
+
+**Orthogonal Mode (rigorous):**
+- `/whitepaper --orthogonal AI-first product development strategy`
+- `/whitepaper --orthogonal Multi-brand platform architecture vision`
+
+## Notes
+
+- Standard mode: 5-10 minutes
+- FPF mode: 15-30 minutes (full reasoning cycle)
+- Orthogonal mode: 10-20 minutes (3-round challenge)
+- Use Orthogonal for strategic proposals with significant organizational impact
 
 What strategic initiative should we document?

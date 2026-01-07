@@ -1,252 +1,101 @@
-# The Brain - PM-OS Knowledge Graph
+# AI Brain: The Semantic Knowledge Graph
 
-The Brain is PM-OS's semantic knowledge base - a structured collection of markdown files that represent your professional context.
+This directory serves as the **Semantic Memory** for the AI Agent. Unlike the `Core_Context` folder, which captures chronological events ("Episodic Memory"), the `Brain` folder captures **state, facts, and enduring knowledge**.
+
+## Philosophy
+*   **Markdown is the Database:** All knowledge is stored in structured Markdown files.
+*   **Entity-Oriented:** Files are organized by what they *are* (Project, Team, Decision), not when they happened.
+*   **Living Documents:** These files are meant to be updated, refined, and refactored over time.
 
 ## Directory Structure
 
-```
-Brain/
-├── Entities/           # People, teams, external partners
-├── Projects/           # Active initiatives and features
-├── Architecture/       # Technical systems and services
-├── Decisions/          # Decision records
-├── Reasoning/          # FPF reasoning artifacts
-│   ├── Decisions/      # Design Rationale Records (DRRs)
-│   ├── Hypotheses/     # Active hypotheses being tested
-│   └── Evidence/       # Supporting evidence for decisions
-├── Synapses/           # Auto-generated cross-references
-├── Inbox/              # Raw ingested data (from integrations)
-├── GitHub/             # GitHub activity tracking
-└── Strategy/           # Strategic documents and plans
-```
+### 1. `/Projects`
+Long-running initiatives with defined goals, roadmaps, and statuses.
+*   *Example:* `OTP.md`, `Good_Chop.md`
+*   *Content:* Executive summary, milestones, blockers, key stakeholders.
 
-## Entity Types
+### 2. `/Entities`
+People, Teams, and external Companies.
+*   *Example:* `Nikita_Gorshkov.md`, `Team_Payments.md`
+*   *Content:* Roles, responsibilities, contact info, key relationships.
 
-### Entities/ - People and Teams
+### 3. `/Architecture`
+Technical systems, data flows, and platform documentation.
+*   *Example:* `SCM_Integration.md`, `Billing_Flow.md`
+*   *Content:* Diagrams (Mermaid), API specs, dependency maps.
 
-Who you work with. Includes:
-- Direct reports
-- Stakeholders
-- Key partners
-- Teams and squads
+### 4. `/Decisions`
+Architectural Decision Records (ADRs) and strategic pivots.
+*   *Example:* `ADR-001-Cart-Consolidation.md`
+*   *Content:* Context, Decision, Consequences, Status (Accepted/Deprecated).
 
-**Template:**
-```markdown
----
-type: person
-name: Full Name
-role: Job Title
-team: Team Name
-created: YYYY-MM-DD
-related:
-  - "[[path/to/related.md]]"
----
+### 5. `/Inbox`
+Transient storage for raw data dumps from `daily_context_updater.py`.
+*   *Status:* Temporary. Files here should be processed into Semantic files and then archived/deleted.
 
-# Full Name
+### 6. `/Episodic`
+Archive of chronological context files (`YYYY-MM-DD-context.md`).
+*   *Status:* Read-Only / Append-Only. Used for historical lookups ("What happened last Tuesday?").
 
-## Profile
-- **Role:** [Title] at [Company]
-- **Team:** [Team]
+## Entity Registry (`registry.yaml`)
 
-## Working Style
-[How they prefer to communicate, work patterns]
+The central index mapping entities to their Brain files with aliases for flexible lookup.
 
-## Interaction Notes
-- **YYYY-MM-DD**: [Note from interaction]
+```yaml
+projects:
+  otp:
+    file: Projects/OTP.md
+    aliases: ["OTP", "One-Time-Purchase", "one-time purchase"]
 ```
 
-### Projects/ - Active Initiatives
+**Benefits:**
+- Single source of truth for entity locations
+- Alias support enables fuzzy matching (e.g., "Sameer" → `Entities/Sameer_Doda.md`)
+- Machine-readable for tooling (`brain_loader.py`)
 
-What you're working on. Includes:
-- Product features
-- Technical initiatives
-- Process improvements
-- Strategic programs
+## Workflow (The "Gardener" Cycle)
+1.  **Ingest:** New information arrives in `Inbox` or via User Chat.
+2.  **Identify:** Run `brain_loader.py` to find which Brain files are relevant ("hot topics").
+3.  **Refine:** Agent updates the relevant Semantic file (e.g., updating a Project status in `Projects/OTP.md`).
+4.  **Retrieve:** Agent searches the `Brain` to answer user queries using keyword expansion and semantic mapping.
 
-**Template:**
-```markdown
----
-type: project
-name: Project Name
-owner: Your Name
-status: Active | Planning | On Hold | Complete
-created: YYYY-MM-DD
-jira_project: PROJECT_KEY
----
+## Relationship Schema (The Synapses)
 
-# Project Name
+To create a dense, navigable knowledge graph, all Brain files support a `relationships` block in their YAML frontmatter.
 
-## Executive Summary
-[2-3 sentences on what and why]
+### Supported Types
 
-## Current Status
-- **Phase:** [Phase]
-- **Health:** [Green/Yellow/Red]
-- **Next Milestone:** [Description] (YYYY-MM-DD)
+| Forward Relationship | Inverse Relationship | Usage |
+|----------------------|----------------------|-------|
+| `owner` | `owns` | Person -> Project/Domain |
+| `member_of` | `has_member` | Person -> Team |
+| `blocked_by` | `blocks` | Project -> Project/Issue |
+| `depends_on` | `dependency_for` | Project -> Project |
+| `relates_to` | `relates_to` | Generic connection |
+| `part_of` | `has_part` | Sub-component -> System |
 
-## Team
-- **PM:** [Name]
-- **Eng:** [Name]
-- **Design:** [Name]
+### Format
 
-## Decisions
-- **YYYY-MM-DD**: [Decision]. Rationale: [Why].
-```
-
-### Architecture/ - Technical Systems
-
-Systems and services you need to understand. Includes:
-- Internal services
-- External integrations
-- Infrastructure components
-- Data systems
-
-**Template:**
-```markdown
----
-type: system
-name: System Name
-status: Active | Deprecated | Planned
-owner: Team Name
----
-
-# System Name
-
-## Overview
-[What it does]
-
-## Architecture
-[Diagram or description]
-
-## Endpoints/Interfaces
-[How to interact with it]
-
-## Owner & Contacts
-[Who to ask for help]
-```
-
-### Reasoning/ - FPF Artifacts
-
-First Principles Framework reasoning materials:
-
-- **Decisions/**: Design Rationale Records documenting major decisions
-- **Hypotheses/**: Active hypotheses being tested
-- **Evidence/**: Supporting data and research
-
-## How the Brain Gets Populated
-
-### Automatic Population
-
-The `/create-context` command automatically populates the Brain:
-
-1. **Ingestion**: Raw data pulled to `Inbox/`
-2. **Analysis**: LLM extracts entities and relationships
-3. **Writing**: `unified_brain_writer.py` creates/updates files
-
-### Manual Creation
-
-Create entities manually when:
-- Meeting someone new important
-- Starting a new project
-- Learning about a new system
-
-### Synapse Building
-
-Run periodically to build cross-references:
-
-```
-/synapse
-```
-
-This creates links between related entities based on:
-- Explicit `related:` frontmatter
-- Mentioned names in content
-- Shared projects/teams
-
-## Best Practices
-
-### 1. Use Frontmatter
-
-Always include YAML frontmatter for machine readability:
+Use Wiki-links (`[[path/to/file]]`) for all values to ensure clicked navigation works in editors.
 
 ```yaml
 ---
-type: project
-name: My Project
-status: Active
-created: 2025-01-05
+aliases: ['OTP']
+relationships:
+  owner:
+    - "[[Entities/Nikita_Gorshkov]]"
+  blocked_by:
+    - "[[Projects/Logistics_Upgrade]]"
+  relates_to:
+    - "[[Architecture/OWL]]"
 ---
 ```
 
-### 2. Link Entities
+## Tools
 
-Reference other Brain entities with double-bracket syntax:
-
-```markdown
-Working with [[Entities/John_Smith.md]] on this.
-```
-
-### 3. Keep Changelogs
-
-Add dated entries when things change:
-
-```markdown
-## Changelog
-- **2025-01-05**: Updated status to Active
-- **2025-01-03**: Initial creation
-```
-
-### 4. Capture Decisions
-
-Every significant decision should be recorded:
-
-```markdown
-## Decisions
-- **2025-01-05**: Chose PostgreSQL over MongoDB. Rationale: Team expertise, ACID compliance needed.
-```
-
-### 5. Regular Maintenance
-
-- **Weekly**: Run `/synapse` to update relationships
-- **Monthly**: Archive completed projects
-- **Quarterly**: Review and clean stale entities
-
-## Querying the Brain
-
-Use `/q-query` to search across the Brain:
-
-```
-/q-query "payment processing"
-```
-
-Or use `/brain-load` to identify hot topics:
-
-```
-/brain-load
-```
-
-## Integration with FPF
-
-The Brain integrates with First Principles Framework:
-
-1. **q0-init**: Creates reasoning cycle, references Brain entities
-2. **q3-validate**: Pulls evidence from Brain
-3. **q5-decide**: Creates DRR in `Reasoning/Decisions/`
-
-## Troubleshooting
-
-### "Entity not found"
-
-Create a new entity file in the appropriate directory.
-
-### "Stale relationships"
-
-Run `/synapse` to rebuild cross-references.
-
-### "Brain too large"
-
-Archive old projects to `Brain/Archive/` (create if needed).
-
-### "Missing context"
-
-Run `/create-context full` to repopulate from sources.
+- **`AI_Guidance/Tools/brain_loader.py`** - Scans context files for entity mentions, identifies relevant Brain files to load.
+  ```bash
+  python3 AI_Guidance/Tools/brain_loader.py              # Scan latest context
+  python3 AI_Guidance/Tools/brain_loader.py --query "OTP" # Search specific terms
+  python3 AI_Guidance/Tools/brain_loader.py --list-all   # List all registered entities
+  ```

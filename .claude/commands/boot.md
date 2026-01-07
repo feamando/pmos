@@ -33,6 +33,34 @@ git pull origin main
 
 This prevents stale context and ensures any work from previous sessions is available.
 
+### Step 0b: Check Session State
+
+**Skip if:** `context-only` argument provided.
+
+Check for existing session state:
+
+```bash
+python3 AI_Guidance/Tools/session_manager.py --status
+```
+
+**If active session exists:**
+- Note the session ID and title
+- This session was not properly archived (possibly interrupted)
+- Ask user if they want to continue or archive it
+
+**If no active session:**
+- Check for recent sessions: `python3 AI_Guidance/Tools/session_manager.py --list 3`
+- Offer to load relevant context from recent sessions if applicable
+
+**Create new session:**
+
+If starting fresh work, create a new session:
+```bash
+python3 AI_Guidance/Tools/session_manager.py --create "Session Title" --tags "tag1,tag2"
+```
+
+Or wait until user clarifies the work to be done.
+
 ### Step 1: Load Core Context Files
 
 **Skip if:** `context-only` argument provided.
@@ -253,6 +281,26 @@ After completing steps 1-5 (including synthesis, upload, hot topics, and optiona
 ```
 FPF: [N] active cycles | [M] DRRs | [K] evidence items expiring
 ```
+
+### Step 7: Post Context to Slack
+
+**Skip if:** `context-only` argument provided.
+
+Post context highlights to Slack channel `#ngo-slack-private` (C0A6ZAS1MSQ):
+
+```bash
+python3 AI_Guidance/Tools/slack_context_poster.py AI_Guidance/Core_Context/YYYY-MM-DD-context.md --type boot
+```
+
+Replace `YYYY-MM-DD` with the actual context file loaded in Step 2.
+
+**Posted summary includes:**
+- Critical Alerts
+- Open Action Items (with owners)
+- Active Blockers
+- Upcoming Key Dates
+
+**Skip if:** Slack token not configured or posting fails (non-blocking).
 
 ## Execute
 

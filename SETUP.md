@@ -283,7 +283,33 @@ SLACK_CHANNELS=engineering-updates,product-team,weekly-sync
 python3 AI_Guidance/Tools/slack_bulk_extractor.py --test
 ```
 
-### 3.6 AWS Bedrock Setup (Optional)
+### 3.6 Confluence Setup (New in v2.1)
+
+**Step 1: Get API Token**
+
+1. Use the same [Atlassian API Token](https://id.atlassian.com/manage/api-tokens) as Jira, or create a new one
+2. Ensure you have read access to the spaces you want to sync
+
+**Step 2: Identify Spaces**
+
+List the Confluence space keys you want to sync (e.g., `ENG`, `PROD`, `TEAM`).
+
+**Step 3: Update .env**
+
+```bash
+CONFLUENCE_URL=https://your-company.atlassian.net/wiki
+CONFLUENCE_EMAIL=your.email@company.com
+CONFLUENCE_API_TOKEN=your-api-token-here
+CONFLUENCE_SPACES=ENG,PROD,TEAM
+```
+
+**Step 4: Test Connection**
+
+```bash
+python3 AI_Guidance/Tools/confluence_brain_sync.py --test
+```
+
+### 3.7 AWS Bedrock Setup (Optional)
 
 For LLM-powered analysis using Claude on AWS Bedrock:
 

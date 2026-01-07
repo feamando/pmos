@@ -74,6 +74,24 @@ If a context file already exists for today:
 2. Create the next increment (e.g., `-02` exists → create `-03`)
 3. Merge with previous version, retaining unresolved blockers/decisions
 
+### Step 5: Post Context to Slack
+
+Post context highlights to Slack channel `#ngo-slack-private` (C0A6ZAS1MSQ):
+
+```bash
+python3 AI_Guidance/Tools/slack_context_poster.py AI_Guidance/Core_Context/YYYY-MM-DD-context.md --type update
+```
+
+Replace `YYYY-MM-DD` with the actual context file created/updated.
+
+**Posted summary includes:**
+- Critical Alerts
+- Open Action Items (with owners)
+- Active Blockers
+- Upcoming Key Dates
+
+**Skip if:** Slack token not configured or posting fails (non-blocking).
+
 ## Options Reference
 
 | Option | Effect |

@@ -1,6 +1,48 @@
-# PM-OS: Product Management Operating System v2.0
+# PM-OS: Product Management Operating System v2.1
 
-A Git-backed, CLI-managed operating system for Product Managers. PM-OS transforms your daily workflow by automatically gathering context from your tools (Jira, Slack, GitHub, Google Docs), building a semantic knowledge graph (the "Brain"), and providing AI-powered assistance tailored to your communication style.
+A Git-backed, CLI-managed operating system for Product Managers. PM-OS transforms your daily workflow by automatically gathering context from your tools (Jira, Slack, GitHub, Google Docs, Confluence), building a semantic knowledge graph (the "Brain"), and providing AI-powered assistance tailored to your communication style.
+
+---
+
+## What's New in v2.1
+
+### New Commands (+11)
+
+| Command | Description |
+|---------|-------------|
+| `/adr` | Generate Architecture Decision Records |
+| `/bc` | Generate Business Cases |
+| `/confluence-sync` | Sync Confluence pages to Brain |
+| `/orthogonal-status` | Check orthogonal challenge status |
+| `/prfaq` | Generate PR/FAQ documents (Amazon style) |
+| `/rfc` | Generate Request for Comments documents |
+| `/session-load` | Load a previous session |
+| `/session-save` | Save current session state |
+| `/session-search` | Search session history |
+| `/session-status` | Show current session status |
+| `/tribe-update` | Generate tribe quarterly updates |
+
+### New Tools (+8)
+
+| Tool | Purpose |
+|------|---------|
+| `confluence_brain_sync.py` | Sync Confluence spaces to Brain |
+| `model_bridge.py` | Bridge between LLM providers |
+| `orthogonal_challenge.py` | Devil's advocate reasoning |
+| `research_aggregator.py` | Aggregate research findings |
+| `session_manager.py` | Manage session state across boots |
+| `slack_context_poster.py` | Post context summaries to Slack |
+| `template_manager.py` | Manage document templates |
+| `tribe_quarterly_update.py` | Generate quarterly update reports |
+
+### Summary
+
+- **Total Commands**: 44 (up from 33 in v2.0)
+- **Total Tools**: 40 (up from 32 in v2.0)
+- **New Document Types**: ADR, BC, PRFAQ, RFC, Tribe Update
+- **Session Management**: Full session persistence across boots
+- **Confluence Integration**: Native Confluence sync support
+- **Orthogonal Challenges**: Devil's advocate reasoning for better decisions
 
 ---
 
@@ -9,9 +51,9 @@ A Git-backed, CLI-managed operating system for Product Managers. PM-OS transform
 PM-OS is an **AI-native productivity framework** designed specifically for Product Managers. Unlike generic AI assistants, PM-OS:
 
 - **Maintains persistent context** across sessions via the Brain knowledge graph
-- **Integrates with your actual tools** (Jira, Slack, GitHub, Google Workspace)
+- **Integrates with your actual tools** (Jira, Slack, GitHub, Google Workspace, Confluence)
 - **Learns your communication style** through a personalized persona file
-- **Provides structured workflows** via 33 specialized slash commands
+- **Provides structured workflows** via 44 specialized slash commands
 - **Tracks decisions and reasoning** with the FPF (First Principles Framework)
 
 ### Who is PM-OS For?
@@ -27,81 +69,90 @@ PM-OS is an **AI-native productivity framework** designed specifically for Produ
 
 ```
                                  PM-OS Architecture
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                        EXTERNAL SOURCES                              │
-    │    ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
-    │    │ Google  │  │  Jira   │  │ GitHub  │  │  Slack  │  │ Statsig │ │
-    │    │Docs/Mail│  │         │  │         │  │         │  │         │ │
-    │    └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘ │
-    └─────────┼───────────┼───────────┼───────────┼───────────┼─────────┘
-              │           │           │           │           │
-              ▼           ▼           ▼           ▼           ▼
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                      INGESTION LAYER                                 │
-    │                                                                      │
-    │    /create-context  ───────────────────────────────────────────────│
-    │         │                                                           │
-    │         ├── daily_context_updater.py (GDocs, Gmail)                │
-    │         ├── jira_brain_sync.py (Jira epics, tickets)               │
-    │         ├── github_brain_sync.py (PRs, commits)                    │
-    │         ├── slack_bulk_extractor.py (Channel history)              │
-    │         └── statsig_brain_sync.py (Experiments)                    │
-    │                                                                      │
-    └────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                       ANALYSIS LAYER                                 │
-    │                                                                      │
-    │    batch_llm_analyzer.py ──► LLM-powered entity extraction         │
-    │    file_chunker.py ────────► Large file processing                 │
-    │    unified_brain_writer.py ► Structured Brain population           │
-    │                                                                      │
-    └────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                     THE BRAIN (Knowledge Core)                       │
-    │                                                                      │
-    │    Brain/                                                           │
-    │    ├── Entities/      ← People, teams, systems                      │
-    │    ├── Projects/      ← Active initiatives, features                │
-    │    ├── Architecture/  ← Technical systems, services                 │
-    │    ├── Decisions/     ← Decision records                            │
-    │    ├── Reasoning/     ← FPF hypotheses, evidence                    │
-    │    │   ├── Decisions/                                               │
-    │    │   ├── Hypotheses/                                              │
-    │    │   └── Evidence/                                                │
-    │    ├── Synapses/      ← Cross-references, relationships            │
-    │    ├── Inbox/         ← Raw ingested data                           │
-    │    └── GitHub/        ← PR activity, commits                        │
-    │                                                                      │
-    └────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                      CONTEXT LAYER                                   │
-    │                                                                      │
-    │    Core_Context/                                                    │
-    │    └── YYYY-MM-DD-context.md  ← Daily synthesized context           │
-    │                                                                      │
-    │    brain_loader.py ─────────► Identifies "hot topics"              │
-    │    synapse_builder.py ──────► Builds entity relationships          │
-    │                                                                      │
-    └────────────────────────────┬────────────────────────────────────────┘
-                                 │
-                                 ▼
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                       OUTPUT LAYER                                   │
-    │                                                                      │
-    │    /boot ─────────────► Initialize session with full context        │
-    │    /pm ───────────────► PM Assistant mode                           │
-    │    /meeting-prep ─────► Generate meeting pre-reads                  │
-    │    /prd ──────────────► Generate PRDs with context                  │
-    │    /sprint-report ────► Generate sprint reports                     │
-    │    /q* commands ──────► FPF reasoning workflows                     │
-    │                                                                      │
-    └─────────────────────────────────────────────────────────────────────┘
+    +---------------------------------------------------------------------+
+    |                        EXTERNAL SOURCES                              |
+    |    +---------+  +---------+  +---------+  +---------+  +---------+  |
+    |    | Google  |  |  Jira   |  | GitHub  |  |  Slack  |  |Confluence| |
+    |    |Docs/Mail|  |         |  |         |  |         |  |         |  |
+    |    +----+----+  +----+----+  +----+----+  +----+----+  +----+----+  |
+    +---------|-----------|-----------|-----------|-----------|----------+
+              |           |           |           |           |
+              v           v           v           v           v
+    +---------------------------------------------------------------------+
+    |                      INGESTION LAYER                                 |
+    |                                                                      |
+    |    /create-context  -------------------------------------------------|
+    |         |                                                            |
+    |         +-- daily_context_updater.py (GDocs, Gmail)                 |
+    |         +-- jira_brain_sync.py (Jira epics, tickets)                |
+    |         +-- github_brain_sync.py (PRs, commits)                     |
+    |         +-- slack_bulk_extractor.py (Channel history)               |
+    |         +-- confluence_brain_sync.py (Confluence pages) [NEW]       |
+    |         +-- statsig_brain_sync.py (Experiments)                     |
+    |                                                                      |
+    +------------------------+--------------------------------------------+
+                             |
+                             v
+    +---------------------------------------------------------------------+
+    |                       ANALYSIS LAYER                                 |
+    |                                                                      |
+    |    batch_llm_analyzer.py ----> LLM-powered entity extraction        |
+    |    file_chunker.py ----------> Large file processing                |
+    |    unified_brain_writer.py --> Structured Brain population          |
+    |    research_aggregator.py ---> Research findings aggregation [NEW]  |
+    |                                                                      |
+    +------------------------+--------------------------------------------+
+                             |
+                             v
+    +---------------------------------------------------------------------+
+    |                     THE BRAIN (Knowledge Core)                       |
+    |                                                                      |
+    |    Brain/                                                           |
+    |    +-- Entities/      <- People, teams, systems                     |
+    |    +-- Projects/      <- Active initiatives, features               |
+    |    +-- Architecture/  <- Technical systems, services                |
+    |    +-- Decisions/     <- Decision records                           |
+    |    +-- Reasoning/     <- FPF hypotheses, evidence                   |
+    |    |   +-- Decisions/                                               |
+    |    |   +-- Hypotheses/                                              |
+    |    |   +-- Evidence/                                                |
+    |    +-- Synapses/      <- Cross-references, relationships            |
+    |    +-- Inbox/         <- Raw ingested data                          |
+    |    +-- Strategy/      <- Strategic documents                        |
+    |                                                                      |
+    +------------------------+--------------------------------------------+
+                             |
+                             v
+    +---------------------------------------------------------------------+
+    |                      CONTEXT LAYER                                   |
+    |                                                                      |
+    |    Core_Context/                                                    |
+    |    +-- YYYY-MM-DD-context.md  <- Daily synthesized context          |
+    |                                                                      |
+    |    Sessions/                                                        |
+    |    +-- YYYY-MM-DD-NNN/        <- Session state [NEW]                |
+    |                                                                      |
+    |    brain_loader.py ----------> Identifies "hot topics"              |
+    |    synapse_builder.py --------> Builds entity relationships         |
+    |    session_manager.py --------> Session persistence [NEW]           |
+    |                                                                      |
+    +------------------------+--------------------------------------------+
+                             |
+                             v
+    +---------------------------------------------------------------------+
+    |                       OUTPUT LAYER                                   |
+    |                                                                      |
+    |    /boot -------------> Initialize session with full context        |
+    |    /pm ---------------> PM Assistant mode                           |
+    |    /meeting-prep -----> Generate meeting pre-reads                  |
+    |    /prd --------------> Generate PRDs with context                  |
+    |    /adr --------------> Generate ADRs [NEW]                         |
+    |    /prfaq ------------> Generate PR/FAQs [NEW]                      |
+    |    /rfc --------------> Generate RFCs [NEW]                         |
+    |    /tribe-update -----> Generate quarterly updates [NEW]            |
+    |    /q* commands ------> FPF reasoning workflows                     |
+    |                                                                      |
+    +---------------------------------------------------------------------+
 ```
 
 ---
@@ -259,12 +310,25 @@ Edit `.env` with your credentials:
 #### Slack
 
 1. Create Slack app at [api.slack.com/apps](https://api.slack.com/apps)
-2. Add scopes: `channels:history`, `channels:read`, `users:read`
+2. Add scopes: `channels:history`, `channels:read`, `users:read`, `chat:write`
 3. Install to workspace
 4. Add to `.env`:
    ```
    SLACK_BOT_TOKEN=xoxb-your-token
    SLACK_CHANNELS=channel1,channel2
+   SLACK_POST_CHANNEL=your-private-channel-id
+   ```
+
+#### Confluence (New in v2.1)
+
+1. Go to [Atlassian API Tokens](https://id.atlassian.com/manage/api-tokens)
+2. Use same token as Jira or create new
+3. Add to `.env`:
+   ```
+   CONFLUENCE_URL=https://your-company.atlassian.net/wiki
+   CONFLUENCE_EMAIL=your-email@company.com
+   CONFLUENCE_API_TOKEN=your-api-token
+   CONFLUENCE_SPACES=SPACE1,SPACE2
    ```
 
 #### AWS Bedrock (Optional - for LLM Analysis)
@@ -297,30 +361,29 @@ The Brain is PM-OS's semantic knowledge graph - a structured collection of markd
 
 ```
 AI_Guidance/Brain/
-├── Entities/           # People, teams, external systems
-│   ├── John_Smith.md
-│   └── Engineering_Team.md
-├── Projects/           # Active initiatives and features
-│   ├── Q1_Launch.md
-│   └── Mobile_App_Redesign.md
-├── Architecture/       # Technical systems and services
-│   ├── Payment_Service.md
-│   └── API_Gateway.md
-├── Decisions/          # Decision records
-│   └── README.md
-├── Reasoning/          # FPF reasoning artifacts
-│   ├── Decisions/      # Design Rationale Records
-│   ├── Hypotheses/     # Active hypotheses
-│   └── Evidence/       # Supporting evidence
-├── Synapses/           # Cross-references
-├── Inbox/              # Raw ingested data
-│   ├── GDocs/
-│   ├── Slack/
-│   ├── Jira/
-│   └── GitHub/
-└── GitHub/             # GitHub activity
-    ├── PR_Activity.md
-    └── Recent_Commits.md
++-- Entities/           # People, teams, external systems
+|   +-- John_Smith.md
+|   +-- Engineering_Team.md
++-- Projects/           # Active initiatives and features
+|   +-- Q1_Launch.md
+|   +-- Mobile_App_Redesign.md
++-- Architecture/       # Technical systems and services
+|   +-- Payment_Service.md
+|   +-- API_Gateway.md
++-- Decisions/          # Decision records
+|   +-- README.md
++-- Reasoning/          # FPF reasoning artifacts
+|   +-- Decisions/      # Design Rationale Records
+|   +-- Hypotheses/     # Active hypotheses
+|   +-- Evidence/       # Supporting evidence
++-- Synapses/           # Cross-references
++-- Strategy/           # Strategic documents
++-- Inbox/              # Raw ingested data
+    +-- GDocs/
+    +-- Slack/
+    +-- Jira/
+    +-- GitHub/
+    +-- Confluence/     # New in v2.1
 ```
 
 ### Entity Format
@@ -359,7 +422,7 @@ Synapses are automatically generated cross-references that link related entities
 
 ## Commands Reference
 
-PM-OS includes 33 specialized slash commands:
+PM-OS includes 44 specialized slash commands:
 
 ### Core Commands
 
@@ -370,6 +433,15 @@ PM-OS includes 33 specialized slash commands:
 | `/create-context` | Pull context from all sources |
 | `/update-context` | Quick context refresh |
 | `/logout` | End session, save context |
+
+### Session Management (New in v2.1)
+
+| Command | Description |
+|---------|-------------|
+| `/session-status` | Show current session status |
+| `/session-save` | Save current session state |
+| `/session-load` | Load a previous session |
+| `/session-search` | Search session history |
 
 ### PM Workflows
 
@@ -384,6 +456,16 @@ PM-OS includes 33 specialized slash commands:
 | `/whitepaper` | Strategic proposal document |
 | `/sprint-report` | Generate sprint report |
 
+### Document Generation (Expanded in v2.1)
+
+| Command | Description |
+|---------|-------------|
+| `/adr` | Architecture Decision Record |
+| `/bc` | Business Case document |
+| `/prfaq` | PR/FAQ document (Amazon style) |
+| `/rfc` | Request for Comments document |
+| `/tribe-update` | Tribe quarterly update |
+
 ### Brain Management
 
 | Command | Description |
@@ -392,9 +474,10 @@ PM-OS includes 33 specialized slash commands:
 | `/synapse` | Build entity relationships |
 | `/jira-sync` | Sync Jira data to Brain |
 | `/github-sync` | Sync GitHub data to Brain |
+| `/confluence-sync` | Sync Confluence pages to Brain (New) |
 | `/statsig-sync` | Sync Statsig experiments |
 
-### FPF Reasoning (13 commands)
+### FPF Reasoning (14 commands)
 
 | Command | Description |
 |---------|-------------|
@@ -414,12 +497,13 @@ PM-OS includes 33 specialized slash commands:
 | `/quint-prd` | FPF-enhanced PRD |
 | `/quint-sync` | Sync with Quint |
 | `/gemini-fpf` | Gemini FPF bridge |
+| `/orthogonal-status` | Orthogonal challenge status (New) |
 
 ---
 
 ## Tools Reference
 
-PM-OS includes 50+ Python tools:
+PM-OS includes 40+ Python tools:
 
 ### Context Ingestion
 
@@ -429,6 +513,7 @@ PM-OS includes 50+ Python tools:
 | `jira_brain_sync.py` | Sync Jira projects |
 | `github_brain_sync.py` | Sync GitHub repos |
 | `slack_bulk_extractor.py` | Extract Slack history |
+| `confluence_brain_sync.py` | Sync Confluence pages (New) |
 | `statsig_brain_sync.py` | Sync experiments |
 
 ### Analysis
@@ -438,6 +523,8 @@ PM-OS includes 50+ Python tools:
 | `batch_llm_analyzer.py` | LLM-powered entity extraction |
 | `file_chunker.py` | Split large files for processing |
 | `unified_brain_writer.py` | Write analyzed data to Brain |
+| `research_aggregator.py` | Aggregate research findings (New) |
+| `orthogonal_challenge.py` | Devil's advocate analysis (New) |
 
 ### Brain Management
 
@@ -447,13 +534,21 @@ PM-OS includes 50+ Python tools:
 | `brain_updater.py` | Update Brain entities |
 | `synapse_builder.py` | Build entity relationships |
 
+### Session Management (New in v2.1)
+
+| Tool | Purpose |
+|------|---------|
+| `session_manager.py` | Manage session persistence |
+| `template_manager.py` | Manage document templates |
+
 ### Outputs
 
 | Tool | Purpose |
 |------|---------|
 | `sprint_report_generator.py` | Generate sprint reports |
-| `meeting_prep.py` | Generate meeting pre-reads |
-| `prd_generator.py` | Generate PRDs |
+| `tribe_quarterly_update.py` | Generate quarterly updates (New) |
+| `slack_context_poster.py` | Post context to Slack (New) |
+| `model_bridge.py` | Bridge between LLM providers (New) |
 
 ---
 
@@ -475,6 +570,22 @@ claude
 /boot context-only
 ```
 
+### Session Management (New in v2.1)
+
+```bash
+# Check current session
+/session-status
+
+# Save session before long break
+/session-save
+
+# Resume previous session
+/session-load 2025-01-05-001
+
+# Search past sessions
+/session-search "marketplace decision"
+```
+
 ### Context Gathering
 
 ```bash
@@ -485,7 +596,7 @@ claude
 /create-context quick
 
 # Specific sources
-/create-context extract -Sources "jira,github"
+/create-context extract -Sources "jira,github,confluence"
 
 # Bulk historical (6 months)
 /create-context bulk
@@ -507,11 +618,26 @@ claude
 # Generate PRD with Brain context
 /prd "Feature: User Authentication"
 
+# Generate Architecture Decision Record
+/adr "Should we use microservices or monolith?"
+
+# Generate PR/FAQ (Amazon style)
+/prfaq "New Premium Tier Feature"
+
+# Generate RFC
+/rfc "API Versioning Strategy"
+
+# Generate Business Case
+/bc "Expansion into APAC Market"
+
 # Strategic proposal
 /whitepaper "API Platform Strategy"
 
 # Sprint report
 /sprint-report
+
+# Tribe quarterly update
+/tribe-update
 ```
 
 ### Decision Making with FPF
@@ -522,6 +648,9 @@ claude
 
 # Generate hypotheses
 /q1-hypothesize
+
+# Run orthogonal challenge (devil's advocate)
+/orthogonal-status
 
 # Verify logic
 /q2-verify
@@ -550,12 +679,17 @@ claude
 | Slack rate limited | Reduce channels or use tier1 only |
 | Brain not loading | Run `/brain-load` or check file paths |
 | Context file too large | Run `/create-context preprocess` |
+| Session not loading | Check AI_Guidance/Sessions/ directory |
+| Confluence 403 error | Check CONFLUENCE_API_TOKEN permissions |
 
 ### Logs and Debugging
 
 ```bash
 # Check tool status
 /create-context status
+
+# Check session status
+/session-status
 
 # Dry run (preview without changes)
 pwsh create-context.ps1 -Mode extract -DryRun
@@ -583,6 +717,12 @@ A: PM-OS is designed for individual use. Each person should have their own insta
 **Q: How do I update PM-OS?**
 A: Pull latest from your PM-OS repo. Brain data is preserved across updates.
 
+**Q: What's the difference between session-save and logout?**
+A: `/logout` ends the session and saves final state. `/session-save` saves a checkpoint without ending.
+
+**Q: How do I migrate from v2.0 to v2.1?**
+A: Copy new command files to `.claude/commands/` and new tools to `AI_Guidance/Tools/`. Your Brain data is preserved.
+
 ---
 
 ## Contributing
@@ -592,6 +732,25 @@ PM-OS is designed to be extended. To add a new:
 - **Command**: Create `.claude/commands/your-command.md`
 - **Tool**: Add Python script to `AI_Guidance/Tools/`
 - **Integration**: Follow existing patterns in ingestion tools
+
+---
+
+## Version History
+
+### v2.1 (Current)
+- Added 11 new commands (session management, document types, confluence)
+- Added 8 new tools (session manager, confluence sync, orthogonal challenge)
+- Session persistence across Claude Code boots
+- Confluence integration
+- Orthogonal challenges for better decision-making
+- Slack context posting
+
+### v2.0
+- Initial public release
+- 33 commands, 32 tools
+- Brain knowledge graph
+- FPF reasoning framework
+- Integration with Jira, GitHub, Slack, Google Workspace
 
 ---
 
@@ -609,4 +768,4 @@ MIT License - See LICENSE file for details.
 
 ---
 
-*PM-OS v2.0 - Built for Product Managers, by Product Managers*
+*PM-OS v2.1 - Built for Product Managers, by Product Managers*
