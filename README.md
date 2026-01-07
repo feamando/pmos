@@ -20,7 +20,7 @@ This enables PRDs, ADRs, and RFCs to reference real technical constraints and pa
 | Command | Description |
 |---------|-------------|
 | `/analyze-codebase` | Analyze a GitHub repo and update Technical Brain |
-| `/sync-tech-context` | Sync patterns from spec-machine (if available) |
+| `/sync-tech-context` | Sync patterns from internal tools (if available) |
 | `/ralph-init` | Initialize a Ralph long-running task |
 | `/ralph-loop` | Continue a Ralph iteration |
 | `/ralph-status` | Check Ralph task status |
