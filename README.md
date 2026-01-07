@@ -1,10 +1,55 @@
-# PM-OS: Product Management Operating System v2.1
+# PM-OS: Product Management Operating System v2.2
 
 A Git-backed, CLI-managed operating system for Product Managers. PM-OS transforms your daily workflow by automatically gathering context from your tools (Jira, Slack, GitHub, Google Docs, Confluence), building a semantic knowledge graph (the "Brain"), and providing AI-powered assistance tailored to your communication style.
 
 ---
 
-## What's New in v2.1
+## What's New in v2.2
+
+### Technical Brain Integration
+
+PM-OS now understands your codebase! The new **Technical Brain** (`Brain/Technical/`) gives PM-OS awareness of:
+- **Tech stack** - Frameworks, libraries, and infrastructure
+- **Coding conventions** - Patterns and standards from your repos
+- **Repository structure** - Per-repo technical overviews
+
+This enables PRDs, ADRs, and RFCs to reference real technical constraints and patterns.
+
+### New Commands (+6)
+
+| Command | Description |
+|---------|-------------|
+| `/analyze-codebase` | Analyze a GitHub repo and update Technical Brain |
+| `/sync-tech-context` | Sync patterns from spec-machine (if available) |
+| `/ralph-init` | Initialize a Ralph long-running task |
+| `/ralph-loop` | Continue a Ralph iteration |
+| `/ralph-status` | Check Ralph task status |
+| `/ralph-specs` | Generate specs for Ralph tasks |
+
+### New Tools (+2)
+
+| Tool | Purpose |
+|------|---------|
+| `tech_context_sync.py` | Analyze repos and sync technical patterns |
+| `ralph_manager.py` | Manage long-running multi-session tasks |
+
+### Enhanced Commands
+
+- `/prd` - Now loads Technical Brain context before generation
+- `/adr` - References existing architecture patterns
+- `/rfc` - Includes technical feasibility assessment
+
+### Summary
+
+- **Total Commands**: 50 (up from 44 in v2.1)
+- **Total Tools**: 47 (up from 40 in v2.1)
+- **Technical Brain**: New `Brain/Technical/` for codebase understanding
+- **Ralph Mode**: Long-running task management across sessions
+- **Smarter Documents**: PRDs/ADRs/RFCs reference real code patterns
+
+---
+
+## What's in v2.1
 
 ### New Commands (+11)
 
@@ -53,7 +98,7 @@ PM-OS is an **AI-native productivity framework** designed specifically for Produ
 - **Maintains persistent context** across sessions via the Brain knowledge graph
 - **Integrates with your actual tools** (Jira, Slack, GitHub, Google Workspace, Confluence)
 - **Learns your communication style** through a personalized persona file
-- **Provides structured workflows** via 44 specialized slash commands
+- **Provides structured workflows** via 50 specialized slash commands
 - **Tracks decisions and reasoning** with the FPF (First Principles Framework)
 
 ### Who is PM-OS For?
