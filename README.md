@@ -1,10 +1,46 @@
-# PM-OS: Product Management Operating System v2.2
+# PM-OS: Product Management Operating System v2.3
 
 A Git-backed, CLI-managed operating system for Product Managers. PM-OS transforms your daily workflow by automatically gathering context from your tools (Jira, Slack, GitHub, Google Docs, Confluence), building a semantic knowledge graph (the "Brain"), and providing AI-powered assistance tailored to your communication style.
 
 ---
 
-## What's New in v2.2
+## What's New in v2.3
+
+### Deep Research for PRDs
+
+PM-OS now includes **Gemini Deep Research** capabilities for generating comprehensive PRDs. The new `deep_research` module:
+- Uses Gemini's grounded search for market research and competitor analysis
+- Integrates with Google Drive file stores for internal context
+- Generates research-backed PRDs with citations
+
+### New Tool Modules (+10 tools)
+
+| Module | Tools | Purpose |
+|--------|-------|---------|
+| `deep_research/` | `prd_generator.py`, `file_store_manager.py` | AI-powered deep research for PRD generation |
+| `repo_indexer/` | `indexer.py`, `search_tree.py`, `create_missing_squads.py`, `update_brain_ownership.py` | Codebase navigation and Brain updates |
+| `meeting_prep/` | `meeting_prep.py` | Automated meeting pre-read generation |
+| `common/` | `config_loader.py`, `__init__.py` | Shared configuration utilities |
+
+### Enhanced Meeting Prep
+
+The new `/meeting-prep` command now uses a dedicated module that:
+- Parses calendar events and extracts context
+- Auto-archives past meeting pre-reads
+- Generates context-rich pre-reads from Brain entities
+- Supports custom meeting type classification
+
+### Summary
+
+- **Total Commands**: 50 (same as v2.2)
+- **Total Tools**: 54 (up from 47 in v2.2)
+- **Deep Research**: Gemini-powered PRD research with citations
+- **Repo Indexer**: Codebase navigation for Technical Brain
+- **Meeting Prep Module**: Dedicated meeting preparation system
+
+---
+
+## What's in v2.2
 
 ### Technical Brain Integration
 
@@ -782,20 +818,33 @@ PM-OS is designed to be extended. To add a new:
 
 ## Version History
 
-### v2.1 (Current)
+### v2.3 (Current)
+- Added Deep Research module for Gemini-powered PRD generation
+- Added Repo Indexer for codebase navigation
+- Added Meeting Prep module for automated pre-reads
+- Added Common module for shared configuration
+- 50 commands, 54 tools
+
+### v2.2
+- Technical Brain integration for codebase understanding
+- Ralph mode for long-running multi-session tasks
+- 6 new commands (analyze-codebase, sync-tech-context, ralph-*)
+- 50 commands, 47 tools
+
+### v2.1
 - Added 11 new commands (session management, document types, confluence)
 - Added 8 new tools (session manager, confluence sync, orthogonal challenge)
 - Session persistence across Claude Code boots
 - Confluence integration
 - Orthogonal challenges for better decision-making
-- Slack context posting
+- 44 commands, 40 tools
 
 ### v2.0
 - Initial public release
-- 33 commands, 32 tools
 - Brain knowledge graph
 - FPF reasoning framework
 - Integration with Jira, GitHub, Slack, Google Workspace
+- 33 commands, 32 tools
 
 ---
 
@@ -813,4 +862,4 @@ MIT License - See LICENSE file for details.
 
 ---
 
-*PM-OS v2.1 - Built for Product Managers, by Product Managers*
+*PM-OS v2.3 - Built for Product Managers, by Product Managers*
