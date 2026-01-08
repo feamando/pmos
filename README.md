@@ -22,6 +22,17 @@ PM-OS now includes **Gemini Deep Research** capabilities for generating comprehe
 | `meeting_prep/` | `meeting_prep.py` | Automated meeting pre-read generation |
 | `common/` | `config_loader.py`, `__init__.py` | Shared configuration utilities |
 
+### MCP Servers (+2 servers)
+
+PM-OS now includes **Model Context Protocol (MCP) servers** for enhanced Claude Code integration:
+
+| Server | Purpose |
+|--------|---------|
+| `gdrive_mcp/` | Google Drive integration - search, read, and manage GDocs |
+| `jira_mcp/` | Jira integration - query issues, create tickets, update status |
+
+Configure MCP servers by copying `.mcp.json.example` to `.mcp.json` and updating credentials.
+
 ### Enhanced Meeting Prep
 
 The new `/meeting-prep` command now uses a dedicated module that:
@@ -33,7 +44,8 @@ The new `/meeting-prep` command now uses a dedicated module that:
 ### Summary
 
 - **Total Commands**: 50 (same as v2.2)
-- **Total Tools**: 54 (up from 47 in v2.2)
+- **Total Tools**: 56 (up from 47 in v2.2)
+- **MCP Servers**: Google Drive and Jira integration
 - **Deep Research**: Gemini-powered PRD research with citations
 - **Repo Indexer**: Codebase navigation for Technical Brain
 - **Meeting Prep Module**: Dedicated meeting preparation system
@@ -819,11 +831,12 @@ PM-OS is designed to be extended. To add a new:
 ## Version History
 
 ### v2.3 (Current)
+- Added MCP servers for Google Drive and Jira integration
 - Added Deep Research module for Gemini-powered PRD generation
 - Added Repo Indexer for codebase navigation
 - Added Meeting Prep module for automated pre-reads
 - Added Common module for shared configuration
-- 50 commands, 54 tools
+- 50 commands, 56 tools, 2 MCP servers
 
 ### v2.2
 - Technical Brain integration for codebase understanding

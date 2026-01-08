@@ -1,0 +1,5 @@
+{
+  "url": "https://your-domain.atlassian.net",
+  "username": "your-email@example.com",
+  "api_token": "your-api-token"
+}

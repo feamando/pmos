@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "google-drive": {
+      "command": "python3",
+      "args": ["AI_Guidance/Tools/gdrive_mcp/server.py"],
+      "env": {
+        "GDRIVE_CREDENTIALS_PATH": "path/to/client_secret.json"
+      }
+    },
+    "jira": {
+      "command": "python3",
+      "args": ["AI_Guidance/Tools/jira_mcp/server.py"],
+      "env": {
+        "JIRA_SERVER": "https://your-company.atlassian.net",
+        "JIRA_EMAIL": "your-email@company.com",
+        "JIRA_API_TOKEN": "your-api-token"
+      }
+    }
+  }
+}
