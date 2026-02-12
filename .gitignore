@@ -1,0 +1,51 @@
+# Credentials and secrets
+.env
+*.token.json
+token.json
+client_secret*.json
+credentials.json
+.secrets/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Local state (recreated by tools)
+AI_Guidance/Tools/daily_context/state.json
+AI_Guidance/Tools/meeting_prep/config.json
+AI_Guidance/Tools/jira_mcp/config.json
+tools/daily_context/state.json
+
+# Synced developer commands (copied by command_sync.py at runtime)
+.claude/commands/.sync-manifest.json
+.claude/commands/bd-*.md
+.claude/commands/boot-dev.md
+.claude/commands/preflight.md
+.claude/commands/*-roadmap*.md
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Distribution packages (keep separately)
+# PM-OS_v*.zip

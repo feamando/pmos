@@ -1,0 +1,334 @@
+# Create Context Pipeline
+
+Consolidated context creation pipeline that extracts, analyzes, and populates the Brain with data from all external sources.
+
+## Overview
+
+This command runs the master `create-context.ps1` orchestration script which consolidates:
+- **GDocs/Gmail** extraction (daily_context_updater.py)
+- **Jira** extraction (jira_brain_sync.py)
+- **GitHub** extraction (github_brain_sync.py)
+- **Slack** extraction (slack_bulk_extractor.py)
+- **Statsig** extraction (statsig_brain_sync.py)
+- **LLM Analysis** (batch_llm_analyzer.py)
+- **Brain Writing** (unified_brain_writer.py)
+- **Hot Topics Loading** (brain_loader.py)
+- **Synapse Building** (synapse_builder.py)
+
+## Arguments
+
+The command accepts optional arguments:
+
+**Modes:**
+- `full` - Run complete pipeline (extract + preprocess + analyze + write + load) **[default]**
+- `quick` - Quick refresh (GDocs + Jira only, no LLM analysis)
+- `bulk` - **Bulk historical extraction (6 months, resumable)**
+- `preprocess` - **Chunk large files (> 1500 lines) for processing**
+- `extract` - Extract only from all sources
+- `analyze` - Analyze only (requires prior extraction)
+- `write` - Write to Brain only (requires prior analysis)
+- `load` - Load hot topics only
+- `status` - Show status of all components
+
+**Flags:**
+- `-Sources <list>` - Comma-separated: gdocs,jira,github,slack,statsig
+- `-Days <N>` - Lookback period (default: 7 for daily, 180 for bulk)
+- `-SlackTier <tier>` - tier1, tier2, tier3, or all (default: tier1)
+- `-Summarize` - Include LLM summaries
+- `-DryRun` - Preview without changes
+- `-NoPull` - Skip git pull before running (useful offline or to avoid conflicts)
+- `-NoWrite` - Extract and analyze but don't write to Brain
+
+**Enrichment:**
+- `-EnrichMode <mode>` - Enrichment mode (default: quick)
+  - `quick` - Body text extraction only (fastest, most effective)
+  - `full` - All enrichers including external sources and ML edges
+  - `external` - GDocs + Jira + GitHub only (requires OAuth)
+  - `skip` - Skip enrichment phase entirely
+
+**Examples:**
+```
+/create-context              # Full pipeline
+/create-context quick        # Fast - GDocs + Jira only
+/create-context status       # Check pipeline state
+/create-context extract -NoPull -Sources "jira,github"  # Extract specific sources offline
+```
+
+## Instructions
+
+### Step 1: Determine Mode
+
+Based on the user's request or argument, determine which mode to run:
+
+| Scenario | Mode | Command |
+|----------|------|---------|
+| Full Brain refresh | full | `pwsh create-context.ps1 -Mode full` |
+| Quick daily update | quick | `pwsh create-context.ps1 -Mode quick` |
+| **6-month historical extraction** | bulk | `pwsh create-context.ps1 -Mode bulk` |
+| Extract new data only | extract | `pwsh create-context.ps1 -Mode extract` |
+| Check pipeline status | status | `pwsh create-context.ps1 -Mode status` |
+| Specific sources only | extract | `pwsh create-context.ps1 -Mode extract -Sources "jira,github"` |
+| Bulk Slack only (3 months) | bulk | `pwsh create-context.ps1 -Mode bulk -Sources "slack" -Days 90` |
+
+### Step 2: Execute Pipeline
+
+Run the appropriate command based on the determined mode.
+
+**For full pipeline:**
+```bash
+pwsh create-context.ps1 -Mode full -Summarize
+```
+
+**For quick refresh:**
+```bash
+pwsh create-context.ps1 -Mode quick
+```
+
+**For bulk historical (6 months):**
+```bash
+pwsh create-context.ps1 -Mode bulk
+```
+
+**For bulk specific sources (e.g., 3 months Slack):**
+```bash
+pwsh create-context.ps1 -Mode bulk -Sources "slack" -Days 90 -SlackTier all
+```
+
+**For status check:**
+```bash
+pwsh create-context.ps1 -Mode status
+```
+
+**For specific sources:**
+```bash
+pwsh create-context.ps1 -Mode extract -Sources "jira,github" -Days 3
+```
+
+### Step 3: Monitor Progress
+
+The script outputs progress indicators for each phase:
+1. **Extraction** - Data pulled from external sources
+2. **Analysis** - LLM processes raw data (unless quick mode)
+3. **Brain Writing** - Entities/projects updated in Brain
+4. **Load** - Hot topics identified
+
+Watch for:
+- `[OK]` - Step completed successfully
+- `[FAIL]` - Step failed (check error message)
+- `[SKIP]` - Step skipped (by flag or missing dependency)
+
+### Step 4: Report Results
+
+After pipeline completes, summarize:
+- Sources processed
+- Duration
+- Entities created/updated
+- Any failures that need attention
+
+## Pipeline Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                          create-context.ps1                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌───────────┐  ┌──────────┐  ┌───────────┐  ┌────────┐  ┌───────────┐ │
+│  │ EXTRACT   │  │ ANALYZE  │  │  WRITE    │  │ ENRICH │  │  SYNAPSE  │ │
+│  ├───────────┤  ├──────────┤  ├───────────┤  ├────────┤  ├───────────┤ │
+│  │ GDocs     │  │ batch_   │  │ unified_  │  │ body   │  │ synapse_  │ │
+│  │ Gmail     │──│ llm_     │──│ brain_    │──│ text   │──│ builder   │ │
+│  │ Jira      │  │ analyzer │  │ writer    │  │ gdocs  │  │           │ │
+│  │ GitHub    │  │          │  │           │  │ jira   │  │ Creates   │ │
+│  │ Slack     │  │ Bedrock/ │  │ Creates   │  │ github │  │ inverse   │ │
+│  │ Statsig   │  │ Claude   │  │ entities  │  │ embed  │  │ relations │ │
+│  └───────────┘  └──────────┘  └───────────┘  └────────┘  └───────────┘ │
+│        │             │              │             │             │       │
+│        ▼             ▼              ▼             ▼             ▼       │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                          Brain/                                  │   │
+│  │  Inbox/  Entities/  Projects/  Reasoning/Decisions/  Synapses/   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                     │                                    │
+│                                     ▼                                    │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                         LOAD PHASE                               │   │
+│  │                  brain_loader.py --reasoning                     │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+## Modes Reference
+
+### Full Mode (default)
+Runs complete pipeline. Best for:
+- Weekly Brain refresh
+- After extended absence
+- Major data sync needed
+
+```bash
+pwsh create-context.ps1 -Mode full -Days 7 -Summarize
+```
+
+### Bulk Mode (Historical)
+**6-month bulk extraction with resumability.** Best for:
+- Initial Brain population
+- Rebuilding context after data loss
+- Deep historical analysis
+- Large-scale Slack/Jira extraction
+
+```bash
+# Extract 6 months of all sources
+pwsh create-context.ps1 -Mode bulk
+
+# Extract 3 months of specific sources
+pwsh create-context.ps1 -Mode bulk -Sources "slack,jira" -Days 90
+
+# Extract all Slack tiers
+pwsh create-context.ps1 -Mode bulk -Sources "slack" -SlackTier all -Days 180
+```
+
+**Features:**
+- **Resumable:** Re-run to continue interrupted extraction
+- **Week-by-week:** Slack extracts in weekly batches with state tracking
+- **Rate-limited:** Respects API limits with automatic backoff
+- **Parallel:** Jira/GitHub fetch squads in parallel
+
+**After bulk extraction:**
+```bash
+# Run LLM analysis on extracted data
+pwsh create-context.ps1 -Mode analyze
+
+# Write analyzed data to Brain
+pwsh create-context.ps1 -Mode write
+```
+
+### Preprocess Mode (File Chunking)
+**Scan and chunk files exceeding 1500 lines.** Best for:
+- Preparing large inbox files for LLM analysis
+- Fixing "file too large" errors
+- Manual chunking of specific directories
+
+```bash
+# Chunk all large files in inbox
+pwsh create-context.ps1 -Mode preprocess
+
+# Check what would be chunked (dry run)
+pwsh create-context.ps1 -Mode preprocess -DryRun
+```
+
+**Standalone chunker usage:**
+```bash
+# Check if a file needs chunking
+python3 "$PM_OS_COMMON/tools/util/file_chunker.py" --check <FILE>
+
+# Split a large file
+python3 "$PM_OS_COMMON/tools/util/file_chunker.py" --split <FILE>
+
+# Scan directory for large files
+python3 "$PM_OS_COMMON/tools/util/file_chunker.py" --scan $PM_OS_USER/brain/Inbox
+```
+
+**Output:** Chunks are written to a `chunks/` subdirectory with metadata headers.
+
+### Quick Mode
+Fast refresh without LLM analysis. Best for:
+- Daily boot
+- Quick status check
+- When LLM quota is limited
+
+```bash
+pwsh create-context.ps1 -Mode quick
+```
+
+### Extract Mode
+Extract only, no processing. Best for:
+- Daily data gathering
+- When running analysis separately
+- Debugging extraction issues
+
+```bash
+pwsh create-context.ps1 -Mode extract -Sources "slack" -Days 30
+```
+
+### Status Mode
+Check pipeline state without running. Best for:
+- Verifying extraction completeness
+- Checking Brain writer state
+- Debugging issues
+
+```bash
+pwsh create-context.ps1 -Mode status
+```
+
+## Output Locations
+
+| Phase | Output Location |
+|-------|-----------------|
+| GDocs Raw | `Brain/Inbox/GDocs/` |
+| Slack Raw | `Brain/Inbox/Slack/Raw/` |
+| Jira Raw | `Brain/Inbox/JIRA_YYYY-MM-DD.md` |
+| GitHub Raw | `Brain/Inbox/GITHUB_YYYY-MM-DD.md` |
+| Analyzed | `Brain/Inbox/*/Analyzed/` |
+| Entities | `Brain/Entities/` |
+| Projects | `Brain/Projects/` |
+| Decisions | `Brain/Reasoning/Decisions/` |
+
+## Enrichment Phase
+
+The enrichment phase increases graph density by creating relationships between entities.
+**Target:** <30% orphan rate (proven achievable in bd-3771).
+
+### Enrichment Order (by effectiveness)
+
+1. **Body text extraction** (+1328 rels, -499 orphans) - MOST EFFECTIVE
+   - Scans entity markdown for mentions of other entities
+   - No external API required
+   - Base confidence: 0.6
+
+2. **GDocs enrichment** (+2200 rels, -300 orphans)
+   - Searches Google Drive for documents mentioning entities
+   - Requires OAuth token
+   - Base confidence: 0.7
+
+3. **Jira enrichment** (+200 rels, -50 orphans)
+   - Extracts owner/team relationships from Jira tickets
+   - Requires API token
+   - Base confidence: 0.9
+
+4. **GitHub enrichment** (+150 rels, -30 orphans)
+   - Extracts maintainer/contributor relationships
+   - Requires `gh` CLI
+   - Base confidence: 0.85
+
+5. **Embedding edges** (+840 rels, -8 orphans) - LEAST EFFECTIVE for orphans
+   - Creates `similar_to` relationships via ML similarity
+   - Requires `sentence-transformers` library
+   - Base confidence: based on similarity score
+
+### Graph Health Targets
+
+- **Orphan rate:** <30% (entities with no relationships)
+- **Relationship coverage:** >56% of entities
+- **Average relationships:** >1.7 per entity
+- **Density score:** >0.5 (1.0 = healthy)
+
+### Enrichment Examples
+
+```bash
+# Quick enrichment (body text only - fastest)
+pwsh create-context.ps1 -Mode full -EnrichMode quick
+
+# Full enrichment (all sources)
+pwsh create-context.ps1 -Mode full -EnrichMode full
+
+# Skip enrichment
+pwsh create-context.ps1 -Mode full -EnrichMode skip
+
+# Check enrichment status
+python3 brain_enrichment_orchestrator.py --status
+```
+
+## Execute
+
+Run the pipeline with the specified mode. Report progress and final status to the user.

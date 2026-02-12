@@ -1,0 +1,111 @@
+# PM-OS Team Entity Schema
+# For teams, squads, tribes, and organizational units
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/team"
+title: PM-OS Team Entity
+description: Schema for team entities in PM-OS Brain
+
+allOf:
+  - $ref: "base.schema.yaml"
+  - type: object
+    properties:
+      type:
+        const: team
+
+      # Team-specific fields
+      team_type:
+        type: string
+        description: Type of team
+        enum:
+          - squad
+          - tribe
+          - chapter
+          - guild
+          - working_group
+          - department
+
+      parent:
+        type: string
+        description: Parent team or organization
+
+      children:
+        type: array
+        description: Child teams
+        items:
+          type: string
+
+      lead:
+        type: string
+        description: Team lead reference
+
+      product_manager:
+        type: string
+        description: PM for the team
+
+      tech_lead:
+        type: string
+        description: Technical lead
+
+      members:
+        type: array
+        description: Team members
+        items:
+          type: string
+
+      mission:
+        type: string
+        description: Team mission statement
+
+      domains:
+        type: array
+        description: Owned domains
+        items:
+          type: string
+
+      projects:
+        type: array
+        description: Active projects
+        items:
+          type: string
+
+      okrs:
+        type: array
+        description: Current OKRs
+        items:
+          type: object
+          properties:
+            objective:
+              type: string
+            key_results:
+              type: array
+              items:
+                type: string
+
+      rituals:
+        type: object
+        description: Team rituals and meetings
+        properties:
+          standup:
+            type: string
+          planning:
+            type: string
+          retro:
+            type: string
+          demo:
+            type: string
+
+      slack_channel:
+        type: string
+        description: Primary Slack channel
+
+      confluence_space:
+        type: string
+        description: Confluence space key
+
+# Recommended fields (not required)
+# - team_type
+# - parent
+# - lead
+
+additionalProperties: true

@@ -1,0 +1,152 @@
+# PM-OS Experiment Entity Schema
+# For A/B tests, feature flags, and experiments
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/experiment"
+title: PM-OS Experiment Entity
+description: Schema for experiment entities in PM-OS Brain
+
+allOf:
+  - $ref: "base.schema.yaml"
+  - type: object
+    properties:
+      type:
+        const: experiment
+
+      # Experiment-specific fields
+      experiment_type:
+        type: string
+        enum:
+          - ab_test
+          - feature_flag
+          - rollout
+          - holdout
+          - multivariate
+
+      status:
+        type: string
+        enum:
+          - draft
+          - running
+          - paused
+          - completed
+          - abandoned
+
+      hypothesis:
+        type: string
+        description: What we're testing
+
+      control:
+        type: string
+        description: Control group description
+
+      treatment:
+        type: string
+        description: Treatment group description
+
+      variants:
+        type: array
+        description: For multivariate tests
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            allocation:
+              type: number
+
+      allocation:
+        type: object
+        properties:
+          control:
+            type: number
+          treatment:
+            type: number
+
+      targeting:
+        type: object
+        description: Who sees the experiment
+        properties:
+          markets:
+            type: array
+            items:
+              type: string
+          platforms:
+            type: array
+            items:
+              type: string
+          user_segments:
+            type: array
+            items:
+              type: string
+
+      metrics:
+        type: object
+        properties:
+          primary:
+            type: array
+            items:
+              type: string
+          secondary:
+            type: array
+            items:
+              type: string
+          guardrails:
+            type: array
+            items:
+              type: string
+
+      start_date:
+        type: string
+        format: date
+
+      end_date:
+        type: string
+        format: date
+
+      sample_size:
+        type: object
+        properties:
+          required:
+            type: integer
+          current:
+            type: integer
+
+      results:
+        type: object
+        properties:
+          winner:
+            type: string
+          confidence:
+            type: number
+          lift:
+            type: number
+          summary:
+            type: string
+
+      owner:
+        type: string
+
+      team:
+        type: string
+
+      project:
+        type: string
+        description: Related project
+
+      statsig_id:
+        type: string
+        description: Statsig experiment ID
+
+      decision:
+        type: string
+        description: Final decision and reasoning
+
+# Recommended fields (not required)
+# - hypothesis
+# - status
+# - owner
+
+additionalProperties: true

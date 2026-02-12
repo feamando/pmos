@@ -1,0 +1,119 @@
+# PM-OS User Configuration
+# Copy to user/config.yaml and customize
+
+version: "3.0.0"
+
+# User Profile
+user:
+  name: "Your Name"
+  email: "your.email@company.com"
+  position: "Product Manager"
+  tribe: null  # e.g., "Growth Division"
+  team: null   # e.g., "Growth Platform"
+
+# Integration Settings
+integrations:
+  jira:
+    enabled: false
+    url: "https://company.atlassian.net"
+    username: ""  # Usually your email
+    tracked_projects:
+      - "PROJ1"
+      - "PROJ2"
+    default_project: "PROJ1"
+
+  github:
+    enabled: false
+    org: "company"
+    tracked_repos:
+      - "repo1"
+      - "repo2"
+
+  slack:
+    enabled: false
+    # Bot name for mention detection (without @)
+    mention_bot_name: "your-slack-bot"
+    # user_id in .env
+
+  google:
+    enabled: false
+    # credentials in .env paths
+
+  confluence:
+    enabled: false
+    url: "https://company.atlassian.net/wiki"
+    spaces:
+      - "SPACE1"
+
+  statsig:
+    enabled: false
+    # api key in .env
+
+# PM-OS Settings
+pm_os:
+  # First Principles Framework
+  fpf_enabled: true
+
+  # Confucius session notes
+  confucius_enabled: true
+
+  # Auto-update LOGIC on boot
+  auto_update: false
+
+  # Ralph workflow
+  ralph_enabled: true
+  ralph_slack_channel: null  # e.g., "#pm-os-updates"
+
+# Path Customization (usually not needed)
+paths:
+  # These are auto-detected, only override if needed
+  # common: "../common"
+  # user: "."
+  # snapshots: "../snapshots"
+
+# Brain Settings
+brain:
+  # Entity types to track
+  entity_types:
+    - person
+    - team
+    - project
+    - domain
+    - experiment
+
+  # Hot topics count
+  hot_topics_limit: 10
+
+  # Entity validation
+  validate_on_load: true
+
+# Context Settings
+context:
+  # Days to keep context files
+  retention_days: 30
+
+  # Include in daily context
+  include:
+    jira: true
+    github: true
+    slack: true
+    calendar: true
+
+# Session Settings
+sessions:
+  # Auto-save interval (minutes)
+  auto_save_interval: 30
+
+  # Max sessions to keep
+  max_sessions: 50
+
+# Meeting Prep Settings
+meeting_prep:
+  # Hours before meeting to prepare
+  prep_hours: 24
+
+  # Include competitor analysis
+  include_competitors: false
+
+  # Include recent context
+  include_recent_context: true

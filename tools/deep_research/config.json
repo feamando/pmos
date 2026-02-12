@@ -1,0 +1,15 @@
+{
+  "agent": "deep-research-pro-preview-12-2025",
+  "file_store_id": "",
+  "file_store_name": "pm-os-documents",
+  "index_patterns": [
+    "Products/**/*.md",
+    "AI_Guidance/Core_Context/*.md",
+    "AI_Guidance/Brain/**/*.md",
+    "Planning/**/*.md"
+  ],
+  "poll_interval_seconds": 10,
+  "max_poll_time_seconds": 600,
+  "default_output_dir": "Products",
+  "uploaded_files": {}
+}

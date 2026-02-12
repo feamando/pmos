@@ -1,0 +1,144 @@
+# PM-OS Project Entity Schema
+# For projects, initiatives, and workstreams
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/project"
+title: PM-OS Project Entity
+description: Schema for project entities in PM-OS Brain
+
+allOf:
+  - $ref: "base.schema.yaml"
+  - type: object
+    properties:
+      type:
+        const: project
+
+      # Project-specific fields
+      project_type:
+        type: string
+        description: Type of project
+        enum:
+          - feature
+          - initiative
+          - epic
+          - program
+          - migration
+          - tech_debt
+          - experiment
+
+      status:
+        type: string
+        description: Current project status
+        enum:
+          - planning
+          - in_progress
+          - blocked
+          - completed
+          - cancelled
+          - on_hold
+
+      priority:
+        type: string
+        enum: [critical, high, medium, low]
+
+      owner:
+        type: string
+        description: Project owner/PM
+
+      team:
+        type: string
+        description: Responsible team
+
+      stakeholders:
+        type: array
+        description: Key stakeholders
+        items:
+          type: string
+
+      start_date:
+        type: string
+        format: date
+
+      target_date:
+        type: string
+        format: date
+
+      completed_date:
+        type: string
+        format: date
+
+      goals:
+        type: array
+        description: Project goals
+        items:
+          type: string
+
+      success_metrics:
+        type: array
+        description: How success is measured
+        items:
+          type: object
+          properties:
+            metric:
+              type: string
+            target:
+              type: string
+            current:
+              type: string
+
+      risks:
+        type: array
+        description: Known risks
+        items:
+          type: object
+          properties:
+            risk:
+              type: string
+            likelihood:
+              type: string
+              enum: [low, medium, high]
+            impact:
+              type: string
+              enum: [low, medium, high]
+            mitigation:
+              type: string
+
+      dependencies:
+        type: array
+        description: Project dependencies
+        items:
+          type: string
+
+      documents:
+        type: object
+        description: Related documents
+        properties:
+          prd:
+            type: string
+          adr:
+            type: string
+          rfc:
+            type: string
+          design:
+            type: string
+
+      jira_project:
+        type: string
+        description: Jira project key
+
+      jira_epic:
+        type: string
+        description: Jira epic key
+
+      experiments:
+        type: array
+        description: Related experiments
+        items:
+          type: string
+
+# Recommended fields (not required)
+# - status
+# - owner
+# - team
+
+additionalProperties: true

@@ -1,0 +1,64 @@
+# PM-OS Push Configuration Template
+# Copy to: user/.config/push_config.yaml
+# Customize with your repository information
+
+# Common/Framework publication
+# Use this to publish PM-OS framework updates
+common:
+  enabled: false  # Set to true to enable
+  repo: "your-org/your-pmos-repo"  # Your fork of PM-OS
+  branch: "pmos-updates"           # Branch for PRs
+  push_method: "pr"                # "pr" for pull requests, "direct" for main
+  source_path: "common"
+  slack_channel: null              # Slack channel ID for notifications
+  slack_enabled: false
+  readme_update: true
+  release_notes: true
+
+# Brain publication
+# Your personal knowledge base
+brain:
+  enabled: false  # Set to true to enable
+  repo: "your-username/brain"      # Your brain repository
+  branch: "main"
+  push_method: "direct"
+  source_path: "user/brain"
+  slack_channel: null
+  slack_enabled: false
+  readme_update: true
+  release_notes: true
+
+# User data publication
+# Your PM-OS user configuration
+user:
+  enabled: false  # Set to true to enable
+  repo: "your-username/user"       # Your user repository
+  branch: "main"
+  push_method: "direct"
+  source_path: "user"
+  exclude_paths:
+    - "user/brain"                 # Brain published separately
+    - "user/.config"               # Don't publish config with credentials
+  slack_channel: null
+  slack_enabled: false
+  readme_update: false
+  release_notes: false
+
+# Global settings
+settings:
+  # State file to track last push timestamps
+  state_file: "user/.config/push_state.json"
+
+  # Default commit message prefix
+  commit_prefix: "chore(pmos):"
+
+  # PR title prefix for PR-based pushes
+  pr_prefix: "[PM-OS]"
+
+# How to use:
+# 1. Copy this file to user/.config/push_config.yaml
+# 2. Replace repository URLs with your own
+# 3. Set enabled: true for targets you want to publish
+# 4. Run: /push --status to verify configuration
+# 5. Run: /push --dry-run to preview
+# 6. Run: /push to publish

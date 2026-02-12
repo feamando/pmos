@@ -1,0 +1,129 @@
+# PM-OS Domain Entity Schema
+# For technical domains, business domains, and areas of ownership
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/domain"
+title: PM-OS Domain Entity
+description: Schema for domain entities in PM-OS Brain
+
+allOf:
+  - $ref: "base.schema.yaml"
+  - type: object
+    properties:
+      type:
+        const: domain
+
+      # Domain-specific fields
+      domain_type:
+        type: string
+        enum:
+          - technical
+          - business
+          - product
+          - platform
+          - infrastructure
+
+      owner_team:
+        type: string
+        description: Team that owns this domain
+
+      owner_person:
+        type: string
+        description: Individual domain owner
+
+      parent_domain:
+        type: string
+        description: Parent domain if hierarchical
+
+      child_domains:
+        type: array
+        items:
+          type: string
+
+      services:
+        type: array
+        description: Services in this domain
+        items:
+          type: string
+
+      repositories:
+        type: array
+        description: Code repositories
+        items:
+          type: string
+
+      documentation:
+        type: object
+        properties:
+          architecture:
+            type: string
+          api:
+            type: string
+          runbook:
+            type: string
+
+      dependencies:
+        type: array
+        description: Dependencies on other domains
+        items:
+          type: string
+
+      dependents:
+        type: array
+        description: Domains that depend on this one
+        items:
+          type: string
+
+      key_metrics:
+        type: array
+        description: Key metrics for this domain
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            dashboard:
+              type: string
+
+      slos:
+        type: array
+        description: Service Level Objectives
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            target:
+              type: string
+            current:
+              type: string
+
+      on_call:
+        type: object
+        properties:
+          schedule:
+            type: string
+          escalation:
+            type: string
+          runbook:
+            type: string
+
+      recent_incidents:
+        type: array
+        items:
+          type: object
+          properties:
+            date:
+              type: string
+            severity:
+              type: string
+            summary:
+              type: string
+
+# Recommended fields (not required)
+# - domain_type
+# - owner_team
+
+additionalProperties: true

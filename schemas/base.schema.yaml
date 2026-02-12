@@ -1,0 +1,87 @@
+# PM-OS Base Entity Schema
+# All entity types extend this base schema
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/base"
+title: PM-OS Base Entity
+description: Base schema for all PM-OS Brain entities
+
+type: object
+required:
+  - type
+  - name
+
+properties:
+  type:
+    type: string
+    description: Entity type identifier
+    enum:
+      - person
+      - team
+      - project
+      - domain
+      - experiment
+
+  name:
+    type: string
+    description: Display name of the entity
+    minLength: 1
+
+  aliases:
+    type: array
+    description: Alternative names for the entity
+    items:
+      type: string
+
+  description:
+    type: string
+    description: Brief description of the entity
+
+  created:
+    type: string
+    format: date
+    description: When the entity was created
+
+  updated:
+    type: string
+    format: date
+    description: When the entity was last updated
+
+  status:
+    type: string
+    description: Current status of the entity
+    enum:
+      - active
+      - inactive
+      - archived
+
+  tags:
+    type: array
+    description: Tags for categorization
+    items:
+      type: string
+
+  links:
+    type: object
+    description: Related links
+    properties:
+      jira:
+        type: string
+        format: uri
+      confluence:
+        type: string
+        format: uri
+      github:
+        type: string
+        format: uri
+      slack:
+        type: string
+
+  related:
+    type: array
+    description: Related entity references
+    items:
+      type: string
+
+# Allow additional properties for extensibility
+additionalProperties: true

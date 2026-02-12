@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pm-os.acme-corp.com/schemas/config",
+  "title": "PM-OS Configuration",
+  "description": "Schema for PM-OS config.yaml",
+  "type": "object",
+  "required": ["version", "user"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "PM-OS config version",
+      "pattern": "^3\\.[0-9]+\\.[0-9]+$"
+    },
+    "user": {
+      "type": "object",
+      "required": ["name", "email"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "email": {
+          "type": "string",
+          "format": "email"
+        },
+        "position": {
+          "type": "string"
+        },
+        "tribe": {
+          "type": ["string", "null"]
+        },
+        "team": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "properties": {
+        "jira": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "url": {"type": "string", "format": "uri"},
+            "username": {"type": "string"},
+            "tracked_projects": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "default_project": {"type": "string"}
+          }
+        },
+        "github": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "org": {"type": "string"},
+            "tracked_repos": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "slack": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"}
+          }
+        },
+        "google": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"}
+          }
+        },
+        "confluence": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "url": {"type": "string", "format": "uri"},
+            "spaces": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "statsig": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "pm_os": {
+      "type": "object",
+      "properties": {
+        "fpf_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "confucius_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "auto_update": {
+          "type": "boolean",
+          "default": false
+        },
+        "ralph_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "ralph_slack_channel": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "properties": {
+        "common": {"type": "string"},
+        "user": {"type": "string"},
+        "snapshots": {"type": "string"}
+      }
+    },
+    "brain": {
+      "type": "object",
+      "properties": {
+        "entity_types": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "hot_topics_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "validate_on_load": {
+          "type": "boolean"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "retention_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "include": {
+          "type": "object",
+          "properties": {
+            "jira": {"type": "boolean"},
+            "github": {"type": "boolean"},
+            "slack": {"type": "boolean"},
+            "calendar": {"type": "boolean"}
+          }
+        }
+      }
+    },
+    "sessions": {
+      "type": "object",
+      "properties": {
+        "auto_save_interval": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_sessions": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "meeting_prep": {
+      "type": "object",
+      "properties": {
+        "prep_hours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "include_competitors": {
+          "type": "boolean"
+        },
+        "include_recent_context": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,87 @@
+# PM-OS Person Entity Schema
+# For individuals (team members, stakeholders, etc.)
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://pm-os.acme-corp.com/schemas/person"
+title: PM-OS Person Entity
+description: Schema for person entities in PM-OS Brain
+
+allOf:
+  - $ref: "base.schema.yaml"
+  - type: object
+    properties:
+      type:
+        const: person
+
+      # Person-specific fields
+      role:
+        type: string
+        description: Job title or role
+
+      email:
+        type: string
+        format: email
+        description: Email address
+
+      team:
+        type: string
+        description: Primary team affiliation
+
+      tribe:
+        type: string
+        description: Tribe or organization unit
+
+      manager:
+        type: string
+        description: Direct manager reference
+
+      direct_reports:
+        type: array
+        description: List of direct reports
+        items:
+          type: string
+
+      location:
+        type: string
+        description: Office location or timezone
+
+      start_date:
+        type: string
+        format: date
+        description: When they joined
+
+      expertise:
+        type: array
+        description: Areas of expertise
+        items:
+          type: string
+
+      projects:
+        type: array
+        description: Current projects
+        items:
+          type: string
+
+      # Communication preferences
+      communication:
+        type: object
+        properties:
+          slack_handle:
+            type: string
+          preferred_contact:
+            type: string
+            enum: [slack, email, meeting]
+          timezone:
+            type: string
+
+      # Notes for working with this person
+      working_style:
+        type: string
+        description: Notes on communication/working style
+
+# Recommended fields (not required)
+# - role
+# - email
+# - team
+
+additionalProperties: true

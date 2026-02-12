@@ -1,0 +1,6 @@
+# PM-OS Common Repository Marker
+# This file identifies this directory as the PM-OS LOGIC folder
+# Do not delete this file
+
+version: 3.0.0
+type: common

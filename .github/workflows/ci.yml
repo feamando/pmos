@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "v*"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install linting tools
+        run: |
+          pip install flake8 black isort
+
+      - name: Check formatting with Black
+        run: |
+          black --check tools/
+
+      - name: Check imports with isort
+        run: |
+          isort --check tools/
+
+      - name: Lint with flake8
+        run: |
+          flake8 tools/ --max-line-length=120 --ignore=E501,W503
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: |
+          pytest tools/tests/ -v --cov=tools --cov-report=xml
+
+      - name: Upload coverage
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+
+  schema-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Validate YAML schemas
+        run: |
+          python -c "
+          import yaml
+          from pathlib import Path
+
+          # Validate all schema files parse correctly
+          schemas_dir = Path('schemas')
+          if schemas_dir.exists():
+              for schema_file in schemas_dir.glob('*.yaml'):
+                  with open(schema_file) as f:
+                      schema = yaml.safe_load(f)
+                  print(f'✓ {schema_file.name}')
+          "
+
+      - name: Validate JSON schema
+        run: |
+          python -c "
+          import json
+          import jsonschema
+          from pathlib import Path
+
+          schema_file = Path('schemas/config.schema.json')
+          if schema_file.exists():
+              with open(schema_file) as f:
+                  schema = json.load(f)
+              jsonschema.Draft202012Validator.check_schema(schema)
+              print('✓ config.schema.json')
+          "
+
+  command-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check command files exist
+        run: |
+          # Ensure key commands exist
+          for cmd in boot update-context prd adr rfc; do
+            if [ ! -f ".claude/commands/$cmd.md" ]; then
+              echo "Missing command: $cmd.md"
+              exit 1
+            fi
+          done
+          echo "All key commands present"
+
+      - name: Check command syntax
+        run: |
+          # Basic markdown validation
+          find .claude/commands -name "*.md" -exec grep -l "^# " {} \; | wc -l
+          echo "Commands have headers"
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for secrets
+        run: |
+          # Ensure no secrets are committed
+          if grep -r "JIRA_API_TOKEN=" --include="*.py" --include="*.sh" .; then
+            echo "Found hardcoded secrets!"
+            exit 1
+          fi
+          if grep -r "SLACK_BOT_TOKEN=" --include="*.py" --include="*.sh" .; then
+            echo "Found hardcoded secrets!"
+            exit 1
+          fi
+          echo "No hardcoded secrets found"
