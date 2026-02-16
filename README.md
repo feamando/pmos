@@ -23,6 +23,54 @@ PM-OS is an AI-native productivity system for product managers. It syncs context
 
 ---
 
+## Architecture Overview
+
+```
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║                     SLASH COMMANDS  (84)                           ║
+  ║   /boot  /prd  /meeting-prep  /brain-load  /push  /ralph-loop ... ║
+  ╚════════════════════════════╤═════════════════════════════════════════╝
+                               │
+          ┌────────────────────┼─────────────────────┐
+          ▼                    ▼                     ▼
+  ┌───────────────┐   ┌───────────────┐   ┌──────────────────┐
+  │  Context      │   │  Document     │   │  Dev Workflow    │
+  │  Engine       │   │  Generation   │   │                  │
+  │               │   │               │   │  Ralph Loops     │
+  │  Daily sync   │   │  PRD / RFC    │   │  Beads Tracking  │
+  │  LLM synth    │   │  ADR / PRFAQ  │   │  Push Publisher  │
+  │  Alerts       │   │  BC / WP      │   │  Feature Mgmt    │
+  └───────┬───────┘   └───────┬───────┘   └────────┬─────────┘
+          │                   │                     │
+          ▼                   ▼                     ▼
+  ┌─────────────────────────────────────────────────────────────┐
+  │                    BRAIN  (Knowledge Graph v1.2)            │
+  │                                                             │
+  │  Entities ──── Relationships ──── Events ──── Quality       │
+  │  /person       bidirectional      sourced      scoring      │
+  │  /project      temporal            history     <30% orphan  │
+  │  /team         canonical refs      queries     enrichment   │
+  └──────────────────────────┬──────────────────────────────────┘
+                             │
+          ┌──────────┬───────┴───────┬──────────┬──────────┐
+          ▼          ▼               ▼          ▼          ▼
+     ┌─────────┐ ┌────────┐   ┌─────────┐ ┌────────┐ ┌────────┐
+     │  Jira   │ │ Slack  │   │ Google  │ │ GitHub │ │ Confl. │
+     │         │ │        │   │ W.space │ │        │ │        │
+     │ Issues  │ │ Msgs   │   │ Docs    │ │ PRs    │ │ Pages  │
+     │ Sprints │ │ Tasks  │   │ Cal     │ │ Repos  │ │ Sync   │
+     │ Boards  │ │ Alerts │   │ Gmail   │ │ Issues │ │        │
+     └─────────┘ └────────┘   └─────────┘ └────────┘ └────────┘
+
+  ┌─────────────────────────────────────────────────────────────┐
+  │  REASONING  (First Principles Framework)                    │
+  │  Q0 Init → Q1 Hypothesize → Q2 Verify → Q3 Validate →     │
+  │  Q4 Audit → Q5 Decide           Session: Confucius capture │
+  └─────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Installation
 
 ### Option A: pip install (Recommended)
