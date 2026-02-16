@@ -1,4 +1,16 @@
-# PM-OS: Product Management Operating System
+```
+                     ____  __  __           ___  ____
+                    |  _ \|  \/  |         / _ \/ ___|
+                    | |_) | |\/| |  ___   | | | \___ \
+                    |  __/| |  | | |___|  | |_| |___) |
+                    |_|   |_|  |_|         \___/|____/
+
+          ┌─────────────────────────────────────────────────┐
+          │  Product Management Operating System    v3.4    │
+          │  ─────────────────────────────────────────────  │
+          │  Brain · Context · Slash Commands · AI-native   │
+          └─────────────────────────────────────────────────┘
+```
 
 **Version 3.4** | AI-powered operating system for product managers
 
