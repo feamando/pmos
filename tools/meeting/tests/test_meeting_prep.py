@@ -241,7 +241,7 @@ class TestSeriesIntelligence(unittest.TestCase):
         history = [
             {
                 "date": "2026-01-20",
-                "summary": "Discussed metrics. Nikita will review dashboard.",
+                "summary": "Discussed metrics. Jane will review dashboard.",
                 "key_points": ["Metrics", "Dashboard review"],
             }
         ]

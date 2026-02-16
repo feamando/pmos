@@ -54,7 +54,7 @@ brain/Inbox/Tech Platform_Sprint/
 ├── Cart.md                                 # Individual squad file
 ├── Meal_Kit.md
 ├── Growth_Platform.md
-├── The_Wellness_Brand.md
+├── Brand_B.md
 ├── Payments_Platform.md
 └── ... (98+ squad files)
 ```
@@ -76,7 +76,7 @@ source: Tech Platform Every Other Week Squad Sprint Report
 ## Cart
 **Tribe:** Shopping Foundation
 **Mega-Alliance:** Consumer
-**Squad Lead:** EM: Arbaaz Dossani, PM: Xavier Sinclair Vale-Buisson
+**Squad Lead:** EM: Alex Kim, PM: Sam Chen
 
 ### Squad KPI
 Cart Service Adoption Rate
@@ -243,7 +243,7 @@ As of Sprint-2-2026-01-19:
 | Growth | AdTech, Communications, Conversions, Insights |
 | Operations | Plan & Procurement, Ingredient to Product, Menu to Content, Inventory Management, Order Enrichment, RTE Manufacturing, Logistics, Ops Enablement |
 | Infrastructure | Global People Technology, Operations Data & Decisions |
-| Growth Division | Growth Division (Meal Kit, WB, Growth Platform, Product Innovation) |
+| Growth Division | Growth Division (Meal Kit, Brand B, Growth Platform, Product Innovation) |
 
 ---
 

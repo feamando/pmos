@@ -63,10 +63,40 @@ jobs:
           pm-os --version
           pm-os --help
 
-      - name: Run tests
+      - name: Run unit tests
+        run: |
+          python -m pytest tests/ -v --tb=short -m "not slow"
+
+      - name: Run tests (including slow)
         run: |
           python -m pytest tests/ -v --tb=short
-        continue-on-error: true  # Allow tests to fail until tests are written
+        continue-on-error: true  # E2E tests may fail in CI without gh auth
+
+  e2e:
+    name: E2E Test
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up git config
+        run: |
+          git config --global user.name "CI Test"
+          git config --global user.email "ci@test.local"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[all,dev]"
+
+      - name: Run E2E test script
+        run: bash scripts/e2e_test.sh --template
+        continue-on-error: true  # May fail without gh auth for private repo
 
   build:
     name: Build

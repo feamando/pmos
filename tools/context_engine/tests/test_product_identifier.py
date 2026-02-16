@@ -51,14 +51,14 @@ class TestProductInfo:
     def test_product_info_to_dict(self):
         """Test converting ProductInfo to dictionary."""
         product = ProductInfo(
-            id="wellness-brand",
-            name="Wellness Brand",
+            id="brand-b",
+            name="Brand B",
         )
 
         result = product.to_dict()
 
-        assert result["id"] == "wellness-brand"
-        assert result["name"] == "Wellness Brand"
+        assert result["id"] == "brand-b"
+        assert result["name"] == "Brand B"
         assert result["type"] == "brand"  # Default
         assert result["status"] == "active"  # Default
 
@@ -87,7 +87,7 @@ class TestIdentificationResult:
         """Test a failed identification result."""
         products = [
             ProductInfo(id="meal-kit", name="Meal Kit"),
-            ProductInfo(id="wellness-brand", name="Wellness Brand"),
+            ProductInfo(id="brand-b", name="Brand B"),
         ]
         result = IdentificationResult(
             found=False,
@@ -166,9 +166,9 @@ class TestProductIdentifierChannelInference:
                         "status": "active",
                     },
                     {
-                        "id": "wellness-brand",
-                        "name": "Wellness Brand",
-                        "jira_project": "WB",
+                        "id": "brand-b",
+                        "name": "Brand B",
+                        "jira_project": "BB",
                         "status": "active",
                     },
                     {
@@ -189,7 +189,7 @@ class TestProductIdentifierChannelInference:
                 "enabled": True,
                 "product_mapping": {
                     "MK": "meal-kit",
-                    "WB": "wellness-brand",
+                    "BB": "brand-b",
                     "FF": "growth-platform",
                     "PROJ2": "product-innovation",
                 },
@@ -219,17 +219,17 @@ class TestProductIdentifierChannelInference:
         assert result is not None
         assert result.id == "meal-kit"
 
-    def test_infer_Wellness_Brand(self, identifier):
-        """Test inferring Wellness Brand."""
-        result = identifier.infer_product_from_channel("#wellness-brand")
+    def test_infer_Brand_B(self, identifier):
+        """Test inferring Brand B."""
+        result = identifier.infer_product_from_channel("#brand-b")
         assert result is not None
-        assert result.id == "wellness-brand"
+        assert result.id == "brand-b"
 
     def test_infer_tpt_abbreviation(self, identifier):
-        """Test inferring from WB abbreviation."""
+        """Test inferring from BB abbreviation."""
         result = identifier.infer_product_from_channel("#tpt-engineering")
         assert result is not None
-        assert result.id == "wellness-brand"
+        assert result.id == "brand-b"
 
     def test_no_inference_for_general_channel(self, identifier):
         """Test that general channels return None."""
@@ -260,9 +260,9 @@ class TestProductIdentifierExplicitProduct:
                         "status": "active",
                     },
                     {
-                        "id": "wellness-brand",
-                        "name": "Wellness Brand",
-                        "jira_project": "WB",
+                        "id": "brand-b",
+                        "name": "Brand B",
+                        "jira_project": "BB",
                         "status": "active",
                     },
                 ],
@@ -271,7 +271,7 @@ class TestProductIdentifierExplicitProduct:
                 "enabled": True,
                 "product_mapping": {
                     "MK": "meal-kit",
-                    "WB": "wellness-brand",
+                    "BB": "brand-b",
                 },
             },
         }
@@ -348,9 +348,9 @@ class TestProductIdentifierPriorityOrder:
                         "status": "active",
                     },
                     {
-                        "id": "wellness-brand",
-                        "name": "Wellness Brand",
-                        "jira_project": "WB",
+                        "id": "brand-b",
+                        "name": "Brand B",
+                        "jira_project": "BB",
                         "status": "active",
                     },
                 ],
@@ -359,7 +359,7 @@ class TestProductIdentifierPriorityOrder:
                 "enabled": True,
                 "product_mapping": {
                     "MK": "meal-kit",
-                    "WB": "wellness-brand",
+                    "BB": "brand-b",
                 },
             },
         }
@@ -372,14 +372,14 @@ class TestProductIdentifierPriorityOrder:
     def test_explicit_beats_channel(self, identifier):
         """Test that explicit product beats channel inference."""
         result = identifier.identify_product(
-            explicit_product="wellness-brand",
+            explicit_product="brand-b",
             channel_name="#meal-kit",  # This should be ignored
             check_master_sheet=False,
             check_daily_context=False,
         )
 
         assert result.found is True
-        assert result.product_id == "wellness-brand"
+        assert result.product_id == "brand-b"
         assert result.source == IdentificationSource.EXPLICIT
 
     def test_channel_used_when_no_explicit(self, identifier):
@@ -426,9 +426,9 @@ class TestProductSelectionFormatting:
                         "status": "active",
                     },
                     {
-                        "id": "wellness-brand",
-                        "name": "Wellness Brand",
-                        "jira_project": "WB",
+                        "id": "brand-b",
+                        "name": "Brand B",
+                        "jira_project": "BB",
                         "status": "active",
                     },
                 ],
@@ -437,7 +437,7 @@ class TestProductSelectionFormatting:
                 "enabled": True,
                 "product_mapping": {
                     "MK": "meal-kit",
-                    "WB": "wellness-brand",
+                    "BB": "brand-b",
                 },
             },
         }
@@ -459,7 +459,7 @@ class TestProductSelectionFormatting:
 
         assert "Product not specified" in formatted
         assert "Meal Kit" in formatted
-        assert "Wellness Brand" in formatted
+        assert "Brand B" in formatted
         assert "1." in formatted
         assert "2." in formatted
 

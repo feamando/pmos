@@ -74,7 +74,7 @@ For a complete challenge, show paths to:
 Orthogonal Challenges:
 
   [complete] prd-2026-01-05-push_notifications
-    Topic: Push notifications for WB app
+    Topic: Push notifications for BB app
     Type: PRD
     Completed: 2026-01-05T14:30:00
 

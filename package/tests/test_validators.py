@@ -10,7 +10,7 @@ class TestCredentialValidators:
         """Test valid Anthropic API key."""
         from pm_os.wizard.validators import validate_anthropic_key
 
-        valid, msg = validate_anthropic_key("sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890")
+        valid, msg = validate_anthropic_key("sk-ant-api03-TESTKEY00000000000000000000000000")
         assert valid is True
 
     def test_validate_anthropic_key_old_format(self):
@@ -40,7 +40,7 @@ class TestCredentialValidators:
         """Test valid OpenAI API key."""
         from pm_os.wizard.validators import validate_openai_key
 
-        valid, msg = validate_openai_key("sk-proj-abcdefghijklmnopqrstuvwxyz1234567890")
+        valid, msg = validate_openai_key("sk-proj-TESTKEY0000000000000000000000000000")
         assert valid is True
 
     def test_validate_openai_key_invalid(self):
@@ -54,14 +54,14 @@ class TestCredentialValidators:
         """Test valid Slack bot token."""
         from pm_os.wizard.validators import validate_slack_token
 
-        valid, msg = validate_slack_token("xoxb-FAKE-TEST-TOKEN")
+        valid, msg = validate_slack_token("xoxb-fake-test-token-placeholder")
         assert valid is True
 
     def test_validate_slack_token_user_token(self):
         """Test user token rejected with helpful message."""
         from pm_os.wizard.validators import validate_slack_token
 
-        valid, msg = validate_slack_token("xoxp-FAKE-TEST-TOKEN")
+        valid, msg = validate_slack_token("xoxp-fake-test-user-token-placeholder")
         assert valid is False
         assert "user token" in msg.lower()
         assert "bot token" in msg.lower()
@@ -77,14 +77,14 @@ class TestCredentialValidators:
         """Test valid GitHub PAT."""
         from pm_os.wizard.validators import validate_github_token
 
-        valid, msg = validate_github_token("ghp_abcdefghijklmnopqrstuvwxyz1234567890")
+        valid, msg = validate_github_token("ghp_FAKETESTTOKEN000000000000000000000000")
         assert valid is True
 
     def test_validate_github_token_fine_grained(self):
         """Test valid GitHub fine-grained token."""
         from pm_os.wizard.validators import validate_github_token
 
-        valid, msg = validate_github_token("github_pat_abcdefghijklmnopqrstuvwxyz")
+        valid, msg = validate_github_token("github_pat_FAKETESTTOKEN000000000000")
         assert valid is True
 
     def test_validate_github_token_classic(self):
@@ -105,7 +105,7 @@ class TestCredentialValidators:
         """Test valid Jira API token."""
         from pm_os.wizard.validators import validate_jira_token
 
-        valid, msg = validate_jira_token("ATATT3xFfGF0abcdefghijklmnop")
+        valid, msg = validate_jira_token("VALID_TOKEN_abcdefghijklmnop")
         assert valid is True
 
     def test_validate_jira_token_too_short(self):
@@ -188,7 +188,7 @@ class TestCredentialValidators:
         from pm_os.wizard.validators import validate_credential
 
         # Known type
-        valid, msg = validate_credential("anthropic_api_key", "sk-ant-abc123456789012345678901234")
+        valid, msg = validate_credential("anthropic_api_key", "sk-ant-TESTKEY0000000000000000000000")
         assert valid is True
 
         # Unknown type

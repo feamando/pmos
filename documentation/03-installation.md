@@ -1,6 +1,6 @@
 # PM-OS Installation Guide
 
-> How to install and configure PM-OS
+> How to install and configure PM-OS v3.3
 
 ## Quick Install (Recommended)
 
@@ -10,7 +10,7 @@ The fastest way to get PM-OS running:
 # Install PM-OS CLI
 pip install pm-os
 
-# Quick setup (~5 minutes)
+# Quick setup — auto-detects name/email from git config
 pm-os init --quick
 
 # Verify installation
@@ -18,10 +18,11 @@ pm-os doctor
 ```
 
 The `--quick` flag:
-- Auto-detects your name/email from git config
-- Only prompts for LLM API key
-- Creates directory structure with sensible defaults
-- Skips optional integrations (add later)
+- Auto-detects your name and email from `git config`
+- Only prompts for LLM API key (Claude/Anthropic)
+- Creates the full directory structure with sensible defaults
+- Skips optional integrations (add them later)
+- Downloads `common/` from GitHub automatically
 
 ### After Quick Setup
 
@@ -30,21 +31,102 @@ The `--quick` flag:
 pm-os setup integrations jira
 pm-os setup integrations slack
 
-# Sync your brain
+# Sync your brain from integrations
 pm-os brain sync
 
-# Get help
+# Get help on any topic
 pm-os help brain
 pm-os help integrations
 ```
 
+---
+
+## Installation Methods
+
+PM-OS supports three installation paths:
+
+| Method | Command | Best For |
+|--------|---------|----------|
+| **Quick** | `pm-os init --quick` | First-time users, minimal config |
+| **Full Wizard** | `pm-os init` | Complete setup with all integrations |
+| **Template** | `pm-os init --template config.yaml` | Automated/scripted deployments |
+
 ### Full Guided Setup
 
-For complete setup with all integrations:
+For complete setup with all integrations, run the interactive 10-step wizard:
 
 ```bash
-pm-os init  # Full wizard, ~15-20 minutes
+pm-os init
 ```
+
+The wizard walks through these steps:
+
+| # | Step | Description |
+|---|------|-------------|
+| 1 | Welcome | Overview of PM-OS and what will be configured |
+| 2 | Prerequisites | Checks Python, pip, git, disk space |
+| 3 | User Profile | Name, email, position, tribe |
+| 4 | LLM Provider | Configure AI provider (Claude, Bedrock, Gemini) |
+| 5 | Integrations | Jira, Slack, Google, GitHub, Confluence (all optional) |
+| 6 | Download PM-OS Tools | Clones `common/` from GitHub with tools and commands |
+| 7 | Directory Setup | Creates directory structure, config files, .env |
+| 8 | Claude Code Setup | Configures Claude Code commands, settings, environment |
+| 9 | Brain Population | Initial sync from configured integrations |
+| 10 | Verification | Validates installation, shows next steps |
+
+You can resume an interrupted wizard with:
+
+```bash
+pm-os init --resume
+```
+
+### Template-Based Install
+
+For automated or scripted deployments, provide a YAML config file:
+
+```bash
+pm-os init --template config.yaml
+```
+
+The template file contains all configuration (user profile, integrations, LLM settings). PM-OS creates the full directory structure, config files, and environment without any interactive prompts.
+
+Example template:
+
+```yaml
+version: "3.3"
+
+user:
+  name: "Jane Smith"
+  email: "jane.smith@company.com"
+  position: "Senior Product Manager"
+  tribe: "Growth"
+
+llm:
+  provider: "anthropic"
+  model: "claude-sonnet-4-20250514"
+  api_key: "sk-ant-..."
+
+integrations:
+  jira:
+    enabled: true
+    url: "https://company.atlassian.net"
+    username: "jane.smith@company.com"
+    api_token: "..."
+    project_keys:
+      - "GROW"
+      - "PLAT"
+  google:
+    enabled: true
+  slack:
+    enabled: true
+    bot_token: "xoxb-..."
+
+pm_os:
+  fpf_enabled: true
+  confucius_enabled: true
+```
+
+**Security note:** API tokens in the template are used during setup but are NOT written to `config.yaml`. They are stored only in `.env` and `.secrets/` with restricted permissions.
 
 ---
 
@@ -54,20 +136,82 @@ pm-os init  # Full wizard, ~15-20 minutes
 
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
-| Python | 3.10+ | Tool execution |
+| Python | 3.10+ | Runtime |
 | pip | Latest | Package management |
-| Git | Any | Repository management |
-| Claude Code | Latest | AI interface (optional but recommended) |
+| Git | Any | Repository management, user detection |
+| Claude Code | Latest | AI interface (recommended) |
 
 ### Optional (for integrations)
 
-| Service | Requirement |
-|---------|-------------|
-| Jira | API token with read access |
-| GitHub | Personal access token |
-| Slack | Bot token with channel access |
-| Google | OAuth credentials |
-| Confluence | API token |
+| Service | Requirement | Wizard Step |
+|---------|-------------|-------------|
+| Jira | API token with read access | Step 5 |
+| GitHub | Personal access token or `gh` CLI | Step 5 |
+| Slack | Bot token with channel access | Step 5 |
+| Google | OAuth credentials (bundled for HF users) | Step 5 |
+| Confluence | API token (same as Jira) | Step 5 |
+
+### Installation
+
+```bash
+pip install pm-os
+```
+
+This installs all integrations (Google, Slack, Jira, GitHub, Confluence, AI providers, AWS Bedrock). No extras needed.
+
+For development tools (pytest, black, ruff):
+
+```bash
+pip install "pm-os[dev]"
+```
+
+---
+
+## Google OAuth Setup
+
+### Acme Corp Users (Bundled Credentials)
+
+If you installed from the `pmos` private repository, Google OAuth credentials are **bundled in the package**. During the wizard:
+
+1. At Step 5 (Integrations), select "Configure" for Google
+2. The wizard detects bundled credentials automatically
+3. Say "Yes" to authenticate — your browser opens
+4. Sign in with your Google account and grant access
+5. Token is saved to `.secrets/token.json`
+
+That's it. No Cloud Console setup needed. Google Calendar, Drive, and Gmail work immediately during brain population (Step 9).
+
+**Scopes granted (6 total):**
+- `drive.readonly` — Read Google Drive files
+- `drive.metadata.readonly` — Read Drive file metadata
+- `drive.file` — Access files created by PM-OS
+- `gmail.readonly` — Read Gmail messages
+- `calendar.events` — Read/write calendar events
+- `calendar.readonly` — Read calendar data
+
+### Public Users (Manual Setup)
+
+If you installed from the public `feamando/pmos` repository, you need to create OAuth credentials manually:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable APIs: Google Drive, Google Calendar, Gmail
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
+5. Application type: "Desktop app"
+6. Download the JSON file
+7. During the wizard, provide the path to the downloaded file
+
+### Re-authenticating
+
+If your Google token expires or you need to add scopes:
+
+```bash
+# Delete existing token
+rm ~/.pm-os/.secrets/token.json
+
+# Re-authenticate during next brain sync
+pm-os brain sync --integration google
+```
 
 ---
 
@@ -77,11 +221,12 @@ pm-os init  # Full wizard, ~15-20 minutes
 
 | Command | Description |
 |---------|-------------|
-| `pm-os init` | Full guided wizard |
-| `pm-os init --quick` | Quick setup (~5 min) |
-| `pm-os init --resume` | Resume interrupted setup |
-| `pm-os doctor` | Verify installation |
-| `pm-os doctor --fix` | Auto-fix issues |
+| `pm-os init` | Full interactive wizard (10 steps) |
+| `pm-os init --quick` | Quick setup with auto-detection |
+| `pm-os init --template FILE` | Non-interactive install from config |
+| `pm-os init --resume` | Resume interrupted wizard |
+| `pm-os doctor` | Verify installation health |
+| `pm-os doctor --fix` | Auto-fix common issues |
 | `pm-os uninstall` | Remove PM-OS |
 
 ### Post-Install Commands
@@ -89,7 +234,8 @@ pm-os init  # Full wizard, ~15-20 minutes
 | Command | Description |
 |---------|-------------|
 | `pm-os setup integrations` | List/configure integrations |
-| `pm-os brain sync` | Sync from integrations |
+| `pm-os brain sync` | Sync from all integrations |
+| `pm-os brain sync --integration google` | Sync from specific integration |
 | `pm-os brain status` | Show entity counts |
 | `pm-os config show` | Display configuration |
 | `pm-os config set KEY VALUE` | Update config value |
@@ -107,291 +253,197 @@ pm-os init  # Full wizard, ~15-20 minutes
 
 ---
 
-## Manual Installation Steps
+## Directory Structure
 
-### Step 1: Create Directory Structure
-
-```bash
-# Create PM-OS root directory
-mkdir -p ~/pm-os
-cd ~/pm-os
-
-# Clone the common repository (LOGIC)
-git clone <pm-os-common-repo-url> common
-
-# Create user directory (CONTENT)
-mkdir -p user/{brain/{entities,projects,experiments,strategy,reasoning,inbox},sessions,context,planning}
-```
-
-### Step 2: Set Up User Configuration
-
-Create `user/config.yaml`:
-
-```yaml
-# PM-OS User Configuration
-version: "3.0"
-
-user:
-  name: "Your Full Name"
-  email: "your.email@company.com"
-  position: "Product Manager"
-  tribe: "Your Tribe"
-  slack_id: "U0XXXXXXXX"  # Your Slack user ID
-
-integrations:
-  jira:
-    enabled: true
-    project_keys:
-      - "PROJ1"
-      - "PROJ2"
-  github:
-    enabled: true
-  slack:
-    enabled: true
-    channels:
-      - "your-team-channel"
-  confluence:
-    enabled: true
-    spaces:
-      - "YOURSPACE"
-  google:
-    enabled: true
-
-pm_os:
-  fpf_enabled: true
-  confucius_enabled: true
-  auto_save_sessions: true
-```
-
-### Step 3: Configure Secrets
-
-Create `user/.env`:
-
-```bash
-# Jira
-JIRA_URL=https://your-company.atlassian.net
-JIRA_USERNAME=your.email@company.com
-JIRA_API_TOKEN=your_jira_api_token
-
-# GitHub
-GITHUB_ORG=your-org
-GITHUB_HF_PM_OS=your_github_token
-
-# Slack
-SLACK_BOT_TOKEN=xoxb-your-bot-token
-USER_OATH_TOKEN=xoxp-your-user-token
-SLACK_USER_ID=U0XXXXXXXX
-SLACK_APP_ID=A0XXXXXXXX
-
-# Google (OAuth paths)
-GOOGLE_CREDENTIALS_PATH=.secrets/credentials.json
-GOOGLE_TOKEN_PATH=.secrets/token.json
-
-# Confluence
-CONFLUENCE_URL=https://your-company.atlassian.net/wiki
-CONFLUENCE_USERNAME=your.email@company.com
-CONFLUENCE_API_TOKEN=your_confluence_token
-
-# Gemini (for meeting prep)
-GEMINI_API_KEY=your_gemini_key
-GEMINI_MODEL=gemini-2.5-flash
-
-# Statsig (optional)
-STATSIG_CONSOLE_API_KEY=your_statsig_key
-```
-
-### Step 4: Set Up Google OAuth
-
-1. Create OAuth credentials in Google Cloud Console
-2. Download `credentials.json`
-3. Place in `user/.secrets/credentials.json`
-4. First run will prompt for OAuth consent
-
-```bash
-mkdir -p ~/pm-os/user/.secrets
-mv ~/Downloads/credentials.json ~/pm-os/user/.secrets/
-```
-
-### Step 5: Install Python Dependencies
-
-```bash
-cd ~/pm-os/common
-pip install -r requirements.txt
-```
-
-Or install individually:
-
-```bash
-pip install python-dotenv PyYAML requests atlassian-python-api google-auth-oauthlib
-```
-
-### Step 6: Create Marker File (Optional)
-
-For reliable path resolution:
-
-```bash
-touch ~/pm-os/.pm-os-root
-```
-
-### Step 7: Initialize Brain
-
-Create `user/brain/registry.yaml`:
-
-```yaml
-# PM-OS Brain Registry
-version: "1.0"
-last_updated: "2026-01-13"
-
-entities:
-  persons: []
-  teams: []
-  partners: []
-
-projects:
-  features: []
-  epics: []
-
-experiments:
-  ab_tests: []
-  flags: []
-
-strategy:
-  okrs: []
-  roadmaps: []
-```
-
-## Verification
-
-### Test Installation
-
-```bash
-cd ~/pm-os/common
-python3 tools/config_loader.py --info
-```
-
-Expected output:
+After installation, PM-OS creates this structure:
 
 ```
-Root:     /Users/yourname/pm-os
-Common:   /Users/yourname/pm-os/common
-User:     /Users/yourname/pm-os/user
-Brain:    /Users/yourname/pm-os/user/brain
-Context:  /Users/yourname/pm-os/user/context
-Sessions: /Users/yourname/pm-os/user/sessions
-Tools:    /Users/yourname/pm-os/common/tools
-Strategy: marker_walkup
-V2.4 Mode: False
+~/.pm-os/                          # Default install path
+├── .pm-os-root                    # Root marker file
+├── .pm-os-user                    # User marker file
+├── .env                           # Environment variables (tokens, paths)
+├── .gitignore                     # Ignores .secrets/, .env, __pycache__
+├── config.yaml                    # User configuration (no secrets)
+├── USER.md                        # User profile for AI context
+├── .secrets/                      # OAuth tokens, credentials (mode 700)
+│   ├── credentials.json           # Google OAuth client secret
+│   └── token.json                 # Google OAuth user token
+├── brain/                         # Knowledge graph
+│   ├── BRAIN.md                   # Brain index
+│   ├── Glossary.md                # Team glossary
+│   ├── registry.yaml              # Entity registry
+│   ├── entities/                  # People, teams, partners
+│   ├── projects/                  # Features, epics
+│   ├── experiments/               # A/B tests, feature flags
+│   ├── strategy/                  # OKRs, roadmaps
+│   ├── reasoning/                 # FPF reasoning chains
+│   └── inbox/                     # Unprocessed items
+├── context/                       # Daily context files
+├── sessions/                      # Session logs
+├── planning/                      # Planning artifacts
+├── common/                        # PM-OS framework (from GitHub)
+│   ├── .claude/commands/          # Slash commands
+│   ├── tools/                     # Python tools
+│   ├── documentation/             # This documentation
+│   └── package/                   # pip package source
+└── .claude/                       # Claude Code configuration
+    ├── commands/                   # Synced slash commands
+    └── settings.json              # Claude Code settings
 ```
 
-### Test Boot
+### Key Files
 
-Open Claude Code in any directory and run:
+| File | Purpose |
+|------|---------|
+| `.env` | All environment variables: API tokens, paths, integration config |
+| `config.yaml` | User preferences and integration settings (no secrets) |
+| `USER.md` | Natural-language user profile consumed by AI during `/boot` |
+| `.secrets/credentials.json` | Google OAuth client secret |
+| `.secrets/token.json` | Google OAuth user token (6 scopes) |
+| `brain/BRAIN.md` | Compressed index of all brain entities |
+| `brain/Glossary.md` | Team-specific terminology |
 
-```
-/boot
-```
-
-You should see:
-- Environment variables set
-- Context files loaded
-- Brain registry accessible
+---
 
 ## Getting API Tokens
 
 ### Jira API Token
 
-1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
+1. Go to [Atlassian API Tokens](https://id.atlassian.com/manage-profile/security/api-tokens)
 2. Click "Create API token"
-3. Copy and save in `.env`
+3. Copy and provide during wizard Step 5
 
 ### GitHub Token
 
-1. Go to https://github.com/settings/tokens
+Two options:
+
+**Option A: GitHub CLI (recommended)**
+```bash
+gh auth login
+```
+The wizard detects `gh` CLI authentication automatically.
+
+**Option B: Personal Access Token**
+1. Go to [GitHub Token Settings](https://github.com/settings/tokens)
 2. Generate new token (classic)
 3. Select scopes: `repo`, `read:org`
-4. Copy and save in `.env`
+4. Provide during wizard Step 5
 
 ### Slack Tokens
 
-1. Create Slack App at https://api.slack.com/apps
-2. Add OAuth scopes: `channels:history`, `chat:write`, `users:read`
-3. Install to workspace
-4. Copy Bot and User tokens to `.env`
+1. Create a Slack App at [api.slack.com/apps](https://api.slack.com/apps)
+2. Add OAuth scopes: `channels:history`, `channels:read`, `chat:write`, `users:read`
+3. Install to your workspace
+4. Copy the Bot Token (`xoxb-...`) for the wizard
 
 ### Confluence Token
 
-Same as Jira - uses Atlassian API tokens.
+Uses the same Atlassian API token as Jira. If you've configured Jira, you already have this.
 
-### Google OAuth
-
-1. Go to https://console.cloud.google.com
-2. Create project or select existing
-3. Enable APIs: Drive, Calendar, Docs
-4. Create OAuth 2.0 credentials
-5. Download JSON and place in `.secrets/`
+---
 
 ## Directory Permissions
 
-Ensure proper permissions:
+PM-OS sets appropriate permissions during installation:
 
 ```bash
-chmod 600 ~/pm-os/user/.env
-chmod -R 700 ~/pm-os/user/.secrets
+# .secrets/ directory: owner-only access
+chmod 700 ~/.pm-os/.secrets
+
+# .env file: owner-only read/write
+chmod 600 ~/.pm-os/.env
 ```
+
+If you need to fix permissions manually:
+
+```bash
+chmod 700 ~/.pm-os/.secrets
+chmod 600 ~/.pm-os/.env
+```
+
+---
 
 ## Troubleshooting
 
-### "Module not found: config_loader"
+### "Module not found" errors
 
-Ensure you're running from `common/tools/` or PYTHONPATH is set:
+Ensure pm-os is installed in your active Python environment:
 
 ```bash
-export PYTHONPATH=$PM_OS_COMMON/tools:$PYTHONPATH
+pip install pm-os
+pm-os doctor
 ```
 
 ### "Cannot resolve PM-OS paths"
 
-Create marker file:
+Create the root marker file or set environment variables:
 
 ```bash
-touch ~/pm-os/.pm-os-root
+touch ~/.pm-os/.pm-os-root
 ```
 
-Or set environment variables:
+Or:
 
 ```bash
-export PM_OS_ROOT=~/pm-os
-export PM_OS_COMMON=~/pm-os/common
-export PM_OS_USER=~/pm-os/user
+export PM_OS_ROOT=~/.pm-os
+export PM_OS_COMMON=~/.pm-os/common
+export PM_OS_USER=~/.pm-os
 ```
 
 ### Google OAuth Errors
 
-Delete token and re-authenticate:
+Delete the token and re-authenticate:
 
 ```bash
-rm ~/pm-os/user/.secrets/token.json
-python3 tools/gdrive/gdrive_fetcher.py  # Will prompt for consent
+rm ~/.pm-os/.secrets/token.json
+pm-os brain sync --integration google
 ```
+
+For scope mismatch errors (e.g., old 2-scope tokens), the same fix applies — deleting the token forces re-authentication with all 6 current scopes.
 
 ### Jira Connection Failed
 
-Verify credentials:
+Verify your credentials:
 
 ```bash
-python3 tools/config_loader.py --jira
+pm-os doctor
 ```
 
-Check that URL, username, and token are correct.
+Check that URL, username, and API token are correct in `.env`.
+
+### Wizard Interrupted
+
+Resume from where you left off:
+
+```bash
+pm-os init --resume
+```
+
+---
 
 ## Updating PM-OS
 
+### Update the pip package
+
 ```bash
-cd ~/pm-os/common
-git pull origin main
+pip install --upgrade pm-os
 ```
 
-Your `user/` directory is never modified by updates.
+### Update common/ tools
+
+```bash
+cd ~/.pm-os/common && git pull origin main
+```
+
+Or use the built-in update command:
+
+```bash
+pm-os update
+```
+
+Your user data (`brain/`, `sessions/`, `config.yaml`) is never modified by updates.
+
+---
 
 ## Migration from v2.4
 
@@ -409,90 +461,6 @@ Or to rollback:
 
 ---
 
-## Developer Tools (Optional)
-
-For PM-OS development, install the developer folder.
-
-### Step 1: Clone Developer Branch
-
-```bash
-cd ~/pm-os
-git clone -b developer <pm-os-repo-url> developer
-```
-
-### Step 2: Verify Structure
-
-```
-pm-os/
-├── common/      # Framework (existing)
-├── user/        # Your data (existing)
-└── developer/   # Dev tools (new)
-    ├── .claude/commands/
-    ├── tools/beads/
-    ├── tools/roadmap/
-    └── docs/
-```
-
-### Step 3: Configure Beads (Optional)
-
-If using Beads for issue tracking:
-
-1. Install Beads CLI:
-   ```bash
-   npm install -g @beads/cli
-   # or
-   pip install beads-cli
-   ```
-
-2. Initialize in your project:
-   ```bash
-   cd ~/your-project
-   bd init
-   ```
-
-### Step 4: Developer Commands
-
-Developer commands auto-sync on `/boot`. To manually sync:
-
-```
-/sync-commands
-```
-
-Available commands after setup:
-- `/bd-*` - Beads issue tracking
-- `/parse-roadmap-inbox` - Roadmap management
-- `/boot-dev` - Developer environment boot
-
-### Push Configuration (Optional)
-
-To enable `/push` for publishing:
-
-Create `user/.config/push_config.yaml`:
-
-```yaml
-common:
-  enabled: true
-  repo: "your-org/your-pm-os-fork"
-  branch: "your-branch"
-  push_method: "pr"
-
-brain:
-  enabled: true
-  repo: "your-username/brain"
-  push_method: "direct"
-
-user:
-  enabled: true
-  repo: "your-username/user"
-  push_method: "direct"
-```
-
-Authenticate with GitHub:
-```bash
-gh auth login
-```
-
----
-
-*Last updated: 2026-02-02*
+*Last updated: 2026-02-11*
+*PM-OS Version: 3.4.0*
 *Confluence: [PM-OS Installation](https://your-company.atlassian.net/wiki/spaces/PMOS/pages/installation)*

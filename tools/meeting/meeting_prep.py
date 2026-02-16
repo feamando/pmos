@@ -213,7 +213,7 @@ INTERNAL_DOMAINS = [
     "factor.com",
     # Meal Kit
     "goodchop.com",
-    # Wellness Brand
+    # Brand B
     "thepetstable.com",
     "petstable.com",
     # Other HF Group brands
@@ -508,19 +508,19 @@ class MeetingManager:
         if cleaned:
             searches.append(cleaned.replace(":", " ").replace("/", " "))
 
-        # Strategy 2: Participant names + "1:1" / "Nikita"
+        # Strategy 2: Participant names + "1:1" / "Jane"
         for p in participants:
             name = p["name"].split()[0] if p["name"] else ""  # First name
             if name and len(name) > 2:
                 searches.append(f"{name} 1:1")
-                searches.append(f"{name} Nikita")
+                searches.append(f"{name} Jane")
 
         # Strategy 3: Extract names from title, search by name pair
         title_names = extract_names_from_title(meeting_title)
         if len(title_names) >= 2:
             searches.append(f"{title_names[0]} {title_names[1]}")
-        elif len(title_names) == 1 and title_names[0].lower() != "nikita":
-            searches.append(f"{title_names[0]} Nikita")
+        elif len(title_names) == 1 and title_names[0].lower() != "jane":
+            searches.append(f"{title_names[0]} Jane")
 
         # Try each search strategy
         for query_text in searches:
@@ -668,7 +668,7 @@ class MeetingManager:
 
         title_names = extract_names_from_title(event.get("summary", ""))
         other_person_name = next(
-            (tn for tn in title_names if tn.lower() != "nikita"), None
+            (tn for tn in title_names if tn.lower() != "jane"), None
         )
 
         participants = []

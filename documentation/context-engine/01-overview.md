@@ -23,7 +23,7 @@ Leadership asks "what's the status of Feature X?" The PM says "in progress." But
 Some features get rigorous review—multiple design iterations, thorough business cases, careful engineering planning. Others slip through with a Slack message and a prayer. The difference often depends on who's working on it, not the feature's importance.
 
 ### The Approval Ambiguity
-"Did Laurent approve this?" "I think so, he seemed positive in the meeting." "Which meeting?" "The one two weeks ago, or maybe three." Critical business decisions live in fuzzy memories and lost Slack threads.
+"Did Irene approve this?" "I think so, he seemed positive in the meeting." "Which meeting?" "The one two weeks ago, or maybe three." Critical business decisions live in fuzzy memories and lost Slack threads.
 
 ## The Solution: Structured Quality at Scale
 
@@ -97,7 +97,7 @@ The decision gate is the moment of truth—a formal checkpoint where all evidenc
 │                                                          │
 │  Context Track:       [PASS] Score: 87%                 │
 │  Design Track:        [PASS] Figma attached             │
-│  Business Case Track: [PASS] Approved by: Laurent, Jama │
+│  Business Case Track: [PASS] Approved by: Irene, Dave │
 │  Engineering Track:   [PASS] Estimate: M                │
 │                                                          │
 │  Blocking Dependencies: None                             │
@@ -149,7 +149,7 @@ The waterfall model (requirements → design → development → testing) made s
 
 ### Explicit Beats Implicit
 
-"Laurent seemed to approve this" is worthless. "Laurent approved this via Slack on Feb 3, here's the link" is an organizational asset. The Context Engine forces explicitness: every approval, every decision, every assumption is captured with evidence.
+"Irene seemed to approve this" is worthless. "Irene approved this via Slack on Feb 3, here's the link" is an organizational asset. The Context Engine forces explicitness: every approval, every decision, every assumption is captured with evidence.
 
 ### Automation Enables Quality
 

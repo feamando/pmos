@@ -4,7 +4,7 @@ Google Docs Processor - Phase 1
 
 Parses extracted GDocs INBOX files and filters for relevant content:
 - Filters by topics (Growth Division, Meal Kit, WB, Growth Platform, etc.)
-- Filters by people (Jama, Deo, Beatrice, Maria, etc.)
+- Filters by people (Dave, Pat, Alice, Eve, etc.)
 - Classifies document types (PRD, 1:1, meeting notes, strategy)
 - Creates batches for LLM analysis
 
@@ -53,16 +53,16 @@ LOOKBACK_DAYS = 180
 # Topics to filter for (case-insensitive)
 TOPIC_FILTERS = [
     # Projects/Brands
-    "new ventures",
+    "growth division",
     "Meal Kit",
     "goodchop",
     "goc",
-    "Wellness Brand",
-    "Wellness Brand",
+    "Brand B",
+    "Brand B",
     "tpt",
     "Growth Platform",
     "vms",
-    "market innovation",
+    "product innovation",
     "market integration",
     "cross-selling",
     "cross selling",
@@ -79,22 +79,22 @@ TOPIC_FILTERS = [
 
 # People to filter for (case-insensitive, partial match)
 PEOPLE_FILTERS = [
-    "jama",
-    "deo",
-    "beatrice",
-    "maria",
-    "prateek",
-    "hamed",
+    "dave",
+    "pat",
+    "alice",
+    "eve",
+    "frank",
+    "bob",
     "yarra",
-    "sameer",
-    "allison",
+    "grace",
+    "nora",
     "wander",
     "ahmed",
     "alex",
     "max",
     "daniel",
-    # Also include Nikita since he's the user
-    "nikita",
+    # Also include Jane since they are the user
+    "jane",
 ]
 
 # Document type classification rules
@@ -110,8 +110,8 @@ DOC_TYPE_RULES = {
         r"1:1",
         r"1-on-1",
         r"one.on.one",
-        r":nikita\b",
-        r"nikita:",
+        r":jane\b",
+        r"jane:",
     ],
     "meeting": [
         r"\bmeeting\b",

@@ -19,6 +19,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -740,6 +741,30 @@ def main():
     # Scan for entities
     # Enable partial matching if using query mode
     matches = scan_for_entities(text, alias_index, partial_match=bool(args.query))
+
+    # Persist hot topics to JSON when scanning context (not query mode)
+    if not args.query:
+        hot_topics_path = os.path.join(BRAIN_DIR, "hot_topics.json")
+        hot_topics_data = {
+            "generated": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "source": os.path.basename(context_file) if context_file else "unknown",
+            "entity_count": len(matches),
+            "entities": {
+                eid: {
+                    "count": data["count"],
+                    "category": data["category"],
+                    "file": data["file"],
+                }
+                for eid, data in sorted(
+                    matches.items(), key=lambda x: x[1]["count"], reverse=True
+                )
+            },
+        }
+        try:
+            with open(hot_topics_path, "w", encoding="utf-8") as f:
+                json.dump(hot_topics_data, f, indent=2)
+        except Exception as e:
+            print(f"Warning: Could not save hot_topics.json: {e}", file=sys.stderr)
 
     # Output
     if args.files_only:

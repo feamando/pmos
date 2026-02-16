@@ -64,7 +64,7 @@ HOT TOPICS - Entities mentioned in context
   File: `Brain/Projects/OTP.md`
 
 ## ENTITIES
-- **Beatrice** (8 mentions) [EXISTS]
+- **Alice** (8 mentions) [EXISTS]
   File: `Brain/Entities/Alice_Engineer.md`
 
 ============================================================

@@ -99,7 +99,7 @@ To generate an API token:
 - `/confluence-sync --space PROJ --recent 10`
 
 **Search and sync:**
-- `/confluence-sync --search "WB app" --sync --limit 5`
+- `/confluence-sync --search "BB app" --sync --limit 5`
 
 **List synced:**
 - `/confluence-sync --list`

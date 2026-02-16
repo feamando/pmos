@@ -135,7 +135,7 @@ python3 "$PM_OS_COMMON/tools/master_sheet/master_sheet_context_integrator.py"
 
 **Filter by owner:**
 ```bash
-python3 "$PM_OS_COMMON/tools/master_sheet/master_sheet_context_integrator.py" --owner "Nikita"
+python3 "$PM_OS_COMMON/tools/master_sheet/master_sheet_context_integrator.py" --owner "Jane"
 ```
 
 ### Step 2: Analyze Raw Output

@@ -116,6 +116,10 @@ def brain_population_step(wizard: "WizardOrchestrator") -> bool:
     # Store results
     wizard.set_data("brain_sync_results", results)
 
+    # Generate BRAIN.md if any syncs succeeded
+    if successful > 0:
+        _generate_brain_md(wizard, brain_path)
+
     return True
 
 
@@ -295,13 +299,15 @@ def sync_google_real(wizard: "WizardOrchestrator", brain_path: Path) -> tuple:
         from pm_os.wizard.brain_sync.google_sync import GoogleSyncer
 
         creds_path = wizard.get_data("google_credentials_path", "")
+        token_path = wizard.get_data("google_token_path", "")
 
         if not creds_path:
             return False, "Google credentials not configured. Run 'pm-os brain sync --integration google' after setting up OAuth."
 
         syncer = GoogleSyncer(
             brain_path=brain_path,
-            credentials_path=Path(creds_path) if creds_path else None
+            credentials_path=Path(creds_path) if creds_path else None,
+            token_path=Path(token_path) if token_path else None,
         )
 
         # Test connection first
@@ -365,3 +371,74 @@ def sync_confluence_real(wizard: "WizardOrchestrator", brain_path: Path) -> tupl
         return False, "Confluence sync module not available"
     except Exception as e:
         return False, str(e)
+
+
+def _generate_brain_md(wizard: "WizardOrchestrator", brain_path: Path) -> None:
+    """Generate BRAIN.md after successful brain population.
+
+    Tries to use the real brain_index_generator from common/tools first.
+    Falls back to a simple entity scan if not available.
+    """
+    import json
+
+    common_dir_str = wizard.get_data("common_dir")
+    brain_md_path = brain_path / "BRAIN.md"
+
+    # Try using the real generator from common/tools
+    if common_dir_str:
+        import sys
+        common_tools = str(Path(common_dir_str) / "tools")
+        if common_tools not in sys.path:
+            sys.path.insert(0, common_tools)
+        try:
+            from brain.brain_index_generator import BrainIndexGenerator
+            generator = BrainIndexGenerator(user_root=brain_path.parent)
+            generator.generate()
+            wizard.ui.print_success("Generated BRAIN.md (full index)")
+            return
+        except Exception:
+            pass  # Fall back to simple generation
+
+    # Fallback: Simple entity scan
+    from datetime import datetime
+
+    entities_dir = brain_path / "Entities"
+    tier1_lines = []
+    tier2_lines = []
+
+    if entities_dir.exists():
+        for category_dir in sorted(entities_dir.iterdir()):
+            if not category_dir.is_dir():
+                continue
+            for entity_file in sorted(category_dir.glob("*.md")):
+                name = entity_file.stem.replace("_", " ")
+                entity_type = category_dir.name.lower().rstrip("s")
+                tier2_lines.append(f"{entity_file.stem}|{entity_type}|{name}|active")
+
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    total = len(tier1_lines) + len(tier2_lines)
+
+    content = f"""# BRAIN.md — Entity Index
+<!-- Generated: {now} | Entities: {total} | Tier1: {len(tier1_lines)} | Tier2: {len(tier2_lines)} -->
+
+## Team (Tier 1)
+id|type|role|squad|status|relationships
+{chr(10).join(tier1_lines) if tier1_lines else "<!-- No team data yet. Configure team in config.yaml. -->"}
+
+## Connected Entities (Tier 2)
+id|type|name|status
+{chr(10).join(tier2_lines) if tier2_lines else "<!-- No entities yet. -->"}
+"""
+    brain_md_path.write_text(content)
+
+    # Also update hot_topics.json with entity counts
+    hot_topics_path = brain_path / "hot_topics.json"
+    hot_topics = {
+        "generated": now,
+        "source": "brain_population",
+        "entity_count": total,
+        "entities": {}
+    }
+    hot_topics_path.write_text(json.dumps(hot_topics, indent=2) + "\n")
+
+    wizard.ui.print_success(f"Generated BRAIN.md ({total} entities)")

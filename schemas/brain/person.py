@@ -147,7 +147,7 @@ class PersonEntity(EntityBase):
                     "tribe": "Growth Division",
                     "manager": "entity/person/holger-hammel",
                     "location": "Berlin",
-                    "expertise": ["product management", "mobile apps", "new ventures"],
+                    "expertise": ["product management", "mobile apps", "growth"],
                     "slack_handle": "jane.smith",
                     "timezone": "Europe/Berlin",
                     "current_focus": "Leading Meal Kit, WB, Growth Platform, Product Innovation",

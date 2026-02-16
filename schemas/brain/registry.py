@@ -145,7 +145,7 @@ class RegistryV2(BaseModel):
                             "$status": "active",
                             "$version": 12,
                             "$updated": "2026-01-21T13:20:00Z",
-                            "aliases": ["nikita", "jane.smith"],
+                            "aliases": ["jane", "jane.smith"],
                             "role": "Director of Product",
                             "team": "growth-division",
                             "relationships_count": 15,
@@ -153,7 +153,7 @@ class RegistryV2(BaseModel):
                         }
                     },
                     "alias_index": {
-                        "nikita": "jane-smith",
+                        "jane": "jane-smith",
                         "jane.smith": "jane-smith",
                     },
                     "stats": {

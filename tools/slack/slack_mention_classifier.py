@@ -3,7 +3,7 @@
 Slack Mention Classifier
 
 Classifies @pmos-slack-bot mentions into actionable categories:
-- NIKITA_TASK: Personal tasks for Jane Smith
+- JANE_TASK: Personal tasks for Jane Smith
 - TEAM_TASK: Tasks delegated to team members
 - PM_OS_FEATURE: PM-OS feature requests
 - PM_OS_BUG: PM-OS bug reports
@@ -11,7 +11,7 @@ Classifies @pmos-slack-bot mentions into actionable categories:
 
 Usage:
     from slack_mention_classifier import classify_mention, MentionType
-    result = classify_mention("@pmos-slack-bot remind Nikita to review PRD")
+    result = classify_mention("@pmos-slack-bot remind Jane to review PRD")
 """
 
 import os
@@ -41,7 +41,7 @@ class MentionType(Enum):
 
     PM_OS_FEATURE = "pmos_feature"
     PM_OS_BUG = "pmos_bug"
-    NIKITA_TASK = "nikita_task"
+    JANE_TASK = "jane_task"
     TEAM_TASK = "team_task"
     GENERAL = "general"
 
@@ -61,16 +61,16 @@ class ClassificationResult:
 
 # Known team members for task delegation detection
 TEAM_MEMBERS = [
-    "deo",
-    "beatrice",
-    "hamed",
-    "prateek",
+    "pat",
+    "alice",
+    "bob",
+    "frank",
     "daniel",
-    "jama",
-    "alison",
+    "dave",
+    "nora",
     "leo",
-    "maria",
-    "sameer",
+    "eve",
+    "grace",
     "shay",
     "ali",
     "yury",
@@ -120,7 +120,7 @@ CLASSIFICATION_RULES = [
         ],
         "priority_boost": 0,
     },
-    # Tasks for Team Members (Priority 2 - check before Nikita to catch specific names)
+    # Tasks for Team Members (Priority 2 - check before Jane to catch specific names)
     {
         "type": MentionType.TEAM_TASK,
         "patterns": [
@@ -134,16 +134,16 @@ CLASSIFICATION_RULES = [
         "priority_boost": 0,
         "capture_assignee": True,
     },
-    # Tasks for Nikita (Priority 2)
+    # Tasks for Jane (Priority 2)
     {
-        "type": MentionType.NIKITA_TASK,
+        "type": MentionType.JANE_TASK,
         "patterns": [
-            r"(?i)(?:remind|task\s+for|todo\s+for|action\s+for)\s+nikita",
-            r"(?i)nikita[,:]?\s+(?:please|can\s+you|could\s+you|needs?\s+to)",
-            r"(?i)for\s+nikita\s+to",
-            r"(?i)@nikita",
-            r"(?i)nikita\s+should",
-            r"(?i)(?:ask|tell|ping)\s+nikita",
+            r"(?i)(?:remind|task\s+for|todo\s+for|action\s+for)\s+jane",
+            r"(?i)jane[,:]?\s+(?:please|can\s+you|could\s+you|needs?\s+to)",
+            r"(?i)for\s+jane\s+to",
+            r"(?i)@jane",
+            r"(?i)jane\s+should",
+            r"(?i)(?:ask|tell|ping)\s+jane",
         ],
         "keywords": [],  # Remove broad keyword matching to avoid false positives
         "priority_boost": 0,
@@ -247,8 +247,8 @@ def classify_mention(
                     else:
                         # No team member found, might be general mention
                         continue
-                elif rule["type"] == MentionType.NIKITA_TASK:
-                    result.assignee = "Nikita"
+                elif rule["type"] == MentionType.JANE_TASK:
+                    result.assignee = "Jane"
 
                 return result
 
@@ -263,8 +263,8 @@ def classify_mention(
                     matched_keyword=keyword,
                 )
 
-                if rule["type"] == MentionType.NIKITA_TASK:
-                    result.assignee = "Nikita"
+                if rule["type"] == MentionType.JANE_TASK:
+                    result.assignee = "Jane"
                 elif rule.get("capture_assignee"):
                     result.assignee = _extract_assignee(text)
 
@@ -318,8 +318,8 @@ def classify_with_all_matches(text: str) -> List[ClassificationResult]:
                 )
                 if rule.get("capture_assignee"):
                     result.assignee = _extract_assignee(text, match)
-                elif rule["type"] == MentionType.NIKITA_TASK:
-                    result.assignee = "Nikita"
+                elif rule["type"] == MentionType.JANE_TASK:
+                    result.assignee = "Jane"
                 matches.append(result)
                 break  # Only one match per rule
 
@@ -334,8 +334,8 @@ def classify_with_all_matches(text: str) -> List[ClassificationResult]:
                         priority=_detect_priority(text),
                         matched_keyword=keyword,
                     )
-                    if rule["type"] == MentionType.NIKITA_TASK:
-                        result.assignee = "Nikita"
+                    if rule["type"] == MentionType.JANE_TASK:
+                        result.assignee = "Jane"
                     matches.append(result)
                     break
 
@@ -361,13 +361,13 @@ if __name__ == "__main__":
     bot_name = get_mention_bot_name()
 
     test_cases = [
-        f"@{bot_name} remind Nikita to review the OTP PRD before Friday",
+        f"@{bot_name} remind Jane to review the OTP PRD before Friday",
         f"@{bot_name} PM-OS feature request: add Confluence sync",
         f"@{bot_name} bug: context updater times out on large docs",
-        f"@{bot_name} task for Deo: follow up on Meal Kit launch",
+        f"@{bot_name} task for Pat: follow up on Meal Kit launch",
         f"@{bot_name} can you add a new dashboard feature?",
         f"@{bot_name} the brain sync is broken",
-        f"@{bot_name} tell Beatrice about the meeting tomorrow",
+        f"@{bot_name} tell Alice about the meeting tomorrow",
         f"@{bot_name} hello there!",
     ]
 

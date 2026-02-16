@@ -56,6 +56,10 @@ def llm_provider_step(wizard: "WizardOrchestrator") -> bool:
     Returns:
         True to continue, False to abort
     """
+    # Quick mode: auto-detect best available provider
+    if wizard.quick_mode:
+        return _quick_llm_provider_step(wizard)
+
     wizard.console.print("[bold]Configure your LLM provider.[/bold]")
     wizard.console.print("[dim]PM-OS uses AI to generate documents and assist with PM tasks.[/dim]")
     wizard.console.print()
@@ -292,4 +296,55 @@ def configure_ollama(wizard: "WizardOrchestrator", config: dict) -> bool:
     wizard.ui.print_success("Ollama configured!")
     wizard.console.print()
     wizard.ui.print_info("Make sure Ollama is running before using PM-OS.")
+    return True
+
+
+def _quick_llm_provider_step(wizard: "WizardOrchestrator") -> bool:
+    """Quick mode: auto-detect best available LLM provider without prompting."""
+    wizard.console.print("[bold]Quick LLM Setup[/bold]")
+    wizard.console.print("[dim]Auto-detecting LLM provider...[/dim]")
+
+    prereqs = wizard.get_data("prerequisites", {})
+    bedrock_available = prereqs.get("Bedrock Access", {}).get("passed", False)
+
+    # Priority: Bedrock > Anthropic > OpenAI > default to Anthropic
+    if bedrock_available:
+        provider = "bedrock"
+        model = LLM_PROVIDERS["bedrock"]["model_default"]
+        region = os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION") or "us-east-1"
+        wizard.update_data({
+            "llm_provider": provider,
+            "llm_model": model,
+            "aws_region": region,
+        })
+        wizard.ui.print_success(f"Auto-selected: AWS Bedrock ({model})")
+    elif os.environ.get("ANTHROPIC_API_KEY"):
+        provider = "anthropic"
+        model = LLM_PROVIDERS["anthropic"]["model_default"]
+        wizard.update_data({
+            "llm_provider": provider,
+            "llm_model": model,
+            "anthropic_api_key": os.environ["ANTHROPIC_API_KEY"],
+        })
+        wizard.ui.print_success(f"Auto-selected: Anthropic ({model})")
+    elif os.environ.get("OPENAI_API_KEY"):
+        provider = "openai"
+        model = LLM_PROVIDERS["openai"]["model_default"]
+        wizard.update_data({
+            "llm_provider": provider,
+            "llm_model": model,
+            "openai_api_key": os.environ["OPENAI_API_KEY"],
+        })
+        wizard.ui.print_success(f"Auto-selected: OpenAI ({model})")
+    else:
+        # Default to Anthropic with no key - user will configure later
+        provider = "anthropic"
+        model = LLM_PROVIDERS["anthropic"]["model_default"]
+        wizard.update_data({
+            "llm_provider": provider,
+            "llm_model": model,
+        })
+        wizard.ui.print_success(f"Defaulted to: Anthropic ({model})")
+        wizard.console.print("[dim]Set ANTHROPIC_API_KEY in .env to enable AI features.[/dim]")
+
     return True

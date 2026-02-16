@@ -43,16 +43,16 @@ PARALLEL_WORKERS = 4
 
 # Topic filters (same as other extractors)
 TOPIC_FILTERS = [
-    "new ventures",
+    "growth division",
     "Meal Kit",
     "goodchop",
     "goc",
-    "Wellness Brand",
-    "Wellness Brand",
+    "Brand B",
+    "Brand B",
     "tpt",
     "Growth Platform",
     "vms",
-    "market innovation",
+    "product innovation",
     "market integration",
     "cross-selling",
     "cross selling",
@@ -241,7 +241,7 @@ def fetch_project_issues(
     Fetch issues from a Jira project.
 
     Args:
-        project_key: Jira project key (e.g., "MK", "WB")
+        project_key: Jira project key (e.g., "MK", "BB")
         jira: Jira client
         since_days: How far back to look
 
@@ -514,7 +514,7 @@ def main():
         "--status", action="store_true", help="Show extraction status and exit"
     )
     parser.add_argument(
-        "--project", type=str, help="Extract specific project only (e.g., MK, WB)"
+        "--project", type=str, help="Extract specific project only (e.g., MK, BB)"
     )
     args = parser.parse_args()
 

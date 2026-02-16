@@ -125,7 +125,7 @@ class TeamEntity(EntityBase):
                     "lead": "entity/person/jane-smith",
                     "tribe": "Growth Division",
                     "department": "Product",
-                    "focus_areas": ["Meal Kit", "WB", "Growth Platform"],
+                    "focus_areas": ["Meal Kit", "BB", "Growth Platform"],
                     "slack_channel": "#team-growth-division",
                 }
             ]

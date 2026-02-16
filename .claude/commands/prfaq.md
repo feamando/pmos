@@ -142,7 +142,7 @@ The generated PRFAQ will include:
 ## Examples
 
 **Standard:**
-- `/prfaq Push notifications for WB app`
+- `/prfaq Push notifications for BB app`
 - `/prfaq One-time purchase for Factor meals`
 - `/prfaq Loyalty rewards program`
 

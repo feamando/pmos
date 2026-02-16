@@ -54,7 +54,7 @@
 | `/whitepaper` | Strategic proposal |
 | `/pupdate` | Performance update |
 | `/4cq` | 4CQ project definition |
-| `/meeting-notes` | Meeting notes (Deo format) |
+| `/meeting-notes` | Meeting notes (Pat format) |
 | `/tribe-update` | Quarterly tribe update |
 
 #### Integration Commands

@@ -129,7 +129,7 @@ The generated BC will include:
 
 **Standard:**
 - `/bc Expand to Canadian market with Meal Kit`
-- `/bc Launch mobile app for WB customers`
+- `/bc Launch mobile app for BB customers`
 - `/bc Migrate to new payment processor`
 
 **Orthogonal (rigorous):**

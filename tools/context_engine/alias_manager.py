@@ -52,7 +52,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 # Common product code prefixes to strip during normalization
 PRODUCT_CODE_PREFIXES = [
     "MK",
-    "WB",
+    "BB",
     "FF",
     "PROJ2",  # From config.yaml product_mapping
     "goc",

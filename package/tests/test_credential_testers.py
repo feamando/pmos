@@ -275,7 +275,7 @@ class TestSlackCredentials:
             importlib.reload(credential_testers)
 
             success, msg = credential_testers.test_slack_credentials.__wrapped__(
-                token="xoxb-FAKE-TEST"
+                token="xoxb-fake-test-placeholder"
             )
             assert success is True
             assert "testbot" in msg
@@ -324,7 +324,7 @@ class TestGitHubCredentials:
             importlib.reload(credential_testers)
 
             success, msg = credential_testers.test_github_credentials.__wrapped__(
-                token="ghp_test123456789"
+                token="ghp_FAKETEST00000000"
             )
             assert success is True
             assert "testuser" in msg

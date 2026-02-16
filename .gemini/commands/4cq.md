@@ -143,7 +143,7 @@ For projects requiring rigorous scoping validation:
 ## Examples
 
 **Standard:**
-- `/4cq Push notifications for WB app`
+- `/4cq Push notifications for BB app`
 - `/4cq One-time purchase for Factor meals`
 - `/4cq Loyalty program for Acme Corp`
 

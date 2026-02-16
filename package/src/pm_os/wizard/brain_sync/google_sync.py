@@ -33,7 +33,9 @@ class GoogleSyncer(BaseSyncer):
         """
         super().__init__(brain_path)
         self.credentials_path = credentials_path
-        self.token_path = token_path or (brain_path / ".google_token.json")
+        # Store token in .secrets/ (sibling to brain/) instead of inside brain/
+        secrets_dir = brain_path.parent / ".secrets"
+        self.token_path = token_path or (secrets_dir / "token.json")
         self._calendar_service = None
         self._drive_service = None
 
@@ -50,16 +52,13 @@ class GoogleSyncer(BaseSyncer):
                 remediation="pip install google-auth google-auth-oauthlib google-api-python-client"
             )
 
-        SCOPES = [
-            'https://www.googleapis.com/auth/calendar.readonly',
-            'https://www.googleapis.com/auth/drive.readonly'
-        ]
+        from pm_os.google_auth import GOOGLE_SCOPES
 
         creds = None
 
         # Load existing token
         if self.token_path and self.token_path.exists():
-            creds = Credentials.from_authorized_user_file(str(self.token_path), SCOPES)
+            creds = Credentials.from_authorized_user_file(str(self.token_path), GOOGLE_SCOPES)
 
         # Refresh or get new credentials
         if not creds or not creds.valid:
@@ -73,7 +72,7 @@ class GoogleSyncer(BaseSyncer):
                         remediation="Download credentials.json from Google Cloud Console"
                     )
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    str(self.credentials_path), SCOPES
+                    str(self.credentials_path), GOOGLE_SCOPES
                 )
                 creds = flow.run_local_server(port=0)
 

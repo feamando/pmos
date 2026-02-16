@@ -35,7 +35,7 @@ Ralph Features:
     Progress: 3/10 (30%) | Iteration: 5 | IN PROGRESS
     Current: Implement product sync endpoint
 
-  ○ [tpt-app] WB Mobile App v1
+  ○ [tpt-app] BB Mobile App v1
     Progress: 0/15 (0%) | Iteration: 0 | INITIALIZING
 
 No features? Run /ralph-init <feature> to start one.

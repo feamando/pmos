@@ -47,7 +47,7 @@ Tracks one-time deliverables and project milestones.
 
 | Column | Description | Required |
 |--------|-------------|----------|
-| Product | Product/brand code (e.g., WB, FF, MK) | Yes |
+| Product | Product/brand code (e.g., BB, FF, MK) | Yes |
 | Feature | Feature or initiative name | Yes |
 | Action | Specific deliverable | Yes |
 | Priority | P0, P1, P2, P3 | Yes |
@@ -187,7 +187,7 @@ master_sheet:
     topics: "topics"      # Tab name for one-time items
     recurring: "recurring" # Tab name for recurring tasks
   product_mapping:
-    WB: "wellness-brand"
+    BB: "brand-b"
     FF: "growth-platform"
     MK: "meal-kit"
     MI: "product-innovation"
@@ -224,7 +224,7 @@ python3 master_sheet_sync.py --overdue
 python3 master_sheet_sync.py --daily
 
 # Filter by owner
-python3 master_sheet_sync.py --daily --owner "Nikita"
+python3 master_sheet_sync.py --daily --owner "Jane"
 
 # Get action items as JSON
 python3 master_sheet_sync.py --action-items --json
@@ -246,7 +246,7 @@ python3 master_sheet_context_integrator.py --section summary
 python3 master_sheet_context_integrator.py --section actions
 
 # Filter by owner
-python3 master_sheet_context_integrator.py --owner "Nikita"
+python3 master_sheet_context_integrator.py --owner "Jane"
 
 # JSON output for programmatic use
 python3 master_sheet_context_integrator.py --json

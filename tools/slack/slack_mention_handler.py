@@ -4,7 +4,7 @@ Slack Mention Handler
 
 Captures, classifies, and tracks @pmos-slack-bot mentions from Slack.
 Routes mentions to:
-- Daily context (tasks for Nikita/team)
+- Daily context (tasks for Jane/team)
 - PM-OS backlog (feature requests, bugs)
 - Review queue (general mentions)
 
@@ -539,7 +539,7 @@ def add_task_to_state(
             entry["formalized"] = formalized
         state["pm_os_backlog"]["bugs"].append(entry)
     else:
-        # Add to pending tasks (nikita_task, team_task, general)
+        # Add to pending tasks (jane_task, team_task, general)
         state["pending_tasks"].append(task_dict)
 
     # Update statistics
@@ -693,14 +693,14 @@ def get_pending_tasks_for_context() -> Dict[str, Any]:
     Called by daily_context_updater or context synthesis tools.
 
     Returns:
-        Dict with 'nikita_tasks', 'team_tasks', 'general', 'pmos_backlog'
+        Dict with 'jane_tasks', 'team_tasks', 'general', 'pmos_backlog'
     """
     state = load_state()
     pending = state.get("pending_tasks", [])
     backlog = state.get("pm_os_backlog", {})
 
     result = {
-        "nikita_tasks": [],
+        "jane_tasks": [],
         "team_tasks": [],
         "general": [],
         "pmos_bugs": backlog.get("bugs", []),
@@ -722,8 +722,8 @@ def get_pending_tasks_for_context() -> Dict[str, Any]:
             "assignee": task.get("assignee"),
         }
 
-        if task["classification"] == "nikita_task":
-            result["nikita_tasks"].append(task_summary)
+        if task["classification"] == "jane_task":
+            result["jane_tasks"].append(task_summary)
         elif task["classification"] == "team_task":
             result["team_tasks"].append(task_summary)
         else:
@@ -750,9 +750,9 @@ def format_mentions_for_daily_context() -> str:
     )
     lines.append("")
 
-    if data["nikita_tasks"]:
-        lines.append("### Tasks for Nikita")
-        for task in data["nikita_tasks"]:
+    if data["jane_tasks"]:
+        lines.append("### Tasks for Jane")
+        for task in data["jane_tasks"]:
             stale = " [STALE]" if task["is_stale"] else ""
             priority_icon = {"high": "!", "critical": "!!"}.get(task["priority"], "")
             lines.append(f"- [ ] {priority_icon}{task['task']}{stale}")
@@ -788,7 +788,7 @@ def format_mentions_for_daily_context() -> str:
             lines.append("")
 
     if (
-        not data["nikita_tasks"]
+        not data["jane_tasks"]
         and not data["team_tasks"]
         and not data["pmos_bugs"]
         and not data["pmos_features"]
@@ -847,14 +847,14 @@ def export_daily_markdown(
     # Pending tasks by type
     pending = state.get("pending_tasks", [])
 
-    nikita_tasks = [t for t in pending if t["classification"] == "nikita_task"]
+    jane_tasks = [t for t in pending if t["classification"] == "jane_task"]
     team_tasks = [t for t in pending if t["classification"] == "team_task"]
     general = [t for t in pending if t["classification"] == "general"]
 
-    if nikita_tasks:
-        lines.append("## Tasks for Nikita")
+    if jane_tasks:
+        lines.append("## Tasks for Jane")
         lines.append("")
-        for task in nikita_tasks:
+        for task in jane_tasks:
             checkbox = "[ ]" if task["status"] == "pending" else "[x]"
             stale_marker = " (STALE)" if task.get("is_stale") else ""
             lines.append(f"- {checkbox} {task['extracted_task']}{stale_marker}")
@@ -1075,7 +1075,7 @@ def send_acknowledgment(
     """Send acknowledgment reply to captured mention."""
     try:
         type_emoji = {
-            "nikita_task": ":clipboard:",
+            "jane_task": ":clipboard:",
             "team_task": ":busts_in_silhouette:",
             "pmos_feature": ":sparkles:",
             "pmos_bug": ":bug:",
@@ -1132,7 +1132,7 @@ def send_formalized_task_reply(
         # Build type emoji
         task_type = formalized.get("task_type", task.classification)
         type_emoji = {
-            "nikita_task": ":clipboard:",
+            "jane_task": ":clipboard:",
             "team_task": ":busts_in_silhouette:",
             "pmos_feature": ":sparkles:",
             "pmos_bug": ":bug:",

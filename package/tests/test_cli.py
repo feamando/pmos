@@ -120,9 +120,9 @@ class TestSecretMasking:
         """Test masking Slack tokens."""
         from pm_os.wizard.ui import mask_secrets
 
-        text = "Token: SLACK_BOT_TOKEN_PLACEHOLDER"
+        text = "Token: xoxb-123456789-abcdefghij"
         result = mask_secrets(text)
-        assert "SLACK_BOT_TOKEN" not in result
+        assert "xoxb-" not in result
 
     def test_mask_secrets_key_value(self):
         """Test masking key=value patterns."""
@@ -249,7 +249,7 @@ class TestSteps:
         from pm_os.wizard.steps import WIZARD_STEPS
 
         assert isinstance(WIZARD_STEPS, list)
-        assert len(WIZARD_STEPS) == 8  # 8 steps in the wizard
+        assert len(WIZARD_STEPS) == 10  # 10 steps in the wizard
 
         # Check step structure
         for step in WIZARD_STEPS:

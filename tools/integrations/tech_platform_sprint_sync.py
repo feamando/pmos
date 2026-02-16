@@ -29,7 +29,35 @@ from typing import Any, Dict, List, Optional
 # Add tools to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+import re
+
 import config_loader
+
+
+def _sanitize_filename(name: str) -> str:
+    """Sanitize a string for use as a filename on all platforms (incl. Windows).
+
+    Handles: newlines, colons, asterisks, question marks, quotes, angle brackets,
+    pipes, ampersands, and other characters that are illegal on Windows or
+    problematic on Unix.
+    """
+    # Replace newlines with underscore (common in spreadsheet data)
+    name = name.replace("\n", "_").replace("\r", "_")
+    # Replace Windows-illegal characters: < > : " / \ | ? *
+    name = re.sub(r'[<>:"/\\|?*]', "_", name)
+    # Replace & with 'and' for readability
+    name = name.replace("&", "and")
+    # Replace spaces with underscores
+    name = name.replace(" ", "_")
+    # Collapse multiple underscores
+    name = re.sub(r"_+", "_", name)
+    # Strip leading/trailing underscores and dots
+    name = name.strip("_.")
+    # Skip EXAMPLE rows from spreadsheet
+    if name.upper().startswith("EXAMPLE"):
+        return ""
+    return name
+
 
 # Google API imports
 try:
@@ -235,7 +263,7 @@ class Tech PlatformSprintSync:
         squad_name = (
             row[COLUMNS["squad_name"]] if len(row) > COLUMNS["squad_name"] else ""
         )
-        if not squad_name or squad_name.lower() in ["squad name", "squad", ""]:
+        if not squad_name or squad_name.lower() in ["squad name", "squad", ""] or squad_name.upper().startswith("EXAMPLE"):
             return None
 
         def get_col(col_name: str) -> str:
@@ -308,10 +336,10 @@ class Tech PlatformSprintSync:
 
         # 1. Individual squad files
         for report in reports:
-            squad_file = (
-                self.output_dir
-                / f"{report.squad_name.replace(' ', '_').replace('/', '-')}.md"
-            )
+            safe_name = _sanitize_filename(report.squad_name)
+            if not safe_name:
+                continue  # Skip EXAMPLE rows or empty names
+            squad_file = self.output_dir / f"{safe_name}.md"
             with open(squad_file, "w") as f:
                 f.write(f"---\n")
                 f.write(f"type: tech-platform_sprint_report\n")
@@ -372,9 +400,10 @@ class Tech PlatformSprintSync:
 
     def get_squad(self, squad_name: str) -> Optional[str]:
         """Get a specific squad's report."""
-        squad_file = (
-            self.output_dir / f"{squad_name.replace(' ', '_').replace('/', '-')}.md"
-        )
+        safe_name = _sanitize_filename(squad_name)
+        if not safe_name:
+            return None
+        squad_file = self.output_dir / f"{safe_name}.md"
         if squad_file.exists():
             return squad_file.read_text()
         return None

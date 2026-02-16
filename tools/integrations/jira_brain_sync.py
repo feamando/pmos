@@ -273,9 +273,9 @@ def update_squad_entity(squad_name: str, squad_data: Dict) -> bool:
     # Map squad names to entity filenames
     filename_map = {
         "Meal Kit": "Squad_Meal_Kit.md",
-        "Wellness Brand": "Squad_The_Wellness_Brand.md",
+        "Brand B": "Squad_Brand_B.md",
         "Growth Platform": "Squad_Growth_Platform.md",
-        "Product Innovation": "Squad_Market_Innovation.md",
+        "Product Innovation": "Squad_Product_Innovation.md",
     }
 
     filename = filename_map.get(squad_name)

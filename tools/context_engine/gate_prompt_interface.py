@@ -764,7 +764,7 @@ class GatePromptInterface:
             result, response = interface.process_interaction(
                 gate,
                 "A --stakeholder='John Smith' --date='2024-01-15'",
-                decided_by="nikita"
+                decided_by="jane"
             )
             if result.success:
                 print(f"Gate transitioned to: {result.new_state}")

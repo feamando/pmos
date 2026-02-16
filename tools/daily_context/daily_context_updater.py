@@ -113,6 +113,7 @@ def fetch_slack_messages(
         return []
 
     messages = []
+    user_cache = {}  # Cache user_id -> real_name to avoid repeated API calls
     try:
         # Get channels the bot is in
         response = client.users_conversations(types="public_channel,private_channel")
@@ -144,14 +145,16 @@ def fetch_slack_messages(
                     msg["channel_id"] = channel_id
                     msg["unique_id"] = msg_id
 
-                    # Resolve user name if possible (simple cache could be added)
+                    # Resolve user name with cache
                     user_id = msg.get("user")
                     if user_id:
-                        try:
-                            user_info = client.users_info(user=user_id)
-                            msg["user_name"] = user_info["user"]["real_name"]
-                        except:
-                            msg["user_name"] = user_id
+                        if user_id not in user_cache:
+                            try:
+                                user_info = client.users_info(user=user_id)
+                                user_cache[user_id] = user_info["user"]["real_name"]
+                            except:
+                                user_cache[user_id] = user_id
+                        msg["user_name"] = user_cache[user_id]
 
                     messages.append(msg)
 
@@ -447,12 +450,22 @@ def fetch_recent_docs(
     ]
     mime_query = "(" + " or ".join([f"mimeType = '{m}'" for m in mime_types]) + ")"
 
-    # Search terms — configure with your name and team members
-    # Load from config.yaml search_terms if available
+    # Search terms from user request
     search_terms = [
-        # Add your name and team members here
-        # "Your Name",
-        # "Team Member",
+        "Jane Smith",
+        "Growth Division",
+        "Growth Division & Ecosystems",
+        "TAM Expansion",
+        "user@example.com",
+        "Alice",
+        "Bob",
+        "Pat",
+        "Leo",
+        "Nora",
+        "Dave",
+        "Daniel",
+        "Eve",
+        "Frank",
     ]
     # Construct OR query for terms: (fullText contains 'Term1' or fullText contains 'Term2' ...)
     terms_query = (
@@ -753,10 +766,10 @@ def format_output(
     if include_mentions and MENTIONS_AVAILABLE:
         try:
             mention_data = get_pending_tasks_for_context()
-            owner_count = len(mention_data.get("owner_tasks", []))
+            jane_count = len(mention_data.get("jane_tasks", []))
             team_count = len(mention_data.get("team_tasks", []))
             lines.append(
-                f"Mention tasks: {owner_count} for owner, {team_count} team tasks"
+                f"Mention tasks: {jane_count} for Jane, {team_count} team tasks"
             )
         except Exception:
             pass  # Silently skip if mentions unavailable

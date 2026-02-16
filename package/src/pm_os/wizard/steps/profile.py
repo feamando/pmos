@@ -176,28 +176,16 @@ def _quick_profile_step(wizard: "WizardOrchestrator") -> bool:
 
     if git_name and git_email:
         wizard.ui.print_success(f"Detected: {git_name} <{git_email}>")
-        wizard.console.print()
 
-        # Show what we found and confirm
-        wizard.ui.show_summary_table("Auto-detected Profile", {
-            "Name": git_name,
-            "Email": git_email,
-            "Role": "Product Manager (default)",
-            "Timezone": "UTC (default)"
+        wizard.update_data({
+            "user_name": git_name,
+            "user_email": git_email,
+            "user_role": "Product Manager",
+            "user_team": "",
+            "user_timezone": "UTC"
         })
-
-        wizard.console.print()
-
-        if wizard.ui.prompt_confirm("Use this profile?", default=True):
-            wizard.update_data({
-                "user_name": git_name,
-                "user_email": git_email,
-                "user_role": "Product Manager",
-                "user_team": "",
-                "user_timezone": "UTC"
-            })
-            wizard.ui.print_success("Profile saved!")
-            return True
+        wizard.ui.print_success("Profile saved!")
+        return True
 
     # Fall back to minimal prompts if git detection failed or user declined
     wizard.console.print()

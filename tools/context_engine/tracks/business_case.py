@@ -23,7 +23,7 @@ Usage:
     from tools.context_engine.tracks import BusinessCaseTrack
 
     track = BusinessCaseTrack(feature_path)
-    track.start(initiated_by="nikita")
+    track.start(initiated_by="jane")
     track.update_assumptions(baseline_metrics={...}, impact_assumptions={...})
     result = track.submit_for_approval(approver="Jack Approver")
     track.record_approval(approver="Jack Approver", approved=True, approval_type="verbal")
@@ -193,7 +193,7 @@ class BusinessCaseTrack:
         track = BusinessCaseTrack(feature_path)
 
         # Start the track
-        result = track.start(initiated_by="nikita")
+        result = track.start(initiated_by="jane")
 
         # Update assumptions
         track.update_assumptions(

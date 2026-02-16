@@ -249,7 +249,7 @@ Generate 4CQ project definition.
 
 ## /meeting-notes
 
-Create meeting notes in Deo format.
+Create meeting notes in Pat format.
 
 ### Arguments
 

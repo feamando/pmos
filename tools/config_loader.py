@@ -791,7 +791,7 @@ def get_product_ids() -> List[str]:
     Get list of configured product IDs.
 
     Returns:
-        List of product ID strings (e.g., ['meal-kit', 'wellness-brand'])
+        List of product ID strings (e.g., ['meal-kit', 'brand-b'])
     """
     products = get_products_config()
     items = products.get("items", [])

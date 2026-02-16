@@ -45,12 +45,12 @@ class WorkspaceMigrator:
     # Mapping of legacy product folder names to product IDs
     PRODUCT_NAME_MAP = {
         "Meal_Kit": "meal-kit",
-        "The_Wellness_Brand": "wellness-brand",
+        "Brand_B": "brand-b",
         "Growth_Platform": "growth-platform",
         "Product Innovation": "product-innovation",
-        "Market_Innovation": "product-innovation",
+        "Product_Innovation": "product-innovation",
         "Creator_Marketplace": "creator-marketplace",
-        "New_Ventures_General": "nv-general",
+        "Growth_Division_General": "gd-general",
         "M&A": "mergers-acquisitions",
     }
 
@@ -370,7 +370,7 @@ class WorkspaceMigrator:
                 target_product = None
 
                 if "tpt" in name_lower or "pets" in name_lower:
-                    target_product = "wellness-brand"
+                    target_product = "brand-b"
                 elif "good" in name_lower and "chop" in name_lower:
                     target_product = "meal-kit"
                 elif "factor" in name_lower:

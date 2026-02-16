@@ -198,12 +198,111 @@ def configure_slack(wizard: "WizardOrchestrator") -> bool:
 
 
 def configure_google(wizard: "WizardOrchestrator") -> bool:
-    """Configure Google integration."""
+    """Configure Google integration (Calendar, Drive, Gmail).
+
+    Two paths:
+    1. Bundled credentials (Acme Corp internal): One-click browser auth
+    2. No bundled credentials (public): Manual Cloud Console instructions
+    """
     wizard.console.print()
     wizard.console.print("[bold]Google Configuration[/bold]")
     wizard.console.print("[dim]Connect to Google Calendar, Drive, and Gmail.[/dim]")
     wizard.console.print()
 
+    secrets_dir = wizard.get_install_path() / ".secrets"
+    creds_path = secrets_dir / "credentials.json"
+    token_path = secrets_dir / "token.json"
+
+    # Check for bundled credentials (Acme Corp internal package)
+    try:
+        from pm_os.google_auth import has_bundled_credentials, copy_credentials_to_secrets, run_oauth_flow
+        bundled = has_bundled_credentials()
+    except ImportError:
+        bundled = False
+
+    if bundled:
+        return _configure_google_bundled(wizard, secrets_dir, creds_path, token_path)
+    else:
+        return _configure_google_manual(wizard, creds_path)
+
+
+def _configure_google_bundled(
+    wizard: "WizardOrchestrator",
+    secrets_dir,
+    creds_path,
+    token_path,
+) -> bool:
+    """Configure Google using bundled OAuth credentials (Acme Corp internal)."""
+    from pm_os.google_auth import copy_credentials_to_secrets, run_oauth_flow
+
+    wizard.console.print("[green]Google OAuth credentials found in package.[/green]")
+    wizard.console.print("[dim]Scopes: Calendar, Drive, Gmail (read), Drive file management[/dim]")
+    wizard.console.print()
+
+    # Check if already authenticated
+    if token_path.exists():
+        wizard.ui.print_success("Already authenticated (token.json exists)")
+        wizard.update_data({
+            "google_credentials_path": str(creds_path),
+            "google_token_path": str(token_path),
+            "google_authenticated": True,
+        })
+        return True
+
+    if not wizard.ui.prompt_confirm("Authenticate with Google now? (opens browser)", default=True):
+        wizard.ui.print_info("Skipped. Run 'pm-os config google-auth' later to authenticate.")
+        # Still copy credentials so they're available for later
+        try:
+            copy_credentials_to_secrets(secrets_dir)
+            wizard.set_data("google_credentials_path", str(creds_path))
+        except Exception:
+            pass
+        return False
+
+    # Copy credentials to .secrets/
+    try:
+        copy_credentials_to_secrets(secrets_dir)
+        wizard.ui.print_success("Credentials saved to .secrets/")
+    except Exception as e:
+        wizard.ui.print_warning(f"Could not copy credentials: {e}")
+        return False
+
+    # Run OAuth browser flow
+    wizard.console.print("[yellow]Opening browser for Google sign-in...[/yellow]")
+    wizard.console.print("[dim]Sign in with your Google account and grant access.[/dim]")
+
+    try:
+        creds = run_oauth_flow(creds_path, token_path)
+        wizard.ui.print_success("Google authenticated! Token saved to .secrets/token.json")
+        wizard.update_data({
+            "google_credentials_path": str(creds_path),
+            "google_token_path": str(token_path),
+            "google_authenticated": True,
+        })
+        return True
+    except Exception as e:
+        wizard.ui.print_warning(f"Google authentication failed: {e}")
+        wizard.console.print("[dim]This can happen if the browser was closed or access was denied.[/dim]")
+        if wizard.ui.prompt_confirm("Retry authentication?", default=True):
+            try:
+                creds = run_oauth_flow(creds_path, token_path)
+                wizard.ui.print_success("Google authenticated!")
+                wizard.update_data({
+                    "google_credentials_path": str(creds_path),
+                    "google_token_path": str(token_path),
+                    "google_authenticated": True,
+                })
+                return True
+            except Exception as e2:
+                wizard.ui.print_warning(f"Retry failed: {e2}")
+
+        wizard.ui.print_info("You can authenticate later with: pm-os config google-auth")
+        wizard.set_data("google_credentials_path", str(creds_path))
+        return False
+
+
+def _configure_google_manual(wizard: "WizardOrchestrator", creds_path) -> bool:
+    """Configure Google using manual Cloud Console setup (public release)."""
     wizard.console.print("""
 [yellow]Google OAuth Setup Steps:[/yellow]
 
@@ -216,17 +315,21 @@ def configure_google(wizard: "WizardOrchestrator") -> bool:
 [dim]Place credentials.json in your PM-OS secrets folder.[/dim]
 """)
 
-    # Check if credentials file exists
-    creds_path = wizard.ui.prompt_text(
+    creds_input = wizard.ui.prompt_text(
         "Path to credentials.json (or press Enter to skip)",
         default=""
     )
 
-    if creds_path:
-        import os
-        if os.path.exists(creds_path):
-            wizard.set_data("google_credentials_path", creds_path)
-            wizard.ui.print_success("Google credentials found!")
+    if creds_input:
+        from pathlib import Path
+        input_path = Path(creds_input)
+        if input_path.exists():
+            # Copy to .secrets/ for consistency
+            import shutil
+            creds_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(str(input_path), str(creds_path))
+            wizard.set_data("google_credentials_path", str(creds_path))
+            wizard.ui.print_success("Google credentials saved!")
             return True
         else:
             wizard.ui.print_warning("File not found. You can add it later.")

@@ -52,7 +52,7 @@ ENTITY_DIRS = {
 # Known entity aliases (loaded from file + defaults)
 DEFAULT_ALIASES = {
     # People
-    "nikita": "Jane_Smith",
+    "jane": "Jane_Smith",
     "ng": "Jane_Smith",
     "@jane.smith": "Jane_Smith",
     "hamed": "Bob_Designer",
@@ -62,8 +62,8 @@ DEFAULT_ALIASES = {
     "goc": "Meal_Kit",
     "goodchop": "Meal_Kit",
     "gc": "Meal_Kit",
-    "tpt": "The_Wellness_Brand",
-    "Wellness Brand": "The_Wellness_Brand",
+    "tpt": "Brand_B",
+    "Brand B": "Brand_B",
     "factor": "Factor",
     "Growth Platform": "Growth_Platform",
     "vms": "Growth_Platform",

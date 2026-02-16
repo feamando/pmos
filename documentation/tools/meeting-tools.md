@@ -25,7 +25,7 @@ Generate personalized meeting pre-reads for upcoming calendar events.
 python3 meeting_prep.py --hours 24
 
 # Specific meeting only
-python3 meeting_prep.py --meeting "1:1 Beatrice"
+python3 meeting_prep.py --meeting "1:1 Alice"
 
 # List upcoming without generating
 python3 meeting_prep.py --list
@@ -75,7 +75,7 @@ python3 meeting_prep.py --cleanup
 ```
 user/planning/Meeting_Prep/
 ├── Series/                    # Recurring meetings
-│   ├── Series-beatrice-nikita-1-1.md
+│   ├── Series-alice-jane-1-1.md
 │   └── Series-growth-division-standup.md
 ├── AdHoc/                     # One-time meetings
 │   └── Meeting-2026-02-02-kickoff.md
@@ -114,7 +114,7 @@ Maintain intelligent context for recurring meetings.
 ```python
 from meeting.series_intelligence import SeriesIntelligence
 
-si = SeriesIntelligence(series_slug="beatrice-nikita-1-1")
+si = SeriesIntelligence(series_slug="alice-jane-1-1")
 
 # Get series context
 context = si.get_context()
@@ -129,7 +129,7 @@ themes = si.synthesize_themes(last_n=5)
 ### Series File Structure
 
 ```markdown
-# Series: Beatrice <> Nikita 1:1
+# Series: Alice <> Jane 1:1
 
 ## Series Intelligence
 - Meeting frequency: Weekly (Thursdays)
@@ -170,7 +170,7 @@ synthesizer = MeetingLLMSynthesizer(model="gemini")
 # Generate pre-read
 preread = synthesizer.generate(
     meeting_type="1:1",
-    participants=["Beatrice"],
+    participants=["Alice"],
     context=context_dict
 )
 ```
@@ -249,7 +249,7 @@ Compare old vs new meeting prep quality.
 ### CLI Usage
 
 ```bash
-python3 relevance_comparison.py --meeting "1:1 Beatrice" --compare
+python3 relevance_comparison.py --meeting "1:1 Alice" --compare
 ```
 
 ---

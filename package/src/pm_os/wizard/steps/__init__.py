@@ -9,6 +9,8 @@ from pm_os.wizard.steps.prerequisites import prerequisites_step
 from pm_os.wizard.steps.profile import profile_step
 from pm_os.wizard.steps.llm_provider import llm_provider_step
 from pm_os.wizard.steps.integrations import integrations_step
+from pm_os.wizard.steps.common_download import common_download_step
+from pm_os.wizard.steps.claude_code_setup import claude_code_setup_step
 from pm_os.wizard.steps.directories import directories_step
 from pm_os.wizard.steps.brain_population import brain_population_step
 from pm_os.wizard.steps.verification import verification_step
@@ -51,10 +53,24 @@ WIZARD_STEPS = [
         "skippable": True,
     },
     {
+        "name": "common_download",
+        "title": "Download PM-OS Tools",
+        "description": "Download common/ directory with tools and commands from GitHub",
+        "handler": common_download_step,
+        "skippable": False,
+    },
+    {
         "name": "directories",
         "title": "Directory Setup",
         "description": "Create PM-OS directory structure and config files",
         "handler": directories_step,
+        "skippable": False,
+    },
+    {
+        "name": "claude_code_setup",
+        "title": "Claude Code Setup",
+        "description": "Configure Claude Code with commands, settings, and environment",
+        "handler": claude_code_setup_step,
         "skippable": False,
     },
     {
@@ -79,6 +95,8 @@ __all__ = [
     "profile_step",
     "llm_provider_step",
     "integrations_step",
+    "common_download_step",
+    "claude_code_setup_step",
     "directories_step",
     "brain_population_step",
     "verification_step",

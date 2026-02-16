@@ -11,7 +11,7 @@ Initialize a new Ralph feature for long-running, multi-iteration work.
 ```
 /ralph-init user-authentication
 /ralph-init shopify-integration --title "Meal Kit Shopify MVP"
-/ralph-init tpt-app-v1 --title "WB Mobile App v1"
+/ralph-init tpt-app-v1 --title "BB Mobile App v1"
 ```
 
 ## Instructions

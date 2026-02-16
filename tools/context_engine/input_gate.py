@@ -226,7 +226,7 @@ class InputGate:
 
         # Check if transition is valid
         if gate.can_transition(GateAction.APPROVE):
-            result = gate.transition(GateAction.APPROVE, decided_by="nikita")
+            result = gate.transition(GateAction.APPROVE, decided_by="jane")
 
         # Save to feature state
         gate.save_to_feature_state(feature_state)
@@ -578,7 +578,7 @@ class InputGate:
             GateResult with transition outcome
 
         Example:
-            result = gate.transition(GateAction.APPROVE, decided_by="nikita")
+            result = gate.transition(GateAction.APPROVE, decided_by="jane")
             if result.success:
                 print(f"New state: {result.new_state}")
         """
@@ -1157,7 +1157,7 @@ class GateManager:
         result = manager.process_gate_action(
             "business_case_approval",
             GateAction.APPROVE,
-            decided_by="nikita"
+            decided_by="jane"
         )
 
         # Save to feature state

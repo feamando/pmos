@@ -150,7 +150,7 @@ python3 "$PM_OS_COMMON/tools/deep_research/prd_generator.py" --setup
 ## Examples
 
 **Standard:**
-- `/prd Add push notifications to WB mobile app`
+- `/prd Add push notifications to BB mobile app`
 - `/prd OTP checkout flow for Meal Kit`
 
 **FPF Mode:**

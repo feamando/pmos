@@ -410,7 +410,7 @@ if __name__ == "__main__":
         {
             "date": "2026-01-20",
             "summary": """
-            Discussed Growth Platform metrics. Nikita will review the dashboard.
+            Discussed Growth Platform metrics. Jane will review the dashboard.
             Decision: We will proceed with the new pricing model.
             Question: Does HIPAA compliance block current B2B roadmap?
             """,
@@ -423,7 +423,7 @@ if __name__ == "__main__":
         {
             "date": "2026-01-13",
             "summary": """
-            Growth Platform metrics came up again. Beatrice to create shelf doc for OTP.
+            Growth Platform metrics came up again. Alice to create shelf doc for OTP.
             Agreed to escalate payment bug to Shashir.
             """,
             "key_points": [

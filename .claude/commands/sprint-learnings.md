@@ -194,6 +194,6 @@ If processing "all" squads, show:
 Updated [CSV filename]:
 - Meal Kit: 5 learnings (internal + external)
 - Growth Platform: 4 learnings (internal + external)
-- Wellness Brand: 5 learnings (internal + external)
+- Brand B: 5 learnings (internal + external)
 - Product Innovation: 2 learnings (internal + external)
 ```

@@ -513,7 +513,7 @@ class TestProjectKeyDerivation:
     def test_derive_project_key_from_product_id(self):
         """Test deriving project key from product ID."""
         # Test the derivation logic directly
-        product_id = "wellness-brand"
+        product_id = "brand-b"
         product_id_upper = product_id.upper()
 
         if "-" in product_id_upper:
@@ -522,7 +522,7 @@ class TestProjectKeyDerivation:
         else:
             project_key = product_id_upper[:3]
 
-        assert project_key == "WB"
+        assert project_key == "BB"
 
     def test_derive_project_key_short_name(self):
         """Test deriving project key from short product name."""

@@ -291,7 +291,7 @@ Examples:
   python brain_query.py "OTP launch"
   python brain_query.py "Growth Platform" --no-graph
   python brain_query.py "squad cart" --format json
-  python brain_query.py "nikita" --limit 5 --decay 0.3
+  python brain_query.py "jane" --limit 5 --decay 0.3
         """,
     )
 

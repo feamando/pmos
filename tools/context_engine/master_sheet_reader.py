@@ -45,7 +45,7 @@ class TopicEntry:
     Represents a single topic/feature from the Master Sheet.
 
     Attributes:
-        product: Product code (e.g., "MK", "WB")
+        product: Product code (e.g., "MK", "BB")
         feature: Feature name
         action: Current action/task
         priority: Priority level (P0, P1, P2)

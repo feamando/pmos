@@ -1,6 +1,6 @@
-# Create Meeting Notes (Deo Format)
+# Create Meeting Notes (Pat Format)
 
-Create meeting notes using the NGO "Deo" format.
+Create meeting notes using the NGO "Pat" format.
 
 ## Format
 ```markdown

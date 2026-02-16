@@ -94,7 +94,7 @@ def normalize_link(link: str) -> str:
     """Clean wiki link to just the relative path."""
     # Remove [[ and ]] and path prefixes if present
     clean = link.replace("[[", "").replace("]]", "")
-    # We want relative path from Brain/ root, e.g. "Entities/Nikita.md"
+    # We want relative path from Brain/ root, e.g. "Entities/Jane.md"
     # Handle both old (AI_Guidance/Brain/) and new (user/brain/) structures
     for prefix in ["AI_Guidance/Brain/", "user/brain/"]:
         if clean.startswith(prefix):

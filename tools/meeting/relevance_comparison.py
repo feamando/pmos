@@ -6,7 +6,7 @@ Compare old vs new meeting prep outputs to measure improvement.
 Generates side-by-side comparisons with automated metrics.
 
 Usage:
-    python relevance_comparison.py --meeting "Jama:Nikita 1:1"
+    python relevance_comparison.py --meeting "Dave:Jane 1:1"
     python relevance_comparison.py --all --output comparison-report.md
 """
 
@@ -343,7 +343,7 @@ def main():
     if args.sample:
         # Generate sample comparisons for testing
         sample_meetings = [
-            {"summary": "Jama:Nikita 1:1", "meeting_type": "1on1"},
+            {"summary": "Dave:Jane 1:1", "meeting_type": "1on1"},
             {"summary": "Daily Standup", "meeting_type": "standup"},
             {"summary": "Sprint Planning", "meeting_type": "planning"},
             {
@@ -373,7 +373,7 @@ def main():
 
 {template.get_standard_header('action_items')}
 
-- [ ] **Nikita**: Review dashboard metrics
+- [ ] **Jane**: Review dashboard metrics
 - [~] **Team**: Update documentation *(possibly complete - mentioned in Slack)*
 
 {template.get_standard_header('context')}

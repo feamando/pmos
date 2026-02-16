@@ -7,7 +7,7 @@ Provides structured sections for: daily plan, action items, deadline tracking.
 
 Usage:
     python3 master_sheet_context_integrator.py                    # Full context section
-    python3 master_sheet_context_integrator.py --owner "Nikita"   # Filter by owner
+    python3 master_sheet_context_integrator.py --owner "Jane"   # Filter by owner
     python3 master_sheet_context_integrator.py --section daily    # Daily plan only
     python3 master_sheet_context_integrator.py --json             # JSON output
 

@@ -320,7 +320,7 @@ class FeatureEngine:
         going through the full start_feature workflow.
 
         Args:
-            product_id: Product ID (e.g., "meal-kit", "wellness-brand")
+            product_id: Product ID (e.g., "meal-kit", "brand-b")
             feature_title: Human-readable feature title (e.g., "OTP Checkout Recovery")
 
         Returns:

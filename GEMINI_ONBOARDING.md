@@ -332,12 +332,12 @@ id: project-otp
 type: project
 title: "One-Time Purchase"
 status: active
-owner: beatrice
+owner: alice
 created: 2025-11-01
 last_updated: 2026-01-19
 related:
   - "[[Entities/Squad_Meal_Kit.md]]"
-  - "[[Entities/Beatrice.md]]"
+  - "[[Entities/Alice.md]]"
 ---
 
 # One-Time Purchase (OTP)
@@ -398,14 +398,14 @@ You can reference these for any v2.4 patterns or data that didn't migrate correc
 
 **Pending Actions:**
 - Factor Canada Shopify setup
-- Maria promo template
+- Eve promo template
 - StatSig one-pager to Aurora
 
 **Hot Topics (from Brain):**
 - Growth_Platform (6 mentions)
 - otp (2 mentions)
 - Meal Kit squad
-- Beatrice (PM)
+- Alice (PM)
 
 ---
 

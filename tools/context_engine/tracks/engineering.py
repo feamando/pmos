@@ -31,7 +31,7 @@ Usage:
     from tools.context_engine.tracks import EngineeringTrack
 
     track = EngineeringTrack(feature_path)
-    track.start(initiated_by="nikita")
+    track.start(initiated_by="jane")
     track.create_adr(
         title="Use Redis for Session Storage",
         context="Need to share sessions across multiple app instances",
@@ -484,7 +484,7 @@ class EngineeringTrack:
         track = EngineeringTrack(feature_path)
 
         # Start the track
-        result = track.start(initiated_by="nikita")
+        result = track.start(initiated_by="jane")
 
         # Create an ADR
         track.create_adr(
@@ -498,7 +498,7 @@ class EngineeringTrack:
         track.record_technical_decision(
             decision="Use TypeScript for frontend",
             rationale="Team expertise and type safety",
-            decided_by="nikita",
+            decided_by="jane",
             category="tooling"
         )
 

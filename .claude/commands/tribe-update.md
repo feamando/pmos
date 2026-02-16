@@ -21,7 +21,7 @@ Parse the arguments:
 - **Tribe:** Growth Division (default)
 - **Quarter:** Q1-2026 (target/future quarter for roadmap)
 - **Previous Quarter:** Q4-2025 (review quarter for blockers/learnings)
-- **Squads:** Meal Kit, Wellness Brand, Growth Platform, Product Innovation
+- **Squads:** Meal Kit, Brand B, Growth Platform, Product Innovation
 - **Deadline:** Friday, January 9, 2026 (EOD)
 
 ### Parameters
@@ -55,7 +55,7 @@ Parse the arguments:
    - Generate the 2-pager template
 
 4. Report output location:
-   - Output: `Planning/Quarterly_Updates/new_ventures_Q1-2026_YYYY-MM-DD.md`
+   - Output: `Planning/Quarterly_Updates/growth_division_Q1-2026_YYYY-MM-DD.md`
 
 5. **CRITICAL:** Inform user they must:
    - Fill in [bracketed] sections with actual Q4 metrics
@@ -92,7 +92,7 @@ For high-stakes planning documents requiring multi-perspective validation:
 
 The generator pulls from:
 
-1. **Brain/Projects/**: OTP, VMS, Meal_Kit, WB, Growth_Platform related files
+1. **Brain/Projects/**: OTP, VMS, Meal_Kit, Brand_B, Growth_Platform related files
 2. **Brain/Entities/**: Squad files for each Growth Division squad
 3. **Core_Context/**: Last 30 days of daily context files
 4. **Brain/Inbox/**: JIRA files for blocker extraction
@@ -120,7 +120,7 @@ From the Planning Offsite guidelines:
 1. **Length:** Maximum 2 pages (no appendices)
 2. **Owner:** Tribe Lead (Jane Smith)
 3. **Deadline:** Friday before Offsite (Jan 9, 2026 EOD)
-4. **Submission:** Email to Brian Leung
+4. **Submission:** Email to Planning Coordinator
 5. **Companion:** 2-slide deck also required
 
 ---
@@ -173,5 +173,5 @@ python3 "$PM_OS_COMMON/tools/reporting/tribe_quarterly_update.py" --tribe "Growt
 - Standard mode: 1-2 minutes
 - Orthogonal mode: 10-15 minutes
 - Document must be ≤2 pages for offsite
-- Submit to Brian Leung by Jan 9 EOD
+- Submit to Planning Coordinator by Jan 9 EOD
 - Template based on Tech Platform Tribe Quarterly Planning Update Template

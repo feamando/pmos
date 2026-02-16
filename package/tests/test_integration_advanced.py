@@ -163,7 +163,7 @@ class TestSecretsLogging:
         """Test Anthropic API key masking."""
         from pm_os.wizard.ui import mask_secrets
 
-        text = "Using key: sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890"
+        text = "Using key: sk-ant-api03-TESTKEY00000000000000000000000000"
         masked = mask_secrets(text)
 
         assert "sk-ant-" not in masked
@@ -173,7 +173,7 @@ class TestSecretsLogging:
         """Test OpenAI API key masking."""
         from pm_os.wizard.ui import mask_secrets
 
-        text = "OpenAI key: sk-proj-abcdefghijklmnopqrstuvwxyz"
+        text = "OpenAI key: sk-proj-TESTKEY0000000000000000000"
         masked = mask_secrets(text)
 
         assert "sk-proj-" not in masked
@@ -182,16 +182,16 @@ class TestSecretsLogging:
         """Test Slack token masking."""
         from pm_os.wizard.ui import mask_secrets
 
-        text = "Bot token: SLACK_BOT_TOKEN_PLACEHOLDER"
+        text = "Bot token: xoxb-fake-test-token-placeholder"
         masked = mask_secrets(text)
 
-        assert "SLACK_BOT_TOKEN" not in masked
+        assert "xoxb-" not in masked
 
     def test_mask_github_token(self):
         """Test GitHub token masking."""
         from pm_os.wizard.ui import mask_secrets
 
-        text = "Token: ghp_abcdefghijklmnopqrstuvwxyz1234567890"
+        text = "Token: ghp_FAKETESTTOKEN000000000000000000000000"
         masked = mask_secrets(text)
 
         assert "ghp_" not in masked

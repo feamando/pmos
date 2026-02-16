@@ -359,6 +359,8 @@ DOC_STRUCTURE = [
     ("01-overview.md", "Overview", "README.md"),
     ("02-architecture.md", "Architecture", "README.md"),
     ("03-installation.md", "Installation Guide", "README.md"),
+    ("pip-package.md", "Pip Package Reference", "03-installation.md"),
+    ("google-oauth-setup.md", "Google OAuth Setup", "03-installation.md"),
     ("04-workflows.md", "Workflows", "README.md"),
     ("05-brain.md", "Brain Architecture", "README.md"),
     ("commands/README.md", "Commands Reference", "README.md"),

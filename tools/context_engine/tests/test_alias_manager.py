@@ -181,7 +181,7 @@ class TestNormalizeFeatureName:
     def test_product_code_removal(self):
         """Product codes are stripped from beginning."""
         assert "otp flow" == normalize_feature_name("MK OTP Flow")
-        assert "checkout" == normalize_feature_name("WB-Checkout")
+        assert "checkout" == normalize_feature_name("BB-Checkout")
         # Note: "feature" is in stopwords, so "FF_Feature" becomes empty
         # Test with a non-stopword instead
         assert "checkout" == normalize_feature_name("FF-Checkout")
@@ -237,7 +237,7 @@ class TestCombinedSimilarity:
     def test_product_code_stripped(self):
         """Product codes don't affect similarity much."""
         sim1 = combined_similarity("OTP Flow", "MK OTP Flow")
-        sim2 = combined_similarity("OTP Flow", "WB OTP Flow")
+        sim2 = combined_similarity("OTP Flow", "BB OTP Flow")
         # Both should be high since product codes are stripped
         assert sim1 > 0.9
         assert sim2 > 0.9
@@ -1094,7 +1094,7 @@ class TestRealWorldScenarios:
         base = "Checkout Flow Optimization"
         with_prefixes = [
             "MK Checkout Flow Optimization",
-            "WB Checkout Flow Optimization",
+            "BB Checkout Flow Optimization",
             "FF Checkout Flow Optimization",
         ]
 

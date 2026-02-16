@@ -80,7 +80,7 @@ class ProjectEntity(EntityBase):
     business_unit: Optional[str] = Field(
         default=None,
         description="Business unit or brand",
-        examples=["Meal Kit", "Wellness Brand", "Growth Platform", "Acme Corp"],
+        examples=["Meal Kit", "Brand B", "Growth Platform", "Acme Corp"],
     )
 
     market: Optional[str] = Field(

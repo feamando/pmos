@@ -333,7 +333,7 @@ class BrainSearch:
         raw_synonyms = {
             # Project aliases
             "otp": ["one-time-purchase", "one-time", "onetime"],
-            "tpt": ["wellness-brand", "wellness-brand", "pettabl"],
+            "tpt": ["brand-b", "brand-b", "pettabl"],
             "ff": ["growth-platform", "factorform"],
             # Common terms
             "launch": ["releas", "deploy", "ship", "rollout"],

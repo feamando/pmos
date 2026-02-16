@@ -13,6 +13,8 @@ PM-OS is an AI-powered productivity system designed for Product Managers. It int
 | [Overview](01-overview.md) | What PM-OS is and what problems it solves |
 | [Architecture](02-architecture.md) | System architecture and integrations |
 | [Installation](03-installation.md) | How to install and configure PM-OS |
+| [Pip Package](pip-package.md) | Package structure, extras, CLI reference |
+| [Google OAuth](google-oauth-setup.md) | Google integration setup and troubleshooting |
 | [Workflows](04-workflows.md) | Key workflows: boot, context, sessions |
 | [Brain](05-brain.md) | Brain architecture and knowledge management |
 
@@ -83,9 +85,9 @@ pm-os help troubleshoot    # Diagnosing issues
 
 ## Version
 
-- **PM-OS Version**: 3.3
-- **Documentation Version**: 1.1.0
-- **Last Updated**: 2026-02-09
+- **PM-OS Version**: 3.4.0
+- **Documentation Version**: 1.2.0
+- **Last Updated**: 2026-02-11
 
 ## Confluence
 

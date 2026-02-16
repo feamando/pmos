@@ -62,14 +62,36 @@ ENTITY_DIRS = {
     "feature": PROJECTS_DIR,
 }
 
-# Known entity aliases — configure via config.yaml for your organization
+# Known entity aliases
 DEFAULT_ALIASES = {
-    # Example people aliases (replace with your team)
-    # "jane": "Jane_Smith",
-    # "jane smith": "Jane_Smith",
+    # People
+    "jane": "Jane_Smith",
+    "Jane Smith": "Jane_Smith",
+    "bob": "Bob_Designer",
+    "bob designer": "Bob_Designer",
+    "daniel": "Carol_Developer",
+    "daniel arias": "Carol_Developer",
+    "dave": "Dave_Manager",
+    "dave manager": "Dave_Manager",
+    "alice": "Alice_Engineer",
+    "eve": "Eve_Analyst",
+    "frank": "Frank_Researcher",
+    "grace": "Grace_Strategist",
+    "pat": "Pat_Teammate",
     # Squads/Projects
+    "Meal Kit": "Meal_Kit",
+    "goc": "Meal_Kit",
+    "goodchop": "Meal_Kit",
+    "tpt": "Brand_B",
+    "Brand B": "Brand_B",
+    "Brand B": "Brand_B",
+    "Growth Platform": "Growth_Platform",
+    "factor": "Factor",
+    "vms": "Growth_Platform",
     "cross-selling": "Cross_Selling",
     "cross selling": "Cross_Selling",
+    "market integration": "Market_Integration",
+    "product innovation": "Product_Innovation",
     "otp": "OTP_One_Time_Purchase",
     "one time purchase": "OTP_One_Time_Purchase",
     # Systems

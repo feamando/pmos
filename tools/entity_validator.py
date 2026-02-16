@@ -102,11 +102,11 @@ class EntityValidator:
     ```
     ---
     type: person
-    name: Deo Nathaniel
+    name: Pat Nathaniel
     role: PM
     ---
 
-    # Deo Nathaniel
+    # Pat Nathaniel
     ...
     ```
     """

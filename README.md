@@ -1,44 +1,50 @@
-# PM-OS
+# PM-OS: Product Management Operating System
 
-```
-    ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐
-    │  Cal │   │ Docs │   │Slack │   │ Jira │
-    └──┬───┘   └──┬───┘   └──┬───┘   └──┬───┘
-       │          │          │          │
-       └────┬─────┴────┬─────┴────┬─────┘
-            │          │          │
-       ┌────┴──────────┴──────────┴────┐
-       │       CONTEXT  ENGINE         │
-       │   aggregate → synthesize →    │
-       │         → deliver             │
-       └──────────────┬────────────────┘
-                      │
-       ┌──────────────┴────────────────┐
-       │                               │
-  ┌────┴────┐  ┌─────────┐  ┌─────────┴──┐
-  │  Brain  │  │ Meeting │  │  Documents  │
-  │ ◉──◉──◉ │  │  Prep   │  │ PRD RFC ADR │
-  │ ◉──◉──◉ │  │ ◈ ◈ ◈   │  │ PRFAQ  BC  │
-  └─────────┘  └─────────┘  └────────────┘
+**Version 3.4** | AI-powered operating system for product managers
 
-    ██████╗ ███╗   ███╗       ██████╗ ███████╗
-    ██╔══██╗████╗ ████║      ██╔═══██╗██╔════╝
-    ██████╔╝██╔████╔██║█████╗██║   ██║███████╗
-    ██╔═══╝ ██║╚██╔╝██║╚════╝██║   ██║╚════██║
-    ██║     ██║ ╚═╝ ██║      ╚██████╔╝███████║
-    ╚═╝     ╚═╝     ╚═╝       ╚═════╝ ╚══════╝
-
-     AI-Native Product Management Operating System
-```
-
+[![PyPI](https://img.shields.io/pypi/v/pm-os)](https://pypi.org/project/pm-os/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-PM-OS is an AI-native operating system for product managers. It syncs context from Google Workspace, Jira, Slack, GitHub, and Confluence into a unified daily briefing, prepares meeting pre-reads, maintains a knowledge graph ([Brain](https://github.com/feamando/brain)), tracks issues and action items, and generates structured documents — all orchestrated through slash commands in [Claude Code](https://docs.anthropic.com/en/docs/build-with-claude/claude-code) or [Gemini CLI](https://github.com/google-gemini/gemini-cli).
+PM-OS is an AI-native productivity system for product managers. It syncs context from Google Workspace, Jira, Slack, GitHub, and Confluence into a unified daily briefing, prepares meeting pre-reads, tracks issues and action items, maintains a knowledge graph (Brain), and generates structured documents — all orchestrated through slash commands in Claude Code or Gemini CLI.
+
+> **Full documentation:** [PM-OS Confluence Space](https://your-company.atlassian.net/wiki/spaces/PMOS/)
 
 ---
 
 ## Installation
+
+### Option A: pip install (Recommended)
+
+```bash
+# Install PM-OS (includes all integrations)
+pip install pm-os
+
+# Quick setup — auto-detects git config, gets you running fast
+pm-os init --quick
+
+# Verify installation
+pm-os doctor
+```
+
+Configure integrations:
+
+```bash
+# Configure integrations via wizard
+pm-os setup integrations jira
+pm-os setup integrations slack
+pm-os brain sync
+```
+
+CLI help:
+
+```bash
+pm-os help                  # List help topics
+pm-os help brain            # Brain documentation
+pm-os help integrations     # Integration setup guide
+pm-os help quick-start      # Getting started guide
+```
+
+### Option B: Manual Setup
 
 ```bash
 mkdir pm-os && cd pm-os
@@ -64,194 +70,43 @@ This loads your agent context, syncs daily data, enriches the Brain, generates m
 
 ## Core Capabilities
 
-### Context Creation Engine
+### Daily Context Engine
 
-The Context Creation Engine is the heart of PM-OS. It's a multi-stage data pipeline that aggregates information from 6+ external sources, synthesizes it with LLMs, populates a knowledge graph, and delivers a structured daily briefing — all in a single command.
+The context engine aggregates information from all connected sources into a synthesized daily briefing:
 
-#### Architecture
-
-```
-                    ┌─────────────┐
-                    │  /boot or   │
-                    │ /update-ctx │
-                    └──────┬──────┘
-                           │
-         ┌─────────────────┼─────────────────┐
-         ▼                 ▼                 ▼
-   ┌───────────┐   ┌───────────┐   ┌───────────┐
-   │  Google   │   │   Slack   │   │   Jira    │
-   │Docs/Gmail │   │ Channels  │   │ Projects  │
-   │ Calendar  │   │ @Mentions │   │  Sprints  │
-   └─────┬─────┘   └─────┬─────┘   └─────┬─────┘
-         │               │               │
-         └───────────┬───┴───────────────┘
-                     ▼
-            ┌────────────────┐
-            │   EXTRACTION   │  Raw data → Brain/Inbox/
-            └────────┬───────┘
-                     ▼
-            ┌────────────────┐
-            │    ANALYSIS    │  LLM-powered structured extraction
-            │  (Bedrock /    │  Document type detection
-            │   Gemini)      │  Entity + relationship extraction
-            └────────┬───────┘
-                     ▼
-            ┌────────────────┐
-            │   SYNTHESIS    │  Daily context file generation
-            │  (Claude /     │  Alerts, blockers, action items
-            │   Bedrock)     │  Previous context carry-forward
-            └────────┬───────┘
-                     ▼
-            ┌────────────────┐
-            │  BRAIN WRITE   │  Entity creation/update
-            │                │  Decision logging
-            │                │  Project context
-            └────────┬───────┘
-                     ▼
-            ┌────────────────┐
-            │  ENRICHMENT    │  Relationship extraction
-            │                │  5 independent strategies
-            │                │  Target: <30% orphan rate
-            └────────┬───────┘
-                     ▼
-            ┌────────────────┐
-            │     LOAD       │  Hot topics identification
-            │                │  Compressed Brain index
-            │                │  Meeting pre-reads
-            └────────────────┘
-```
-
-#### Data Sources
-
-| Source | What It Fetches | Tool |
-|--------|----------------|------|
-| **Google Docs** | Recently modified documents (7-day lookback) | `daily_context_updater.py` |
-| **Gmail** | Emails authored by or shared with you | `daily_context_updater.py` |
-| **Google Calendar** | Upcoming meetings, attendees, links | `meeting_prep.py` |
-| **Slack** | Channel messages across configurable tiers (tier1/tier2/tier3), @mention task tracking | `slack_bulk_extractor.py` |
-| **Jira** | Project status, sprint data, owner/team relationships | `jira_brain_sync.py` |
-| **GitHub** | PR activity, commit history, maintainer/contributor data | `github_brain_sync.py` |
-| **Statsig** | Active/inactive feature flag experiments | `statsig_brain_sync.py` |
-| **Master Sheet** | Priority items, deadlines, owner assignments, weekly plan | `master_sheet_sync.py` |
-
-#### LLM Synthesis
-
-The engine supports multiple LLM backends with automatic fallback:
-
-| Backend | Model | Use Case |
-|---------|-------|----------|
-| **AWS Bedrock** | Claude Opus 4.6 | Batch document analysis (rate-limited: 10 req/min) |
-| **Anthropic API** | Claude Haiku 4.5 | Fast context synthesis |
-| **Google Gemini** | Gemini 2.5 Flash | Meeting prep synthesis, orthogonal challenge |
-| **Template** | Rule-based | Fallback when no LLM available |
-
-During analysis, each document is classified by type (PRD, 1:1 meeting, standup, review, etc.) and processed with type-specific structured extraction prompts that produce JSON output with entities, decisions, action items, and dependencies.
-
-The synthesis phase carries forward unresolved items from the previous day's context and produces a structured daily briefing:
-
-```markdown
-## Critical Alerts
-## Today's Schedule
-## Key Updates & Decisions
-## Active Blockers (table: Blocker | Impact | Owner | Status)
-## Action Items (organized by timeline)
-## Key Dates
-## Recent Documents
-## Sprint Focus
-## Pending Slack Tasks
-```
-
-#### Execution Modes
-
-| Mode | Command | Pipeline | Use Case |
-|------|---------|----------|----------|
-| `full` | `/create-context` | Extract → Analyze → Write → Enrich → Load | Complete refresh |
-| `quick` | `/create-context quick` | GDocs + Jira only, no analysis | Daily boot |
-| `bulk` | `/create-context bulk` | 6-month extraction, resumable | Historical population |
-| `extract` | `/create-context extract` | Extraction only | Data gathering |
-| `analyze` | `/create-context analyze` | Analysis only (pre-extracted data) | LLM processing |
-| `write` | `/create-context write` | Brain population only | Entity creation |
-| `load` | `/create-context load` | Hot topics and index only | Quick reload |
-
-All modes support incremental execution with state tracking. Bulk mode processes 6 months of data with resumability — if interrupted, it picks up where it left off.
-
-#### Output Files
-
-| Output | Location | Purpose |
-|--------|----------|---------|
-| Daily context | `user/personal/context/YYYY-MM-DD-context.md` | Synthesized daily briefing |
-| Raw documents | `user/brain/Inbox/GDocs/` | Source document archive |
-| Analyzed docs | `user/brain/Inbox/GDocs/Analyzed/` | Structured JSON extraction |
-| Entity files | `user/brain/Entities/{type}/` | People, teams, squads, systems |
-| Project pages | `user/brain/Projects/` | Project/feature context |
-| Decision log | `user/brain/Reasoning/Decisions/` | Decision audit trail |
-| Brain index | `user/brain/BRAIN.md` | Compressed entity index for agent context |
-| Writer state | `user/brain/brain_writer_state.json` | Pipeline progress tracking |
+- **Google Workspace** — Recent Docs, emails, calendar events
+- **Slack** — Channel messages, @mention task tracking, stale task detection
+- **Master Sheet** — Priority items, deadlines, suggested daily plan
+- **LLM Synthesis** — Raw data is synthesized via AWS Bedrock (Claude Haiku 4.5) or Gemini into structured context with critical alerts, blockers, action items, and metrics
 
 Commands: `/boot`, `/update-context`, `/create-context`
 
----
-
 ### Meeting Prep System
 
-Automated pre-reads for upcoming meetings, integrated with the Context Engine.
+Automated pre-reads for upcoming meetings:
 
-#### How It Works
+- Fetches past meeting notes from Google Drive
+- Pulls participant context from Brain
+- Enriches with relevant Jira issues
+- Generates personalized pre-reads per meeting type (1:1, interview, planning, review, standup)
+- Uploads to Google Drive and links to calendar events
+- **Series intelligence** — Learns patterns from recurring meetings
+- **Task inference** — Extracts actionable items from meeting content
 
-1. **Fetch** — Pulls calendar events for the next N hours (default: 24)
-2. **Classify** — Categorizes each meeting by type with per-type word limits:
-
-| Type | Max Words | Focus |
-|------|-----------|-------|
-| 1:1 | 300 | Action items first, quick context |
-| Standup | 150 | Team status |
-| Interview | 1000 | Detailed assessment |
-| External | 500 | Company context, talking points |
-| Large Meeting | 200 | Why am I here? |
-| Review/Retro | 400 | Your prep, discussion points |
-| Planning | 400 | Sprint context |
-
-3. **Gather context** — Pulls participant info from Brain, relevant Jira issues, recent documents
-4. **Synthesize** — LLM generates a personalized pre-read (Bedrock, Gemini, Claude, or template fallback)
-5. **Upload** — Writes pre-read to Google Drive and links it to the calendar event
-6. **Archive** — Cleans up cancelled/orphaned preps
-
-#### Series Intelligence
-
-For recurring meetings, the system maintains a `Series-{slug}.md` file that tracks outcomes over time:
-
-- Extracts decisions, commitments, recommendations, open questions from each occurrence
-- Synthesizes patterns and recurring themes across the series
-- Carries forward open items automatically
-- Detects task completion using signals from Jira, GitHub, Slack, and Brain (with confidence scores)
-
-#### Output Routing
-
-Pre-reads are automatically routed based on meeting type:
-
-```
-user/planning/Meeting_Prep/
-├── Series/           # Recurring meetings (Series-{slug}.md)
-├── AdHoc/            # One-time meetings
-└── Archive/          # Past/cancelled
-```
-
-1:1s additionally route to `user/team/reports/{person}/1on1s/` or `user/team/manager/{person}/1on1s/`.
+Synthesis supports multiple backends: AWS Bedrock, Gemini, Claude Code, or template fallback.
 
 Command: `/meeting-prep`
 
----
+### Brain Knowledge Graph (v1.2)
 
-### Brain Knowledge Graph (v3.0.0)
-
-A time-series entity system that maintains your organizational knowledge. See [pmos-brain](https://github.com/feamando/brain) for the standalone library.
+A time-series entity system that maintains your organizational knowledge:
 
 - **Canonical references** — `entity/{type}/{slug}` normalized format
 - **Typed relationships** — Bidirectional with temporal validity
 - **Event sourcing** — Full change history, point-in-time queries
 - **Quality scoring** — Automated completeness and freshness metrics
-- **Enrichment pipeline** — 5 independent strategies: body text extraction, GDocs, Jira, GitHub, embedding similarity
-- **Graph health monitoring** — Targets <30% orphan rate, >56% relationship coverage
+- **Enrichment pipeline** — Automatic relationship extraction from GDocs, Jira, GitHub, Slack, sessions
+- **Graph health monitoring** — Targets <30% orphan rate
 
 ```yaml
 ---
@@ -274,21 +129,6 @@ Brain tools: `canonical_resolver`, `relationship_normalizer`, `orphan_cleaner`, 
 
 Commands: `/brain-load`, `/brain-enrich`, `/synapse`, `/q-query`
 
-### First Principles Framework (FPF)
-
-A 5-step reasoning framework for structured decision-making:
-
-| Step | Command | Purpose |
-|------|---------|---------|
-| Q0 | `/q0-init` | Initialize context |
-| Q1 | `/q1-hypothesize` | Generate hypotheses (Abduction) |
-| Q2 | `/q2-verify` | Verify logic (Deduction) |
-| Q3 | `/q3-validate` | Validate evidence (Induction) |
-| Q4 | `/q4-audit` | Audit trust (Trust Calculus) |
-| Q5 | `/q5-decide` | Finalize decision |
-
-FPF integrates into document generation (`/prd`, `/rfc`, `/adr`) to produce reasoning-backed artifacts.
-
 ### Session Management (Confucius)
 
 Lightweight context capture during conversations:
@@ -303,7 +143,7 @@ Commands: `/session-save`, `/session-load`, `/session-search`, `/confucius-statu
 
 ### Document Generation
 
-Structured documents with FPF reasoning:
+Structured documents with First Principles Framework (FPF) reasoning:
 
 | Command | Output |
 |---------|--------|
@@ -327,16 +167,18 @@ Lightweight issue management integrated with the development workflow:
 
 Commands: `/bd-list`, `/bd-create`, `/bd-show`, `/bd-close`, `/bd-update`, `/bd-prime`
 
-### Ralph (Long-Running Features)
+### Push Publisher
 
-Multi-iteration feature development across context windows:
+Multi-target publication system:
 
-- **Spec-driven development** — PLAN.md with acceptance criteria drives each loop
-- **Background execution** — Iterations continue while you work on other tasks
-- **Progress tracking** — Checkboxes and iteration logs
-- **Slack updates** — Automatic progress notifications
+- **PR-based publishing** — common framework → feamando/pmos (with Jira ticket in branch name)
+- **Direct push** — brain/user → personal repos
+- **PyPI publishing** — `pip install pm-os` package with version bumping
+- **Slack notifications** — Release notes to configured channels
+- **Semantic release notes** — Auto-generated from Ralph completions and file changes
+- **Documentation audit** — Coverage tracking and Confluence sync
 
-Commands: `/ralph-init`, `/ralph-specs`, `/ralph-loop`, `/ralph-status`
+Command: `/push`
 
 ---
 
@@ -348,34 +190,29 @@ pm-os/
 │   ├── .claude/commands/       # 84 Claude slash commands
 │   ├── .gemini/commands/       # Gemini commands
 │   ├── tools/                  # Python tools
-│   │   ├── boot/               # Boot orchestrator
-│   │   ├── brain/              # Brain v3.0.0 knowledge system
+│   │   ├── brain/              # Brain 1.2 knowledge system
 │   │   ├── daily_context/      # Context sync engine
 │   │   ├── meeting/            # Meeting prep system
 │   │   ├── session/            # Confucius session management
 │   │   ├── beads/              # Issue tracking
+│   │   ├── push/               # Multi-target publisher
 │   │   ├── slack/              # Slack integration
 │   │   ├── integrations/       # Google, Jira, GitHub, Confluence
 │   │   ├── quint/              # FPF reasoning framework
 │   │   ├── master_sheet/       # Priority tracking
 │   │   └── preflight/          # Health checks
+│   ├── package/                # PyPI package source
 │   ├── schemas/                # Pydantic entity schemas
 │   ├── frameworks/             # Document templates
 │   ├── rules/                  # Agent behavior rules
-│   ├── documentation/          # System documentation
+│   ├── documentation/          # Docs synced to Confluence
 │   └── scripts/                # Boot scripts
 │
 ├── user/                    # Your data (separate repo)
 │   ├── brain/                  # Knowledge base entities
-│   │   ├── Entities/           # People, teams, squads, systems
-│   │   ├── Projects/           # Project/feature pages
-│   │   ├── Reasoning/          # Decision log
-│   │   ├── Inbox/              # Raw ingested data
-│   │   └── BRAIN.md            # Compressed entity index
 │   ├── personal/context/       # Daily context files
-│   ├── planning/               # Meeting prep, career planning
-│   │   └── Meeting_Prep/       # Series/, AdHoc/, Archive/
 │   ├── sessions/               # Session persistence
+│   ├── planning/               # Meeting prep, career planning
 │   ├── config.yaml             # Your configuration
 │   └── .env                    # Your secrets
 │
@@ -393,7 +230,7 @@ PM-OS includes 84 slash commands. Key commands:
 |----------|---------|-------------|
 | **Core** | `/boot` | Initialize PM-OS context and sync all data |
 | | `/update-context` | Sync daily context from integrations |
-| | `/create-context` | Full context pipeline (extract/analyze/write/enrich/load) |
+| | `/push` | Publish components to repos and PyPI |
 | | `/preflight` | Run health checks on tools and integrations |
 | **Documents** | `/prd` | Generate PRD with FPF reasoning |
 | | `/rfc` | Generate RFC |
@@ -409,8 +246,7 @@ PM-OS includes 84 slash commands. Key commands:
 | **Session** | `/session-save` | Save current session |
 | | `/session-load` | Restore a previous session |
 | | `/session-search` | Search across sessions |
-| **Development** | `/ralph-init` | Initialize feature for multi-iteration work |
-| | `/ralph-loop` | Run feature development iteration |
+| **Development** | `/ralph-loop` | Run feature development iteration |
 | | `/start-feature` | Initialize a new feature |
 | | `/check-feature` | Validate feature state |
 | **Beads** | `/bd-list` | List issues |
@@ -421,99 +257,6 @@ PM-OS includes 84 slash commands. Key commands:
 | | `/q1-hypothesize` | Generate hypotheses |
 | | `/q2-verify` | Verify logic |
 | | `/q5-decide` | Finalize decision |
-
----
-
-## Configuration
-
-### config.yaml
-
-```yaml
-version: "3.3.0"
-
-user:
-  name: "Your Name"
-  email: "you@company.com"
-  position: "Product Manager"
-  tribe: null
-  team: null
-
-integrations:
-  google:
-    enabled: true
-    scopes: ["drive", "calendar", "gmail", "docs"]
-  slack:
-    enabled: true
-    mention_bot_name: "your-slack-bot"
-  jira:
-    enabled: true
-    url: "https://your-company.atlassian.net"
-    tracked_projects: ["PROJ1", "PROJ2"]
-    default_project: "PROJ1"
-  github:
-    enabled: true
-    org: "your-org"
-    tracked_repos: ["repo1", "repo2"]
-  confluence:
-    enabled: true
-    url: "https://your-company.atlassian.net/wiki"
-    space_key: "SPACE"
-  statsig:
-    enabled: false
-
-brain:
-  entity_types: [person, team, project, domain, experiment]
-  hot_topics_limit: 10
-  validate_on_load: true
-  enrichment:
-    auto_enrich: true
-    orphan_threshold: 0.30
-
-context:
-  synthesis_backend: "bedrock"   # bedrock | gemini | claude | template
-  retention_days: 30
-  output_dir: "personal/context/"
-
-meeting_prep:
-  prep_hours: 24
-  include_competitors: false
-  include_recent_context: true
-
-pm_os:
-  fpf_enabled: true
-  confucius_enabled: true
-  ralph_enabled: true
-```
-
-### .env
-
-```bash
-# Required
-ANTHROPIC_API_KEY=sk-...
-
-# Google Workspace
-GOOGLE_CREDENTIALS_FILE=credentials.json
-
-# Slack
-SLACK_BOT_TOKEN=
-SLACK_APP_TOKEN=
-
-# Jira
-JIRA_API_TOKEN=...
-JIRA_EMAIL=you@company.com
-JIRA_SERVER=https://your-company.atlassian.net
-
-# GitHub
-GITHUB_TOKEN=...
-
-# AWS Bedrock (for LLM synthesis)
-AWS_REGION=us-east-1
-AWS_PROFILE=default
-
-# Master Sheet (optional)
-MASTER_SHEET_SPREADSHEET_ID=
-MASTER_SHEET_ENABLED=false
-```
 
 ---
 
@@ -543,22 +286,46 @@ python3 common/tools/brain/schema_migrator.py --migrate-all
 /update-3.0
 ```
 
-Creates a backup snapshot, migrates Brain/sessions/context, and generates config.yaml.
+Creates a backup snapshot, migrates Brain/sessions/context, generates config.yaml. See [Migration Guide](https://your-company.atlassian.net/wiki/spaces/PMOS/pages/migration-guide).
+
+---
+
+## Documentation
+
+Full documentation is maintained on Confluence:
+
+- **[PM-OS Confluence Space](https://your-company.atlassian.net/wiki/spaces/PMOS/)** — Architecture, installation, workflows, troubleshooting
+- [Getting Started](docs/getting-started.md)
+- [Brain 1.2 Guide](docs/brain-1.2.md)
+- [Command Reference](docs/command-reference.md)
+- [Contributing](docs/contributing.md)
 
 ---
 
 ## Changelog
+
+### v3.4.0 (2026-02-11)
+- **Pip Install Overhaul**: Complete rewrite of the installation system with 10-step interactive wizard, `--quick` auto-detect mode, and `--template` non-interactive mode
+- **Bundled Google OAuth**: Google OAuth client secret bundled in the Acme Corp pip package — one-click browser authentication during wizard, no Cloud Console setup
+- **6-Scope Google Integration**: Expanded from 2 scopes to 6 (Drive, Drive metadata, Drive file, Gmail, Calendar events, Calendar read) with `google_auth.py` as single source of truth
+- **Template Install Security**: `_strip_secrets_from_config()` prevents API tokens from leaking into `config.yaml` during template-based installs
+- **Silent Install Parity**: `run_silent_install()` rewritten to produce the same rich output as the interactive wizard (full .env, USER.md, Glossary, brain files)
+- **Directory Permissions**: `.secrets/` set to mode 700 during all install paths
+- **Google Token Wiring**: Brain population reuses the OAuth token from the integrations step — no second browser popup
+- **Documentation**: Updated installation guide, new Google OAuth setup guide, new pip package reference — all synced to Confluence (24 pages)
 
 ### v3.3.0 (2026-02-10)
 - **Bedrock LLM Integration**: Context synthesis and meeting prep via AWS Bedrock (Claude Haiku 4.5)
 - **Model-agnostic synthesis**: Bedrock, Gemini, Claude Code, and template fallback
 - **Brain Density**: Enrichment orchestrator with <30% orphan rate target
 - **ENRICH Phase**: New pipeline phase between WRITE and SYNAPSE
-- **CI Compliance**: Black formatting, security check fixes
-- **Slack Integration**: Context summaries to configured channels
+- **Push Publisher v2**: Jira ticket in branch naming, PyPI publishing with version bumping
+- **CI Compliance**: Black formatting, security check fixes, Tech Platform headref rules
+- **Slack Integration**: Release notes and context summaries to configured channels
+- **PyPI Distribution**: `pip install pm-os` with optional dependency groups
 
 ### v3.2.0 (2026-01-22)
-- **Brain v3.0.0**: Time-series entity system with canonical references and event sourcing
+- **Brain 1.2**: Time-series entity system with canonical references
 - **PRD to Spec Machine**: Export PRDs to implementation specs
 - **Beads-Ralph Integration v2.0**: Bidirectional sync between Beads and Ralph
 - **Data Quality Tools**: Canonical resolver, relationship normalizer, orphan cleaner
@@ -579,8 +346,12 @@ Creates a backup snapshot, migrates Brain/sessions/context, and generates config
 
 ## Contributing
 
-Contributions are welcome. Please open an issue first to discuss what you'd like to change.
+We welcome contributions! See [Contributing](docs/contributing.md) for guidelines.
 
 ## License
 
 MIT License - See [LICENSE](LICENSE)
+
+---
+
+*PM-OS v3.4 - Built with care at Acme Corp*

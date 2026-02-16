@@ -69,7 +69,7 @@ brain/Inbox/Tech Platform_Sprint/
 ├── _sync_state.json              # Sync metadata
 ├── Tech Platform_Sprint_Summary_YYYY-MM-DD.md  # Combined summary
 ├── Meal_Kit.md                  # Individual squad files
-├── The_Wellness_Brand.md
+├── Brand_B.md
 ├── Growth_Platform.md
 └── ...
 ```
@@ -133,5 +133,5 @@ When `sync_on_boot: true`, the `/boot` command will automatically sync Tech Plat
 ## Source
 
 - **Spreadsheet:** [Tech Platform Every Other Week Squad Sprint Report](https://docs.google.com/spreadsheets/d/SPREADSHEET_ID_EXAMPLE)
-- **Owner:** Brian Leung
+- **Owner:** Tech Platform Team
 - **Cadence:** Bi-weekly (aligned with sprint cycles)

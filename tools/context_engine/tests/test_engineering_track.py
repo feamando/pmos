@@ -84,7 +84,7 @@ class TestTechnicalDecision:
         decision = TechnicalDecision(
             decision="Use TypeScript",
             rationale="Type safety",
-            decided_by="nikita",
+            decided_by="jane",
             date=datetime(2026, 2, 4, 10, 0, 0),
             category="tooling",
             related_adr="ADR-001",
@@ -92,7 +92,7 @@ class TestTechnicalDecision:
         result = decision.to_dict()
         assert result["decision"] == "Use TypeScript"
         assert result["rationale"] == "Type safety"
-        assert result["decided_by"] == "nikita"
+        assert result["decided_by"] == "jane"
         assert result["category"] == "tooling"
         assert result["related_adr"] == "ADR-001"
 
@@ -124,7 +124,7 @@ class TestADR:
             decision="Use Redis",
             consequences="Adds dependency",
             created=datetime(2026, 2, 4, 10, 0, 0),
-            created_by="nikita",
+            created_by="jane",
         )
         result = adr.to_dict()
         assert result["number"] == 1
@@ -159,7 +159,7 @@ class TestADR:
             decision="Use Redis",
             consequences="Adds dependency",
             created=datetime(2026, 2, 4, 10, 0, 0),
-            created_by="nikita",
+            created_by="jane",
         )
         md = adr.to_markdown()
         assert "# ADR-001: Use Redis for Sessions" in md
@@ -205,12 +205,12 @@ class TestEngineeringTrack:
     def test_start_track(self, temp_feature):
         """Test starting the engineering track."""
         track = EngineeringTrack(temp_feature)
-        result = track.start(initiated_by="nikita")
+        result = track.start(initiated_by="jane")
 
         assert result.success
         assert result.status == EngineeringStatus.IN_PROGRESS
         assert track.status == EngineeringStatus.IN_PROGRESS
-        assert track._started_by == "nikita"
+        assert track._started_by == "jane"
 
         # Verify folders created
         assert (temp_feature / "engineering").exists()
@@ -219,7 +219,7 @@ class TestEngineeringTrack:
     def test_start_already_started(self, temp_feature):
         """Test starting an already started track fails."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
         result = track.start(initiated_by="john")
 
         assert not result.success
@@ -228,7 +228,7 @@ class TestEngineeringTrack:
     def test_create_adr(self, temp_feature):
         """Test ADR creation."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.create_adr(
             title="Use Redis for Sessions",
@@ -255,7 +255,7 @@ class TestEngineeringTrack:
     def test_create_adr_supersedes(self, temp_feature):
         """Test ADR superseding another ADR."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         # Create first ADR
         track.create_adr(
@@ -283,7 +283,7 @@ class TestEngineeringTrack:
     def test_record_estimate(self, temp_feature):
         """Test recording an estimate."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.record_estimate(
             estimate="M",
@@ -301,7 +301,7 @@ class TestEngineeringTrack:
     def test_record_estimate_invalid_size(self, temp_feature):
         """Test recording invalid estimate size fails."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.record_estimate(estimate="XXL")
         assert not result.success
@@ -310,12 +310,12 @@ class TestEngineeringTrack:
     def test_record_technical_decision(self, temp_feature):
         """Test recording a technical decision."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.record_technical_decision(
             decision="Use TypeScript",
             rationale="Type safety",
-            decided_by="nikita",
+            decided_by="jane",
             category="tooling",
         )
 
@@ -326,7 +326,7 @@ class TestEngineeringTrack:
     def test_add_risk(self, temp_feature):
         """Test adding a technical risk."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.add_risk(
             risk="Redis may have downtime",
@@ -342,7 +342,7 @@ class TestEngineeringTrack:
     def test_add_dependency(self, temp_feature):
         """Test adding a dependency."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         result = track.add_dependency(
             name="Payment API v2",
@@ -358,7 +358,7 @@ class TestEngineeringTrack:
     def test_complete_track(self, temp_feature):
         """Test completing the engineering track."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         # Add required elements
         track.create_adr(
@@ -374,7 +374,7 @@ class TestEngineeringTrack:
     def test_complete_track_without_estimate(self, temp_feature):
         """Test completing without estimate fails."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
         track.create_adr(
             title="Test ADR", context="Test", decision="Test", consequences="Test"
         )
@@ -386,7 +386,7 @@ class TestEngineeringTrack:
     def test_complete_track_without_decisions(self, temp_feature):
         """Test completing without ADRs or decisions fails."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
         track.record_estimate(estimate="M")
 
         result = track.complete()
@@ -396,7 +396,7 @@ class TestEngineeringTrack:
     def test_state_persistence(self, temp_feature):
         """Test state is persisted to feature-state.yaml."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
         track.create_adr(
             title="Test ADR",
             context="Test context",
@@ -419,7 +419,7 @@ class TestEngineeringTrack:
         """Test state is loaded from feature-state.yaml."""
         # Create track and add data
         track1 = EngineeringTrack(temp_feature)
-        track1.start(initiated_by="nikita")
+        track1.start(initiated_by="jane")
         track1.create_adr(
             title="Test ADR", context="Test", decision="Test", consequences="Test"
         )
@@ -433,7 +433,7 @@ class TestEngineeringTrack:
     def test_active_adrs_property(self, temp_feature):
         """Test active_adrs property filters correctly."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
 
         # Create multiple ADRs
         track.create_adr(
@@ -458,7 +458,7 @@ class TestEngineeringTrack:
     def test_to_dict(self, temp_feature):
         """Test to_dict method."""
         track = EngineeringTrack(temp_feature)
-        track.start(initiated_by="nikita")
+        track.start(initiated_by="jane")
         track.create_adr(
             title="Test", context="Test", decision="Test", consequences="Test"
         )

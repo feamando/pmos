@@ -132,6 +132,18 @@ jobs:
             echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Create common/ tarball
+        run: |
+          # Create tarball of common/ directory for pm-os init download
+          REPO_ROOT="${{ github.workspace }}"
+          if [ -d "$REPO_ROOT/common" ]; then
+            cd "$REPO_ROOT"
+            tar czf dist/common-${{ steps.version.outputs.version }}.tar.gz common/
+            echo "Common tarball created"
+          else
+            echo "No common/ directory found (package-only repo)"
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:

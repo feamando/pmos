@@ -31,6 +31,8 @@ DIRECTORY_STRUCTURE = [
     "brain/Context",
     "brain/Templates",
     "brain/Inbox",
+    "brain/Caches",
+    "brain/Confucius",
 
     # Sessions
     "sessions/active",
@@ -38,9 +40,13 @@ DIRECTORY_STRUCTURE = [
 
     # Personal
     "personal/calendar",
+    "personal/context",
+    "personal/context/raw",
     "personal/emails",
     "personal/notes",
     "personal/todos",
+    "personal/development",
+    "personal/reflections",
 
     # Team
     "team/reports",
@@ -170,8 +176,10 @@ def generate_env_file(wizard: "WizardOrchestrator", base_path: Path) -> str:
         lines.extend([
             "# Google",
             f"GOOGLE_CREDENTIALS_PATH=\"{wizard.get_data('google_credentials_path', '')}\"",
-            "",
         ])
+        if wizard.get_data("google_token_path"):
+            lines.append(f"GOOGLE_TOKEN_PATH=\"{wizard.get_data('google_token_path', '')}\"")
+        lines.append("")
 
     # Paths
     lines.extend([
@@ -218,7 +226,7 @@ def generate_config_yaml(wizard: "WizardOrchestrator") -> str:
                 "space": wizard.get_data("confluence_space", ""),
             },
             "google": {
-                "enabled": bool(wizard.get_data("google_credentials_path")),
+                "enabled": bool(wizard.get_data("google_authenticated")),
             },
         },
         "brain": {
@@ -274,6 +282,58 @@ def generate_user_md(wizard: "WizardOrchestrator") -> str:
     return content
 
 
+def create_user_entity(wizard: "WizardOrchestrator", base_path: Path) -> None:
+    """Create the user entity in the brain."""
+    import time
+    people_path = base_path / "brain" / "Entities" / "People"
+    people_path.mkdir(parents=True, exist_ok=True)
+
+    name = wizard.get_data("user_name", "User")
+    email = wizard.get_data("user_email", "")
+    role = wizard.get_data("user_role", "")
+    team = wizard.get_data("user_team", "")
+
+    filename = name.replace(" ", "_") + ".md"
+    filepath = people_path / filename
+
+    # Don't overwrite if it already exists
+    if filepath.exists():
+        return
+
+    content = f"""---
+type: person
+name: {name}
+email: {email}
+role: {role}
+team: {team}
+is_self: true
+created: {time.strftime('%Y-%m-%d')}
+last_sync: {time.strftime('%Y-%m-%dT%H:%M:%S')}
+---
+
+# {name}
+
+## Profile
+
+- **Email**: {email}
+- **Role**: {role}
+{"- **Team**: " + team if team else ""}
+
+## Relationships
+
+<!-- Relationships will be added as entities are synced -->
+
+## Notes
+
+This is your user entity. PM-OS uses this to personalize interactions and track your context.
+
+---
+*Created by PM-OS installation wizard*
+"""
+    filepath.write_text(content)
+    wizard.track_file(filepath)
+
+
 def generate_gitignore(base_path: Path) -> None:
     """Generate .gitignore with security-sensitive entries."""
     gitignore_content = """# PM-OS Generated .gitignore
@@ -323,7 +383,8 @@ Thumbs.db
 
 
 def create_initial_brain_files(base_path: Path) -> None:
-    """Create initial brain files."""
+    """Create initial brain files including BRAIN.md, hot_topics.json, Glossary, and Index."""
+    import json
     brain_path = base_path / "brain"
 
     # Glossary.md
@@ -344,6 +405,12 @@ The knowledge graph that stores entities, relationships, and context.
 ### Entity
 A discrete unit of knowledge (person, project, decision, etc.).
 
+### Boot
+The startup sequence that loads context, syncs integrations, and prepares your session.
+
+### Confucius
+The PM-OS knowledge synthesis engine that processes context into actionable insights.
+
 ---
 *Initialized by PM-OS*
 """
@@ -356,20 +423,51 @@ Quick reference to key entities in your PM-OS brain.
 
 ## People
 
-<!-- People entities will be listed here -->
+<!-- People entities will be listed here after brain sync -->
 
 ## Projects
 
-<!-- Project entities will be listed here -->
+<!-- Project entities will be listed here after brain sync -->
 
 ## Decisions
 
-<!-- Recent decisions will be listed here -->
+<!-- Recent decisions will be listed here after brain sync -->
+
+## How to Populate
+
+Run `pm-os brain sync` or use `/boot` in Claude Code to populate
+your brain with entities from configured integrations.
 
 ---
 *Initialized by PM-OS*
 """
     (brain_path / "Index" / "Index.md").write_text(index)
+
+    # BRAIN.md - Compressed entity index for agent context
+    now = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+    brain_md = f"""# BRAIN.md — Entity Index
+<!-- Generated: {now} | Entities: 0 | Tier1: 0 | Tier2: 0 -->
+
+## Team (Tier 1)
+id|type|role|squad|status|relationships
+
+<!-- No entities yet. Run /boot or pm-os brain sync to populate. -->
+
+## Connected Entities (Tier 2)
+id|type|name|status
+
+<!-- Entities from integrations will appear here after sync. -->
+"""
+    (brain_path / "BRAIN.md").write_text(brain_md)
+
+    # hot_topics.json - Empty initial structure
+    hot_topics = {
+        "generated": now,
+        "source": "initial",
+        "entity_count": 0,
+        "entities": {}
+    }
+    (brain_path / "hot_topics.json").write_text(json.dumps(hot_topics, indent=2) + "\n")
 
 
 def directories_step(wizard: "WizardOrchestrator") -> bool:
@@ -414,7 +512,11 @@ def directories_step(wizard: "WizardOrchestrator") -> bool:
 
     # Create initial brain files
     create_initial_brain_files(base_path)
-    wizard.ui.print_success("Created initial brain files (Glossary.md, Index.md)")
+    wizard.ui.print_success("Created initial brain files (BRAIN.md, Glossary.md, Index.md, hot_topics.json)")
+
+    # Create user entity in brain (so it exists even if brain_population is skipped)
+    create_user_entity(wizard, base_path)
+    wizard.ui.print_success("Created user entity in brain")
 
     # Generate .gitignore for security
     generate_gitignore(base_path)

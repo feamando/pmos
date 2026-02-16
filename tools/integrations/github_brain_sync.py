@@ -508,9 +508,9 @@ def update_squad_entity(squad_name: str, squad_data: Dict) -> bool:
     """Update the GitHub Status section in Brain/Entities/Squad_*.md."""
     filename_map = {
         "Meal Kit": "Squad_Meal_Kit.md",
-        "Wellness Brand": "Squad_The_Wellness_Brand.md",
+        "Brand B": "Squad_Brand_B.md",
         "Growth Platform": "Squad_Growth_Platform.md",
-        "Product Innovation": "Squad_Market_Innovation.md",
+        "Product Innovation": "Squad_Product_Innovation.md",
     }
 
     filename = filename_map.get(squad_name)
@@ -687,7 +687,7 @@ def update_project_technical_context(squad_name: str, context: str) -> bool:
     # Note: Product Innovation doesn't map 1:1 to a single project file yet
     filename_map = {
         "Meal Kit": "Projects/Meal_Kit.md",
-        "Wellness Brand": "Projects/The_Wellness_Brand.md",
+        "Brand B": "Projects/Brand_B.md",
         "Growth Platform": "Projects/Growth_Platform.md",
     }
 

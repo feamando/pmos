@@ -3,7 +3,7 @@ description:
 globs: 
 alwaysApply: true
 ---
-**Development Guidelines**
+**Acme Corp Development Guidelines**
 
 You must follow this org-wide development guidelines. This would have precedence over other guidelines.
 

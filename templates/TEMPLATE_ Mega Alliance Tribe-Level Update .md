@@ -11,7 +11,7 @@ These guidelines mirror the structure and clarity of the Yearly Plan documentati
 3. **How long do you expect the Market Yearly Plan document to be? T**he Tribe Q4-2025 Review and Q1-2026 Alignment document, including all mandatory sections, must be no longer than two (2) full pages. No appendices are permitted. The document must be immediately scannable and digestible by senior leadership.  
 4. **What are the mandatory sections?** All sections detailed in the template (Q4-2025 Review, Systemic Blockers, Learnings, Q1-2026 Roadmap, Dependencies, and Hot Debates) are mandatory and must be answered concisely.  
 5. **What is the deadline for submission of the Market Yearly Plans?** The Friday prior to the start of the Quarterly Planning Offsite  
-6. **How to submit my Yearly Plan Document?**  Your Yearly Plan Document must be sent via email by the Tribe Lead to Brian Leung, who will add it to the formal Quarterly Planning Offsite so that all participants can read them prior to the sessions.
+6. **How to submit my Yearly Plan Document?**  Your Yearly Plan Document must be sent via email by the Tribe Lead to Planning Coordinator, who will add it to the formal Quarterly Planning Offsite so that all participants can read them prior to the sessions.
 
 ## 
 

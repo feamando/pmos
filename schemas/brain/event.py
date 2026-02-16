@@ -90,8 +90,8 @@ class ChangeEvent(BaseModel):
 
     actor: str = Field(
         ...,
-        description="Who/what made the change (e.g., 'user/nikita', 'system/daily_context')",
-        examples=["user/nikita", "system/daily_context", "sync/jira", "sync/github"],
+        description="Who/what made the change (e.g., 'user/jane', 'system/daily_context')",
+        examples=["user/jane", "system/daily_context", "sync/jira", "sync/github"],
     )
 
     changes: List[FieldChange] = Field(

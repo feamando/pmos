@@ -28,33 +28,41 @@ classifiers = [
 ]
 
 dependencies = [
+    # Core
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
     "requests>=2.28.0",
     "click>=8.0.0",
     "rich>=13.0.0",
-]
-
-[project.optional-dependencies]
-google = [
+    # Google (Calendar, Drive, Gmail)
     "google-api-python-client>=2.0.0",
     "google-auth>=2.0.0",
     "google-auth-oauthlib>=1.0.0",
-]
-slack = ["slack-sdk>=3.0.0"]
-jira = ["jira>=3.5.0"]
-github = ["PyGithub>=1.59.0"]
-confluence = ["atlassian-python-api>=3.0.0"]
-ai = [
+    # Slack
+    "slack-sdk>=3.0.0",
+    # Jira
+    "jira>=3.5.0",
+    # GitHub
+    "PyGithub>=1.59.0",
+    # Confluence
+    "atlassian-python-api>=3.0.0",
+    # AI providers
     "anthropic>=0.18.0",
     "google-generativeai>=0.8.0",
-]
-bedrock = [
+    # AWS Bedrock
     "boto3>=1.28.0",
 ]
-all = [
-    "pm-os[google,slack,jira,github,confluence,ai,bedrock]"
-]
+
+[project.optional-dependencies]
+# Kept for backward compatibility — these are now all included by default
+google = []
+slack = []
+jira = []
+github = []
+confluence = []
+ai = []
+bedrock = []
+all = []
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
@@ -85,6 +93,7 @@ include = [
     "src/pm_os/**/*.json",
     "src/pm_os/**/*.md",
     "src/pm_os/templates/*",
+    "src/pm_os/data/*",
     "VERSION",
     "README.md",
     "LICENSE",

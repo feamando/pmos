@@ -27,10 +27,10 @@ Scans Brain files for `relationships` in YAML frontmatter and ensures inverse li
 If `Projects/OTP.md` has:
 ```yaml
 relationships:
-  owner: [[Entities/Beatrice.md]]
+  owner: [[Entities/Alice.md]]
 ```
 
-Then `Entities/Beatrice.md` will be updated to include:
+Then `Entities/Alice.md` will be updated to include:
 ```yaml
 relationships:
   owns: [[Projects/OTP.md]]
@@ -56,8 +56,8 @@ python3 "$PM_OS_COMMON/tools/documents/synapse_builder.py"
 
 ```
 Scanning Brain in /path/to/Brain...
-  [+] Entities/Beatrice.md: Adding 'owns' -> Projects/OTP.md
-  [+] Entities/Team_NV.md: Adding 'has_member' -> Entities/Beatrice.md
+  [+] Entities/Alice.md: Adding 'owns' -> Projects/OTP.md
+  [+] Entities/Team_GD.md: Adding 'has_member' -> Entities/Alice.md
 
 Done. Modified 2 files.
 ```

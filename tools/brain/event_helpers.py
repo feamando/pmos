@@ -52,7 +52,7 @@ class EventHelper:
 
         Args:
             event_type: Must be a valid EventType value (e.g., "field_update", "relationship_add")
-            actor: Who/what made the change (e.g., "system/relationship_builder", "user/nikita")
+            actor: Who/what made the change (e.g., "system/relationship_builder", "user/jane")
             changes: List of field change dicts with keys: field, operation, value, old_value (optional)
             message: Human-readable description of the change
             source: Source system (e.g., "jira:PROJ-123", "body_extraction")

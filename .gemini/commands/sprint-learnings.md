@@ -165,6 +165,6 @@ If processing "all" squads, show:
 Updated [CSV filename]:
 - Meal Kit: 5 learnings
 - Growth Platform: 4 learnings
-- Wellness Brand: 5 learnings
+- Brand B: 5 learnings
 - Product Innovation: 2 learnings
 ```

@@ -192,14 +192,19 @@ class WizardOrchestrator:
         has_session = self._load_session()
 
         if has_session and not resume:
-            # Ask if user wants to resume
-            self.console.print()
-            self.ui.print_warning("A previous installation session was found.")
-            if self.ui.prompt_confirm("Resume previous session?", default=True):
-                resume = True
-            else:
+            if self.quick_mode:
+                # In quick mode, always start fresh
                 self._clear_session()
                 self.state = WizardState()
+            else:
+                # Ask if user wants to resume
+                self.console.print()
+                self.ui.print_warning("A previous installation session was found.")
+                if self.ui.prompt_confirm("Resume previous session?", default=True):
+                    resume = True
+                else:
+                    self._clear_session()
+                    self.state = WizardState()
 
         # Initialize new session if not resuming
         if not resume or not has_session:

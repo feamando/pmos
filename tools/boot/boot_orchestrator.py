@@ -141,7 +141,7 @@ def main():
                 ],
                 capture_output=True,
                 text=True,
-                timeout=300,
+                timeout=600,
             )
             raw_output = fetch_result.stdout
 

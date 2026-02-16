@@ -217,7 +217,7 @@ class EntityBase(BaseModel):
                         }
                     ],
                     "$tags": ["leadership", "product"],
-                    "$aliases": ["nikita", "jane.smith"],
+                    "$aliases": ["jane", "jane.smith"],
                     "name": "Jane Smith",
                     "description": "Director of Product, Growth Division & Ecosystems",
                 }

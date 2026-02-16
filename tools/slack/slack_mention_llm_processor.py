@@ -9,7 +9,7 @@ Usage:
     from slack_mention_llm_processor import process_mention_with_llm
 
     enhanced_task = process_mention_with_llm(
-        raw_text="@bot remind Nikita to review the PRD before Friday",
+        raw_text="@bot remind Jane to review the PRD before Friday",
         context={"channel": "product-team", "requester": "Alice"}
     )
 """
@@ -108,7 +108,7 @@ Analyze this message and extract a formalized task. Return valid JSON with:
 
 ## Classification Guide
 - **nikita_task**: Direct task for Jane Smith
-- **team_task**: Task delegated to a team member (Deo, Beatrice, Hamed, etc.)
+- **team_task**: Task delegated to a team member (Pat, Alice, Bob, etc.)
 - **pmos_feature**: Feature request for PM-OS system
 - **pmos_bug**: Bug report for PM-OS system
 - **question**: Question needing an answer (not a task)
@@ -380,8 +380,8 @@ if __name__ == "__main__":
     if not args.text:
         # Demo mode
         test_cases = [
-            "@pmos-slack-bot remind Nikita to review the OTP PRD before Friday - this is blocking the launch",
-            "@pmos-slack-bot task for Deo: follow up with engineering on the API timeline, we need this for Q1",
+            "@pmos-slack-bot remind Jane to review the OTP PRD before Friday - this is blocking the launch",
+            "@pmos-slack-bot task for Pat: follow up with engineering on the API timeline, we need this for Q1",
             "@pmos-slack-bot PM-OS feature request: add ability to sync Confluence pages automatically",
             "@pmos-slack-bot bug: the context updater times out when processing large documents over 100KB",
         ]

@@ -100,7 +100,7 @@ engine:
       figma_attached: false
     business_case:
       status: pending_approval
-      approvals: [{approver: "Laurent", approved: true}]
+      approvals: [{approver: "Irene", approved: true}]
     engineering:
       status: not_started
 
@@ -166,7 +166,7 @@ result = validate_decision_gate(state, feature_path, gates)
 from tools.context_engine.tracks import BusinessCaseTrack
 
 track = BusinessCaseTrack(feature_path)
-track.start(initiated_by="nikita")
+track.start(initiated_by="jane")
 track.update_assumptions(baseline_metrics={...}, impact_assumptions={...})
 track.submit_for_approval(approver="Jack Approver")
 track.record_approval(approver="Jack Approver", approved=True, approval_type="verbal")
@@ -185,7 +185,7 @@ NOT_STARTED → IN_PROGRESS → PENDING_APPROVAL → APPROVED
 from tools.context_engine.tracks import EngineeringTrack
 
 track = EngineeringTrack(feature_path)
-track.start(initiated_by="nikita")
+track.start(initiated_by="jane")
 track.create_adr(
     title="Use Redis for Session Storage",
     context="Need to share sessions across multiple app instances",

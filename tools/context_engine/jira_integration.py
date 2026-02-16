@@ -221,7 +221,7 @@ class JiraEpicCreator:
             return product["jira_project"]
 
         # Fallback: derive from product_id
-        # Common patterns: meal-kit -> MK, wellness-brand -> WB
+        # Common patterns: meal-kit -> MK, brand-b -> BB
         product_id = state.product_id.upper()
         if "-" in product_id:
             parts = product_id.split("-")

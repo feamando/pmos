@@ -43,16 +43,16 @@ MAX_COMMITS_PER_REPO = 500
 
 # Topic filters (same as GDocs/Slack)
 TOPIC_FILTERS = [
-    "new ventures",
+    "growth division",
     "Meal Kit",
     "goodchop",
     "goc",
-    "Wellness Brand",
-    "Wellness Brand",
+    "Brand B",
+    "Brand B",
     "tpt",
     "Growth Platform",
     "vms",
-    "market innovation",
+    "product innovation",
     "market integration",
     "cross-selling",
     "cross selling",

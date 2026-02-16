@@ -44,7 +44,7 @@ This will:
 python3 "$PM_OS_COMMON/tools/meeting/meeting_prep.py" --hours 8
 
 # Specific meeting
-python3 "$PM_OS_COMMON/tools/meeting/meeting_prep.py" --meeting "1:1 Beatrice"
+python3 "$PM_OS_COMMON/tools/meeting/meeting_prep.py" --meeting "1:1 Alice"
 
 # List without generating
 python3 "$PM_OS_COMMON/tools/meeting/meeting_prep.py" --list

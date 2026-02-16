@@ -90,9 +90,9 @@ products:
         - "Jack Approver"
         - "Dave Manager"
     tpt:
-      name: "Wellness Brand"
+      name: "Brand B"
       slug_prefix: "tpt"
-      jira_project: "WB"
+      jira_project: "BB"
     growth-platform:
       name: "Growth Platform"
       slug_prefix: "ff"

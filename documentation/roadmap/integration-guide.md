@@ -75,7 +75,7 @@ parser = RoadmapParser(model="gemini")  # or "claude"
 # Parse single item
 parsed_data = parser.parse_item(
     raw_text="Add OAuth2 login flow",
-    context={"requester": "Nikita", "classification": "pmos_feature"}
+    context={"requester": "Jane", "classification": "pmos_feature"}
 )
 
 # Parse batch of temp items

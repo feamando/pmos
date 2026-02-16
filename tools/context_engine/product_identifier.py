@@ -146,9 +146,9 @@ CHANNEL_PRODUCT_PATTERNS = {
     "meal-kit": "meal-kit",
     "goodchop": "meal-kit",
     "goc": "meal-kit",
-    "wellness-brand": "wellness-brand",
-    "wellness-brand": "wellness-brand",
-    "tpt": "wellness-brand",
+    "brand-b": "brand-b",
+    "brand-b": "brand-b",
+    "tpt": "brand-b",
     "growth-platform": "growth-platform",
     "factorform": "growth-platform",
     "ff": "growth-platform",
@@ -317,7 +317,7 @@ class ProductIdentifier:
         Maps common channel naming patterns to products:
         - #meal-kit-* -> Meal Kit
         - #goc-* -> Meal Kit
-        - #tpt-* -> Wellness Brand
+        - #tpt-* -> Brand B
         - #factor-* -> Growth Platform
 
         Args:

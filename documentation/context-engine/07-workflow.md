@@ -175,7 +175,7 @@ Create `business-case/impact-assumptions.md`:
 **Get approval:**
 
 ```bash
-# After presenting to Jama in 1:1
+# After presenting to Dave in 1:1
 # Record the approval
 ```
 
@@ -330,7 +330,7 @@ DECISION GATE:       READY ✓
 ### Step 5.1: Request Approval
 
 ```bash
-/decision-gate mk-feature-recovery --approve --reason "All tracks complete, BC approved by Jama, ready for implementation"
+/decision-gate mk-feature-recovery --approve --reason "All tracks complete, BC approved by Dave, ready for implementation"
 ```
 
 **Output:**
@@ -339,7 +339,7 @@ DECISION GATE: APPROVED ✓
 
 Feature: OTP Checkout Recovery (mk-feature-recovery)
 Decision: GO
-Reason: All tracks complete, BC approved by Jama, ready for implementation
+Reason: All tracks complete, BC approved by Dave, ready for implementation
 Decided: 2026-02-06T10:30:00Z
 
 Audit trail saved to: reports/decision-gate-2026-02-06.md

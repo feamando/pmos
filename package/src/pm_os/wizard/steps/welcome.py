@@ -68,10 +68,11 @@ def welcome_step(wizard: "WizardOrchestrator") -> bool:
 
     wizard.console.print()
 
-    # Confirm user wants to proceed
-    if not wizard.ui.prompt_confirm("Ready to begin?", default=True):
-        wizard.console.print()
-        wizard.ui.print_info("Installation cancelled. Run 'pm-os init' when ready.")
-        return False
+    # Confirm user wants to proceed (skip in quick mode)
+    if not wizard.quick_mode:
+        if not wizard.ui.prompt_confirm("Ready to begin?", default=True):
+            wizard.console.print()
+            wizard.ui.print_info("Installation cancelled. Run 'pm-os init' when ready.")
+            return False
 
     return True

@@ -7,7 +7,7 @@ Planning Offsite. Includes orthogonal challenge support for rigorous review.
 
 Key Features:
 - Auto-populates from Brain, Jira, Context files, and Yearly Plans
-- Supports Growth Division tribe squads (Meal Kit, WB, Growth Platform, PROJ2)
+- Supports Growth Division tribe squads (Meal Kit, BB, Growth Platform, PROJ2)
 - Orthogonal challenge mode for Claude<>Gemini review
 - Multiple output formats (Markdown, Google Docs compatible)
 
@@ -61,8 +61,8 @@ TRIBES = {
     "Growth Division": {
         "mega_alliance": "Enterprise Alliance",
         "mission": "Incubate, validate, and scale new business ventures beyond Acme Corp's core meal kit offering.",
-        "squads": ["Meal Kit", "Wellness Brand", "Growth Platform", "Product Innovation"],
-        "jira_projects": ["MK", "WB", "PROJ1", "PROJ2"],
+        "squads": ["Meal Kit", "Brand B", "Growth Platform", "Product Innovation"],
+        "jira_projects": ["MK", "BB", "PROJ1", "PROJ2"],
         "lead": "Jane Smith",
         "eng_lead": "Carol Developer",
     }
