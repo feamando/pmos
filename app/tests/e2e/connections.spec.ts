@@ -27,7 +27,7 @@ async function launchApp(envOverrides: Record<string, string> = {}): Promise<{ a
       ...process.env,
       SKIP_SPLASH: 'true',
       NODE_ENV: 'test',
-      HELLOAI_TEST_ENV_PATH: tmpEnv,
+      PMOS_TEST_ENV_PATH: tmpEnv,
       ...envOverrides,
     },
   })
