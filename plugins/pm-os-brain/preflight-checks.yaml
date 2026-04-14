@@ -1,0 +1,24 @@
+# Brain plugin preflight checks
+# Registered with the Base plugin's preflight runner to verify Brain tool availability
+brain:
+  brain_loader:
+    module: tools/core/brain_loader.py
+    description: "Brain entity loader and hot topic identifier"
+  brain_search:
+    module: tools/index/brain_search.py
+    description: "Brain keyword and content search"
+  brain_index_generator:
+    module: tools/index/brain_index_generator.py
+    description: "BRAIN.md compressed index generator"
+  entity_cache:
+    module: tools/core/entity_cache.py
+    description: "In-memory entity cache"
+  brain_mcp_server:
+    module: tools/mcp/brain_mcp_server.py
+    description: "Brain MCP server (stdio + streamable-http)"
+  quality_scorer:
+    module: tools/quality/quality_scorer.py
+    description: "Entity completeness and quality scorer"
+  enrichment_pipeline:
+    module: tools/enrichment/enrichment_pipeline.py
+    description: "Multi-source enrichment coordinator"

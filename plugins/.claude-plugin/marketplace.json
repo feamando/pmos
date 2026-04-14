@@ -1,0 +1,66 @@
+{
+  "name": "pm-os",
+  "metadata": {
+    "description": "PM-OS \u2014 AI-native Product Management Operating System"
+  },
+  "owner": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "pm-os-base",
+      "description": "PM-OS foundation \u2014 config, pipelines, session management, plugin orchestration",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-base"
+    },
+    {
+      "name": "pm-os-brain",
+      "description": "Organizational knowledge graph \u2014 persistent, enriched entity store with MCP server",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-brain"
+    },
+    {
+      "name": "pm-os-daily-workflow",
+      "description": "Daily PM operating rhythm \u2014 context synthesis, meeting intelligence, integration sync",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-daily-workflow"
+    },
+    {
+      "name": "pm-os-cce",
+      "description": "Context Creation Engine \u2014 feature lifecycle, document generation, FPF reasoning",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-cce"
+    },
+    {
+      "name": "pm-os-reporting",
+      "description": "Sprint reports, performance updates, and organizational reporting",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-reporting"
+    },
+    {
+      "name": "pm-os-career",
+      "description": "Career planning, team development, interview scorecards, and 1:1 preparation",
+      "author": {
+        "name": "feamando",
+        "email": "feamando@gmail.com"
+      },
+      "source": "./pm-os-career"
+    }
+  ]
+}

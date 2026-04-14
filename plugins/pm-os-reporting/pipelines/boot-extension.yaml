@@ -1,0 +1,3 @@
+# Reporting plugin boot extension
+# No boot-time steps required — reporting is on-demand
+steps: []

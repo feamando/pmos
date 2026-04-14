@@ -1,0 +1,17 @@
+# PM-OS Base Logout Pipeline
+# Base provides session end. Plugins extend via logout-extension.yaml files.
+
+name: logout
+description: PM-OS logout sequence — session end, plugin-contributed cleanup
+version: "5.0.0"
+error_strategy: continue
+
+steps:
+  - name: session-end
+    action: session.end
+    on_error: skip
+
+# Plugin-contributed steps are inserted here via pipeline extensions.
+# After all plugins contribute, a typical full logout might look like:
+#   session-end -> confucius-end -> brain-index -> master-sheet
+#   -> roadmap-capture -> slack-post

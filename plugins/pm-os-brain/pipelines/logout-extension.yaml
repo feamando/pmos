@@ -1,0 +1,8 @@
+# Brain logout pipeline extension
+# Rebuilds the Brain index to capture any entities created or modified during the session
+extends: logout
+steps:
+  - name: brain-index
+    action: brain.index
+    after: session-end
+    on_error: skip

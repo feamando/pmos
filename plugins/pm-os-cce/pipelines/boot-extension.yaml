@@ -1,0 +1,9 @@
+# CCE boot pipeline extension
+# Checks for active feature state and loads context if found
+extends: boot
+steps:
+  - name: feature-status
+    action: cce.feature-status
+    condition: "not quick"
+    after: brain-enrich
+    on_error: skip

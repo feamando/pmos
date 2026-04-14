@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-base",
+  "version": "5.0.0",
+  "description": "PM-OS foundation \u2014 config, pipelines, session management, plugin orchestration",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}

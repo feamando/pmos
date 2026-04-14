@@ -1,0 +1,18 @@
+# Daily Workflow logout pipeline extension
+# Adds session enrichment, sync, and Slack posting to logout sequence
+extends: logout
+steps:
+  - name: session-enrichment
+    action: session.enrichment
+    on_error: skip
+
+  - name: master-sheet-sync
+    action: master_sheet.sync
+    after: session-enrichment
+    on_error: skip
+
+  - name: slack-post
+    action: slack.post
+    condition: not quiet
+    after: master-sheet-sync
+    on_error: skip

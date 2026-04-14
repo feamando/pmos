@@ -1,0 +1,28 @@
+# PM-OS Base Boot Pipeline
+# Base provides only core steps. Plugins extend via boot-extension.yaml files.
+#
+# Example: pm-os-brain adds brain.load, brain.index after session.ensure
+# Example: pm-os-daily-workflow adds context.update, meeting.prep, slack.post
+
+name: boot
+description: PM-OS boot sequence — preflight, session init, plugin-contributed steps
+version: "5.0.0"
+error_strategy: continue
+
+steps:
+  - name: preflight
+    action: preflight.check
+    on_error: skip
+    condition: "not quick"
+
+  - name: session-ensure
+    action: session.ensure
+    on_error: skip
+
+# Plugin-contributed steps are inserted here via pipeline extensions.
+# The pipeline executor discovers *-extension.yaml files from installed plugins
+# and inserts steps at their specified `after:` positions.
+#
+# After all plugins contribute, a typical full boot might look like:
+#   preflight -> session-ensure -> brain-load -> brain-index -> brain-enrich
+#   -> context-update -> master-sheet -> meeting-prep (bg) -> slack-post

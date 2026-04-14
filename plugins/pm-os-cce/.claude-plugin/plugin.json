@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-cce",
+  "version": "5.0.0",
+  "description": "Context Creation Engine \u2014 feature lifecycle, document generation, FPF reasoning, research",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}

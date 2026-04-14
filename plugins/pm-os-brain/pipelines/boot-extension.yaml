@@ -1,0 +1,19 @@
+# Brain boot pipeline extension
+# Loads Brain entities, rebuilds index, and runs boot-time enrichment
+extends: boot
+steps:
+  - name: brain-load
+    action: brain.load
+    after: session-ensure
+    on_error: skip
+
+  - name: brain-index
+    action: brain.index
+    after: brain-load
+    on_error: skip
+
+  - name: brain-enrich
+    action: brain.enrich
+    condition: "not quick"
+    after: brain-index
+    on_error: skip

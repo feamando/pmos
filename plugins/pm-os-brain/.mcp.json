@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "pm-os-brain": {
+      "command": "python3",
+      "args": ["tools/mcp/brain_mcp_server.py"],
+      "env": {
+        "MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}

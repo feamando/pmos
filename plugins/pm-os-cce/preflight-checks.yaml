@@ -1,0 +1,30 @@
+# CCE plugin preflight checks
+# Registered with the Base plugin's preflight runner to verify CCE tool availability
+cce:
+  feature_engine:
+    module: tools/feature/feature_engine.py
+    description: "Feature lifecycle management engine"
+  feature_state:
+    module: tools/feature/feature_state.py
+    description: "Feature state persistence and recovery"
+  context_doc_generator:
+    module: tools/feature/context_doc_generator.py
+    description: "Feature context document generator"
+  deep_research_swarm:
+    module: tools/research/deep_research_swarm.py
+    description: "Multi-source research coordination"
+  fpf_engine:
+    module: tools/reasoning/fpf_engine.py
+    description: "First Principles Framework reasoning engine"
+  orthogonal_challenge:
+    module: tools/reasoning/orthogonal_challenge.py
+    description: "Orthogonal perspective challenger and bias detector"
+  prototype_engine:
+    module: tools/prototype/prototype_engine.py
+    description: "Feature prototype generator"
+  jira_integration:
+    module: tools/integration/jira_integration.py
+    description: "Jira roadmap integration"
+  framework_matcher:
+    module: tools/reasoning/framework_matcher.py
+    description: "Strategic framework matching and application"

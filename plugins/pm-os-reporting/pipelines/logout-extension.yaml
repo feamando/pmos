@@ -1,0 +1,3 @@
+# Reporting plugin logout extension
+# No logout-time steps required — reports are saved on generation
+steps: []

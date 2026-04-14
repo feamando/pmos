@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-reporting",
+  "version": "5.0.0",
+  "description": "Sprint reports, performance updates, and organizational reporting",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}

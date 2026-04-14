@@ -1,0 +1,14 @@
+# pm-os-career preflight checks
+pm-os-career:
+  career_plan_generator:
+    module: tools/career_plan_generator.py
+    description: "Career plan generation and tracking"
+  interview_scorecard:
+    module: tools/interview_scorecard.py
+    description: "Interview scorecard generation and management"
+  one_on_one_prep:
+    module: tools/one_on_one_prep.py
+    description: "1:1 meeting preparation with context"
+  team_operations:
+    module: tools/team_operations.py
+    description: "Team capacity planning and org operations"

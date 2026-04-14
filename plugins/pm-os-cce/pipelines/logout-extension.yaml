@@ -1,0 +1,8 @@
+# CCE logout pipeline extension
+# Saves active feature state before session ends
+extends: logout
+steps:
+  - name: feature-save
+    action: cce.feature-save
+    after: session-end
+    on_error: skip

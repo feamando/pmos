@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-brain",
+  "version": "5.0.0",
+  "description": "Organizational knowledge graph \u2014 persistent, enriched entity store with MCP server for any Claude interface",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}

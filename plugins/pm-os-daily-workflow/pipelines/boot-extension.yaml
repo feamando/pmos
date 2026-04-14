@@ -1,0 +1,44 @@
+# Daily Workflow boot pipeline extension
+# Adds context synthesis, meeting prep, and Slack posting to boot sequence
+extends: boot
+steps:
+  - name: slack-channel-sync
+    action: slack.channel_sync
+    after: session-ensure
+    on_error: skip
+
+  - name: google-oauth
+    action: util.google_oauth
+    condition: not quick
+    after: slack-channel-sync
+    on_error: skip
+
+  - name: context-update
+    action: context.update
+    condition: not quick
+    after: google-oauth
+    on_error: skip
+
+  - name: context-synthesize
+    action: context.synthesize
+    condition: not quick
+    after: context-update
+    on_error: skip
+
+  - name: master-sheet
+    action: master_sheet.sync
+    condition: not quick
+    after: context-synthesize
+    on_error: skip
+
+  - name: meeting-prep
+    action: meeting.prep
+    condition: not quick
+    after: context-synthesize
+    on_error: skip
+
+  - name: slack-post
+    action: slack.post
+    condition: not quiet
+    after: meeting-prep
+    on_error: skip

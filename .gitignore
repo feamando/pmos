@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Secrets and credentials
+.env
+*.token.json
+client_secret*.json
+credentials.json
+.secrets/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Local state
+tools/daily_context/state.json
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# User data (created at runtime, not shipped)
+user/

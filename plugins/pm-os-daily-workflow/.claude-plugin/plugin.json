@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-daily-workflow",
+  "version": "5.0.0",
+  "description": "Daily PM operating rhythm \u2014 context synthesis, meeting intelligence, integration sync, Slack operations",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "pm-os-career",
+  "version": "5.0.0",
+  "description": "Career planning, team development, interview scorecards, and 1:1 preparation",
+  "author": {
+    "name": "feamando",
+    "email": "feamando@gmail.com"
+  }
+}
