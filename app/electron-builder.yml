@@ -1,0 +1,46 @@
+appId: com.feamando.pmos
+productName: PM-OS
+directories:
+  output: dist
+  buildResources: assets
+files:
+  - "out/**/*"
+  - "splash/**/*"
+  - "assets/**/*"
+extraResources:
+  - from: "bundle/"
+    to: "bundle"
+    filter:
+      - "**/*"
+mac:
+  category: public.app-category.developer-tools
+  artifactName: "${productName}-${version}-${arch}-${os}-${env.BUILD_TIMESTAMP}.${ext}"
+  target:
+    - dmg
+    - zip
+  icon: assets/icons/icon.icns
+  identity: null
+dmg:
+  title: "PM-OS"
+  iconSize: 80
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+win:
+  target:
+    - nsis
+  icon: assets/icons/icon.ico
+linux:
+  target:
+    - AppImage
+  icon: assets/icons/icon.png
+  category: Development
+publish:
+  provider: github
+  owner: feamando
+  repo: pm-os-app
+  private: false

@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM-OS</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { overflow: hidden; background: #001122; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+
+  /* --- Shared overlay base --- */
+  .overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .overlay.interactive { pointer-events: auto; }
+  .overlay.hidden { opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+  .overlay.visible { opacity: 1; transition: opacity 0.4s ease; }
+
+  /* --- Title --- */
+  .title {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 56px;
+    color: #ffffff;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+    animation: fadeIn 0.8s ease-out;
+  }
+
+  /* --- Boot checklist --- */
+  .checklist {
+    margin-top: 32px;
+    font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    text-align: left;
+    animation: fadeIn 1.2s ease-out;
+    line-height: 1.8;
+  }
+  .check-item { transition: opacity 0.3s ease; }
+  .check-item.pending { opacity: 0.6; }
+  .check-item.running { opacity: 1.0; color: #ffffff; }
+  .check-item.done { opacity: 1.0; color: #eeeeff; }
+  .check-item.fail { opacity: 1.0; color: #ff9999; }
+  .check-icon { display: inline-block; width: 16px; }
+
+  /* --- Onboarding prompt --- */
+  .onboard-prompt {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .onboard-prompt .question {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 28px;
+  }
+  .onboard-btn {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #ffffff;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 6px;
+    padding: 10px 36px;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .onboard-btn:hover {
+    background: #ff0088;
+    color: #ffffff;
+    border-color: #ff0088;
+  }
+
+  /* --- Path input --- */
+  .path-input-wrap {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .path-input-wrap .label {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 20px;
+  }
+  .path-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+  .path-input {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 14px;
+    color: #ffffff;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 4px;
+    padding: 10px 14px;
+    width: 340px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .path-input:focus { border-color: rgba(255,255,255,0.8); }
+  .path-input::placeholder { color: rgba(255,255,255,0.5); }
+  .path-input.error {
+    animation: shake 0.4s ease;
+    border-color: rgba(255,100,100,0.8);
+  }
+  .submit-btn {
+    font-size: 18px;
+    color: #ffffff;
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .submit-btn:hover { background: #ff0088; color: #ffffff; border-color: #ff0088; }
+  .back-btn {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 20px;
+    color: rgba(255,255,255,0.8);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 20;
+    padding: 4px 8px;
+  }
+  .back-btn:hover { color: #ffffff; }
+  .path-error-msg {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 12px;
+    color: rgba(255,100,100,0.9);
+    margin-top: 12px;
+    height: 16px;
+  }
+
+  /* --- Install progress --- */
+  .progress-wrap {
+    text-align: center;
+    width: 360px;
+    margin-top: 24px;
+  }
+  .progress-step-name {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 14px;
+  }
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #ff0088;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-pct {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    margin-top: 8px;
+  }
+  .step-list {
+    margin-top: 20px;
+    text-align: left;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 11px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.8);
+  }
+  .step-list .step-done { color: #eeeeff; }
+  .step-list .step-current { color: rgba(255,255,255,0.95); }
+  .step-list .step-error { color: #ff9999; }
+  .step-icon { display: inline-block; width: 16px; }
+
+  /* --- Success overlay --- */
+  .success-wrap {
+    text-align: center;
+  }
+  .success-white-fade {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #ffffff;
+    opacity: 0;
+    transition: opacity 1.5s ease-in;
+    z-index: 15;
+    pointer-events: none;
+  }
+  .success-white-fade.active { opacity: 1; }
+  .success-wrap .success-text {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: #ffffff;
+    opacity: 0;
+    transition: opacity 0.8s ease-out 1.2s;
+  }
+  .success-wrap .success-text.show { opacity: 1; }
+
+  /* --- Error overlay --- */
+  .error-wrap {
+    text-align: center;
+    width: 440px;
+  }
+  .error-wrap .error-title {
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 700;
+    font-size: 24px;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+  .error-wrap .error-subtitle {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 16px;
+  }
+  .error-box {
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+    padding: 14px;
+    max-height: 180px;
+    overflow-y: auto;
+    text-align: left;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 11px;
+    color: #ffffff;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+  }
+  .error-actions { display: flex; gap: 8px; justify-content: center; }
+
+  /* --- Dev mode pill --- */
+  .dev-pill {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #fbbf24;
+    color: #1a1a1a;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 10px;
+    z-index: 30;
+    display: none;
+  }
+  .dev-pill.active { display: block; }
+
+  /* --- Pre-installation checklist (v0.9) --- */
+  .pre-check-wrap {
+    text-align: left;
+    margin-top: 24px;
+    max-width: 440px;
+    animation: fadeIn 0.8s ease-out;
+  }
+  .pre-check-subtitle {
+    font-family: 'Krub', -apple-system, sans-serif;
+    font-size: 16px;
+    color: #ffffff;
+    margin-bottom: 28px;
+    text-align: center;
+  }
+  .pre-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+    cursor: pointer;
+    position: relative;
+  }
+  .pre-check-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .pre-check-box {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid rgba(255,255,255,0.6);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-top: 1px;
+  }
+  .pre-check-box::after {
+    content: '';
+    font-size: 14px;
+    color: #001122;
+    font-weight: 700;
+  }
+  .pre-check-input:checked + .pre-check-box {
+    background: #ff0088;
+    border-color: #ff0088;
+  }
+  .pre-check-input:checked + .pre-check-box::after {
+    content: '\2713';
+  }
+  .pre-check-label {
+    font-family: 'Krub', -apple-system, sans-serif;
+    font-size: 15px;
+    color: #ffffff;
+    line-height: 1.5;
+  }
+  .pre-check-link {
+    color: rgba(255,255,255,0.95);
+    text-decoration: underline;
+    cursor: pointer;
+    text-underline-offset: 2px;
+  }
+  .pre-check-link:hover {
+    color: #ffffff;
+  }
+  .pre-check-continue {
+    margin-top: 28px;
+    width: 100%;
+    text-align: center;
+    transition: opacity 0.3s ease;
+  }
+  .pre-check-continue.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('../assets/fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'Inter';
+    src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
+    font-weight: 700;
+  }
+  @font-face {
+    font-family: 'Krub';
+    src: url('../assets/fonts/Krub-Regular.woff2') format('woff2');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Krub';
+    src: url('../assets/fonts/Krub-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<canvas id="shader-canvas"></canvas>
+
+<!-- Dev mode indicator -->
+<div class="dev-pill" id="dev-pill">DEV MODE</div>
+
+<!-- Screen: Boot checklist (default) -->
+<div class="overlay visible" id="screen-boot">
+  <span class="title">PM-OS</span>
+  <div class="checklist" id="checklist">
+    <div class="check-item pending" id="chk-env"><span class="check-icon">&#9675;</span> Detecting environment</div>
+    <div class="check-item pending" id="chk-brain"><span class="check-icon">&#9675;</span> Loading Brain index</div>
+    <div class="check-item pending" id="chk-connections"><span class="check-icon">&#9675;</span> Validating connections</div>
+    <div class="check-item pending" id="chk-session"><span class="check-icon">&#9675;</span> Ensuring session</div>
+    <div class="check-item pending" id="chk-health"><span class="check-icon">&#9675;</span> Starting health monitor</div>
+  </div>
+</div>
+
+<!-- Screen: Pre-installation checklist (v0.9) -->
+<div class="overlay interactive hidden" id="screen-pre-check">
+  <span class="title">PM-OS</span>
+  <div class="pre-check-wrap">
+    <div class="pre-check-subtitle">Before we begin, please confirm:</div>
+    <label class="pre-check-item">
+      <input type="checkbox" id="chk-mac" class="pre-check-input" />
+      <span class="pre-check-box"></span>
+      <span class="pre-check-label">I am on a Mac device</span>
+    </label>
+    <label class="pre-check-item">
+      <input type="checkbox" id="chk-claude" class="pre-check-input" />
+      <span class="pre-check-box"></span>
+      <span class="pre-check-label">I can open Claude Code in my terminal and work in it</span>
+    </label>
+    <label class="pre-check-item">
+      <input type="checkbox" id="chk-devtools" class="pre-check-input" />
+      <span class="pre-check-box"></span>
+      <span class="pre-check-label">I have Mac <a id="link-devtools" class="pre-check-link">developer tools</a> installed</span>
+    </label>
+    <button class="onboard-btn pre-check-continue hidden" id="btn-pre-check-continue">Continue</button>
+  </div>
+</div>
+
+<!-- Screen: Onboarding prompt -->
+<div class="overlay interactive hidden" id="screen-prompt">
+  <span class="title">PM-OS</span>
+  <div class="onboard-prompt">
+    <div class="question">Do you have PM-OS installed?</div>
+    <button class="onboard-btn" id="btn-yes">Yes</button>
+    <button class="onboard-btn" id="btn-no">No</button>
+  </div>
+</div>
+
+<!-- Screen: Path input -->
+<div class="overlay interactive hidden" id="screen-path">
+  <button class="back-btn" id="btn-back">&larr;</button>
+  <span class="title">PM-OS</span>
+  <div class="path-input-wrap">
+    <div class="label">Provide your PM-OS installation path</div>
+    <div class="path-row">
+      <input class="path-input" id="path-input" type="text" placeholder="~/pm-os" autofocus />
+      <button class="submit-btn" id="btn-submit-path">&rarr;</button>
+    </div>
+    <div class="path-error-msg" id="path-error"></div>
+  </div>
+</div>
+
+<!-- Screen: Install progress -->
+<div class="overlay interactive hidden" id="screen-progress">
+  <span class="title">PM-OS</span>
+  <div class="progress-wrap">
+    <div class="progress-step-name" id="progress-step-name">Preparing...</div>
+    <div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
+    <div class="progress-pct" id="progress-pct">0%</div>
+    <div class="step-list" id="step-list"></div>
+  </div>
+</div>
+
+<!-- Screen: Success -->
+<div class="success-white-fade" id="success-white-fade"></div>
+<div class="overlay hidden" id="screen-success">
+  <div class="success-wrap">
+    <div class="success-text" id="success-text">Installation Complete</div>
+  </div>
+</div>
+
+<!-- Screen: Error -->
+<div class="overlay interactive hidden" id="screen-error">
+  <div class="error-wrap">
+    <div class="error-title">Installation Failed</div>
+    <div class="error-subtitle">See error details below. Consult Claude for support.</div>
+    <div class="error-box" id="error-content"></div>
+    <div class="error-actions">
+      <button class="onboard-btn" id="btn-copy-error">Copy</button>
+      <button class="onboard-btn" id="btn-retry">Retry</button>
+      <button class="onboard-btn" id="btn-quit">Quit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// WebGL2 Wave Dithering Shader
+// ============================================================
+const canvas = document.getElementById('shader-canvas');
+const gl = canvas.getContext('webgl2');
+
+function resize() {
+  canvas.width = window.innerWidth * window.devicePixelRatio;
+  canvas.height = window.innerHeight * window.devicePixelRatio;
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+resize();
+window.addEventListener('resize', resize);
+
+const vsSource = `#version 300 es
+precision mediump float;
+layout(location = 0) in vec4 a_position;
+void main() {
+  gl_Position = a_position;
+}
+`;
+
+const fsSource = `#version 300 es
+precision mediump float;
+
+uniform float u_time;
+uniform vec2 u_resolution;
+out vec4 fragColor;
+
+const int bayer8x8[64] = int[64](
+   0, 32,  8, 40,  2, 34, 10, 42,
+  48, 16, 56, 24, 50, 18, 58, 26,
+  12, 44,  4, 36, 14, 46,  6, 38,
+  60, 28, 52, 20, 62, 30, 54, 22,
+   3, 35, 11, 43,  1, 33,  9, 41,
+  51, 19, 59, 27, 49, 17, 57, 25,
+  15, 47,  7, 39, 13, 45,  5, 37,
+  63, 31, 55, 23, 61, 29, 53, 21
+);
+
+float getBayerValue(vec2 uv) {
+  ivec2 pos = ivec2(mod(uv, 8.0));
+  int index = pos.y * 8 + pos.x;
+  return float(bayer8x8[index]) / 64.0;
+}
+
+void main() {
+  float t = 0.3 * u_time;
+  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+  uv -= 0.5;
+
+  float pxSize = 3.0;
+  vec2 pxSizeUv = gl_FragCoord.xy / pxSize;
+  vec2 pixelizedUv = floor(pxSizeUv) * pxSize / u_resolution.xy - 0.5;
+
+  // Wave shape
+  vec2 shape_uv = pixelizedUv * 4.0;
+  float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
+  float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
+
+  // Bayer 8x8 dithering
+  float dithering = getBayerValue(pxSizeUv) - 0.5;
+  float res = step(0.5, shape + dithering);
+
+  // Colors: #001122 background, #ff0088 foreground
+  vec3 bgColor = vec3(0.0, 0.067, 0.133);
+  vec3 fgColor = vec3(1.0, 0.0, 0.533);
+
+  vec3 color = mix(bgColor, fgColor, res);
+  fragColor = vec4(color, 1.0);
+}
+`;
+
+function createShader(type, source) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+  return shader;
+}
+
+const vs = createShader(gl.VERTEX_SHADER, vsSource);
+const fs = createShader(gl.FRAGMENT_SHADER, fsSource);
+const program = gl.createProgram();
+gl.attachShader(program, vs);
+gl.attachShader(program, fs);
+gl.linkProgram(program);
+gl.useProgram(program);
+
+const posBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const posLoc = gl.getAttribLocation(program, 'a_position');
+gl.enableVertexAttribArray(posLoc);
+gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+const timeLoc = gl.getUniformLocation(program, 'u_time');
+const resLoc = gl.getUniformLocation(program, 'u_resolution');
+
+const startTime = performance.now();
+function render() {
+  const elapsed = (performance.now() - startTime) / 1000;
+  gl.uniform1f(timeLoc, elapsed);
+  gl.uniform2f(resLoc, canvas.width, canvas.height);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  requestAnimationFrame(render);
+}
+render();
+
+// ============================================================
+// Screen management
+// ============================================================
+const screens = ['screen-boot', 'screen-pre-check', 'screen-prompt', 'screen-path', 'screen-progress', 'screen-success', 'screen-error'];
+
+function showScreen(id) {
+  screens.forEach(s => {
+    const el = document.getElementById(s);
+    el.classList.remove('visible');
+    el.classList.add('hidden');
+  });
+  const target = document.getElementById(id);
+  target.classList.remove('hidden');
+  target.classList.add('visible');
+}
+
+// ============================================================
+// Boot checklist API (v0 -- unchanged)
+// ============================================================
+window.updateCheck = function(id, status) {
+  const el = document.getElementById('chk-' + id);
+  if (!el) return;
+  const icon = el.querySelector('.check-icon');
+  el.className = 'check-item ' + status;
+  if (status === 'running') icon.textContent = '\u25CE';
+  else if (status === 'done') icon.textContent = '\u2713';
+  else if (status === 'fail') icon.textContent = '\u2717';
+};
+
+// ============================================================
+// Onboarding API (v0.1) -- called from main process
+// ============================================================
+let _onPreCheckContinue = null;
+let _onPromptAnswer = null;
+let _onPathSubmit = null;
+let _onRetry = null;
+let _onQuit = null;
+
+// --- Pre-installation checklist (v0.9) ---
+window.showPreInstallCheck = function(onContinue) {
+  _onPreCheckContinue = onContinue;
+  document.getElementById('chk-mac').checked = false;
+  document.getElementById('chk-claude').checked = false;
+  document.getElementById('chk-devtools').checked = false;
+  document.getElementById('btn-pre-check-continue').classList.add('hidden');
+  showScreen('screen-pre-check');
+};
+
+function updateContinueVisibility() {
+  const allChecked = document.getElementById('chk-mac').checked
+    && document.getElementById('chk-claude').checked
+    && document.getElementById('chk-devtools').checked;
+  const btn = document.getElementById('btn-pre-check-continue');
+  if (allChecked) btn.classList.remove('hidden');
+  else btn.classList.add('hidden');
+}
+
+['chk-mac', 'chk-claude', 'chk-devtools'].forEach(function(id) {
+  document.getElementById(id).addEventListener('change', updateContinueVisibility);
+});
+
+document.getElementById('btn-pre-check-continue').addEventListener('click', function() {
+  if (_onPreCheckContinue) _onPreCheckContinue();
+});
+
+document.getElementById('link-devtools').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  try {
+    require('electron').shell.openExternal('https://developer.apple.com/xcode/resources/');
+  } catch(err) {
+    window.open('https://developer.apple.com/xcode/resources/', '_blank');
+  }
+});
+
+window.showPrompt = function(onAnswer) {
+  _onPromptAnswer = onAnswer;
+  showScreen('screen-prompt');
+};
+
+window.showPathInput = function(onSubmit) {
+  _onPathSubmit = onSubmit;
+  showScreen('screen-path');
+  document.getElementById('path-input').focus();
+};
+
+window.showProgress = function() {
+  showScreen('screen-progress');
+};
+
+window.updateProgress = function(stepName, pct, steps) {
+  document.getElementById('progress-step-name').textContent = stepName;
+  document.getElementById('progress-bar-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = Math.round(pct) + '%';
+
+  if (steps && steps.length > 0) {
+    const list = document.getElementById('step-list');
+    list.innerHTML = steps.map(s => {
+      let cls = '', icon = '\u25CB';
+      if (s.status === 'done') { cls = 'step-done'; icon = '\u2713'; }
+      else if (s.status === 'running') { cls = 'step-current'; icon = '\u25CE'; }
+      else if (s.status === 'error') { cls = 'step-error'; icon = '\u2717'; }
+      return `<div class="${cls}"><span class="step-icon">${icon}</span> ${s.name}</div>`;
+    }).join('');
+  }
+};
+
+window.showSuccess = function() {
+  // Fade to white, then show "Installation Complete" text over white
+  showScreen('screen-success');
+  requestAnimationFrame(() => {
+    document.getElementById('success-white-fade').classList.add('active');
+    document.getElementById('success-text').classList.add('show');
+  });
+};
+
+window.showError = function(errorText, onRetry, onQuit) {
+  _onRetry = onRetry;
+  _onQuit = onQuit;
+  document.getElementById('error-content').textContent = errorText;
+  showScreen('screen-error');
+};
+
+window.setDevMode = function(active) {
+  const pill = document.getElementById('dev-pill');
+  pill.classList.toggle('active', active);
+};
+
+window.showPathError = function(msg) {
+  const input = document.getElementById('path-input');
+  const errEl = document.getElementById('path-error');
+  errEl.textContent = msg;
+  input.classList.add('error');
+  setTimeout(() => { input.classList.remove('error'); }, 500);
+};
+
+// ============================================================
+// UI event handlers
+// ============================================================
+document.getElementById('btn-yes').addEventListener('click', () => {
+  if (_onPromptAnswer) _onPromptAnswer('yes');
+});
+document.getElementById('btn-no').addEventListener('click', () => {
+  if (_onPromptAnswer) _onPromptAnswer('no');
+});
+document.getElementById('btn-back').addEventListener('click', () => {
+  document.title = 'PATH:__BACK__';
+});
+document.getElementById('btn-submit-path').addEventListener('click', () => {
+  const val = document.getElementById('path-input').value.trim();
+  if (_onPathSubmit && val) _onPathSubmit(val);
+});
+document.getElementById('path-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (_onPathSubmit && val) _onPathSubmit(val);
+  }
+  if (e.key === 'Escape') document.title = 'PATH:__BACK__';
+});
+document.getElementById('btn-copy-error').addEventListener('click', () => {
+  const text = document.getElementById('error-content').textContent;
+  navigator.clipboard.writeText(text);
+});
+document.getElementById('btn-retry').addEventListener('click', () => {
+  if (_onRetry) _onRetry();
+});
+document.getElementById('btn-quit').addEventListener('click', () => {
+  if (_onQuit) _onQuit();
+});
+</script>
+</body>
+</html>

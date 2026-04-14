@@ -1,0 +1,57 @@
+:root {
+  --pmos-pink: #ff0088;
+  --pmos-pink-hover: #cc006d;
+  --status-green: #22c55e;
+  --status-red: #ef4444;
+  --bg-dark: #001122;
+  --text-primary: #ffffff;
+  --text-secondary: #aabbcc;
+  --text-muted: #667788;
+  --border: #223344;
+  --bg-muted: #001a33;
+  --radius: 6px;
+  --radius-lg: 8px;
+
+  /* v0.2 onboarding */
+  --bg-onboarding: #001122;
+  --btn-primary-bg: #ff0088;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-border: #ffffff;
+  --btn-tertiary-text: #aabbcc;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Krub', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+}
+
+button {
+  font-family: 'Krub', sans-serif;
+  cursor: pointer;
+}
+
+input {
+  font-family: 'Krub', sans-serif;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
