@@ -171,7 +171,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
         <SettingsToggle label="Confucius (Session Notes)" checked={pmos.confucius_enabled ?? true} onChange={(v) => updatePmos('confucius_enabled', v)} />
         <SettingsToggle label="Ralph (Workflow Engine)" checked={pmos.ralph_enabled ?? true} onChange={(v) => updatePmos('ralph_enabled', v)} />
         <SettingsToggle label="Auto-update on Boot" checked={pmos.auto_update ?? true} onChange={(v) => updatePmos('auto_update', v)} />
-        <SettingsField label="Ralph Slack Channel" value={pmos.ralph_slack_channel || ''} onChange={(v) => updatePmos('ralph_slack_channel', v)} placeholder="C0A6ZAS1MSQ" />
+        <SettingsField label="Ralph Slack Channel" value={pmos.ralph_slack_channel || ''} onChange={(v) => updatePmos('ralph_slack_channel', v)} placeholder="C0XXXXXXXXX" />
       </SettingsSection>
 
       {/* Paths */}

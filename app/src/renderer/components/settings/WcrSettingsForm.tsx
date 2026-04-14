@@ -259,7 +259,7 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
         <SettingsField label="Instructions Tab" value={tabs.instructions || ''} onChange={(v) => updateMasterSheetTab('instructions', v)} placeholder="Instructions" />
         <SettingsField label="Topics Tab" value={tabs.topics || ''} onChange={(v) => updateMasterSheetTab('topics', v)} placeholder="Topics" />
         <SettingsField label="Recurring Tab" value={tabs.recurring || ''} onChange={(v) => updateMasterSheetTab('recurring', v)} placeholder="Recurring" />
-        <SettingsField label="Slack Channel" value={masterSheet.slack_channel || ''} onChange={(v) => updateMasterSheet('slack_channel', v)} placeholder="C0A6ZAS1MSQ" />
+        <SettingsField label="Slack Channel" value={masterSheet.slack_channel || ''} onChange={(v) => updateMasterSheet('slack_channel', v)} placeholder="C0XXXXXXXXX" />
         <SettingsField label="Timezone" value={masterSheet.timezone || ''} onChange={(v) => updateMasterSheet('timezone', v)} placeholder="Europe/Berlin" />
       </SettingsSection>
     </div>

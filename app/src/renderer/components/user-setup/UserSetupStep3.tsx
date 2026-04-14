@@ -58,8 +58,8 @@ export default function UserSetupStep3({ data, devConfig, onChange }: UserSetupS
 
   const orgField: FieldConfig = { envKey: 'org', label: 'GitHub Organization', type: 'text', required: false, placeholder: 'my-org' }
   const reposField: FieldConfig = { envKey: 'tracked_repos', label: 'Tracked Repositories', type: 'text', required: false, placeholder: 'my-org/web, my-org/api' }
-  const slackChannelField: FieldConfig = { envKey: 'channel', label: 'Personal Bot Channel', type: 'text', required: false, placeholder: 'e.g. C0A6ZAS1MSQ' }
-  const slackContextField: FieldConfig = { envKey: 'context_output_channel', label: 'Daily Context Publishing Channel', type: 'text', required: false, placeholder: 'e.g. C0A6ZAS1MSQ' }
+  const slackChannelField: FieldConfig = { envKey: 'channel', label: 'Personal Bot Channel', type: 'text', required: false, placeholder: 'e.g. C0XXXXXXXXX' }
+  const slackContextField: FieldConfig = { envKey: 'context_output_channel', label: 'Daily Context Publishing Channel', type: 'text', required: false, placeholder: 'e.g. C0XXXXXXXXX' }
 
   return (
     <div>

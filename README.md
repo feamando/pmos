@@ -15,7 +15,7 @@ PM-OS is a modular plugin system that turns [Claude Code](https://docs.anthropic
 
 ```bash
 # Clone the repo
-git clone https://github.com/feamando/pm-os.git
+git clone https://github.com/feamando/pmos.git
 cd pm-os
 
 # Set up user directory

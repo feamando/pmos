@@ -18,7 +18,7 @@ describe('IntegrationSettingsForm', () => {
     expect(screen.getByText('Slack')).toBeDefined()
     expect(screen.getByText('Google')).toBeDefined()
     expect(screen.getByText('Statsig')).toBeDefined()
-    expect(screen.getByText('HelloTech Sprint')).toBeDefined()
+    expect(screen.getByText('Sprint Tracker')).toBeDefined()
   })
 
   it('shows Jira expanded by default with fields', () => {

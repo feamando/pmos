@@ -49,8 +49,8 @@ fi
 
 # 4. Connector App tests (426 vitest)
 if [ "${1:-}" != "--quick" ]; then
-    run_suite "Connector App (vitest, 426 tests)" \
-        sh -c "cd '$PM_OS_ROOT/apps/helloai-connector' && npm run test"
+    run_suite "Connector App (vitest)" \
+        sh -c "cd '$PM_OS_ROOT/app' && npm run test"
 else
     echo ""
     echo ">>> SKIPPED: Connector App tests (--quick mode)"

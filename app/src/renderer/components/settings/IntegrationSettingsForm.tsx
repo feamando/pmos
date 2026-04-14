@@ -40,8 +40,8 @@ const INTEGRATIONS: IntegrationDef[] = [
   {
     id: 'slack', label: 'Slack',
     fields: [
-      { key: 'channel', label: 'Default Channel', placeholder: 'C0A6ZAS1MSQ' },
-      { key: 'context_output_channel', label: 'Context Output Channel', placeholder: 'C0A6ZAS1MSQ' },
+      { key: 'channel', label: 'Default Channel', placeholder: 'C0XXXXXXXXX' },
+      { key: 'context_output_channel', label: 'Context Output Channel', placeholder: 'C0XXXXXXXXX' },
       { key: 'mention_bot_name', label: 'Bot Name', placeholder: 'your-bot-name' },
     ],
   },
@@ -54,7 +54,7 @@ const INTEGRATIONS: IntegrationDef[] = [
     fields: [],
   },
   {
-    id: 'hellotech', label: 'HelloTech Sprint',
+    id: 'sprint_tracker', label: 'Sprint Tracker',
     fields: [
       { key: 'spreadsheet_id', label: 'Spreadsheet ID', placeholder: 'Google Sheets ID' },
       { key: 'calendar_tab', label: 'Calendar Tab', placeholder: 'Sprint Calendar' },
