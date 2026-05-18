@@ -32,8 +32,9 @@ try:
     from pm_os_base.tools.core.config_loader import get_config
 except ImportError:
     try:
-        sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent.parent))
-        from tools.core.config_loader import get_config
+        _PLUGIN_ROOT = Path(__file__).resolve().parent.parent.parent
+        sys.path.insert(0, str(_PLUGIN_ROOT.parent / "pm-os-base" / "tools" / "core"))
+        from config_loader import get_config
     except ImportError:
         get_config = None
 
@@ -41,7 +42,7 @@ try:
     from pm_os_base.tools.core.path_resolver import get_paths
 except ImportError:
     try:
-        from tools.core.path_resolver import get_paths
+        from path_resolver import get_paths
     except ImportError:
         get_paths = None
 
@@ -49,7 +50,7 @@ try:
     from pm_os_base.tools.core.connector_bridge import get_auth
 except ImportError:
     try:
-        from tools.core.connector_bridge import get_auth
+        from connector_bridge import get_auth
     except ImportError:
         get_auth = None
 

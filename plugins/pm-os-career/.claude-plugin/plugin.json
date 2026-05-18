@@ -2,8 +2,17 @@
   "name": "pm-os-career",
   "version": "5.0.0",
   "description": "Career planning, team development, interview scorecards, and 1:1 preparation",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
-  }
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "career", "team", "1on1", "reviews", "scorecards"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/review.md", "commands/team.md"],
+  "skills": [
+    "skills/career-frameworks/SKILL.md",
+    "skills/feedback-patterns/SKILL.md",
+    "skills/one-on-one-structure/SKILL.md",
+    "skills/review-writing/SKILL.md"
+  ],
+  "mcpServers": {}
 }

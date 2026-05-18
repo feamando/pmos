@@ -8,7 +8,7 @@ cce:
     module: tools/feature/feature_state.py
     description: "Feature state persistence and recovery"
   context_doc_generator:
-    module: tools/feature/context_doc_generator.py
+    module: tools/documents/context_doc_generator.py
     description: "Feature context document generator"
   deep_research_swarm:
     module: tools/research/deep_research_swarm.py
@@ -26,5 +26,5 @@ cce:
     module: tools/integration/jira_integration.py
     description: "Jira roadmap integration"
   framework_matcher:
-    module: tools/reasoning/framework_matcher.py
+    module: tools/util/framework_matcher.py
     description: "Strategic framework matching and application"

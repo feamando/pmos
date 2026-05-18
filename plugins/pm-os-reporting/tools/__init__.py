@@ -1,11 +1,11 @@
 """
 PM-OS Reporting Tools (v5.0)
 
-Sprint reports, performance updates, and organizational reporting.
+Sprint reports, performance updates, and tribe-level reporting.
 
 Usage:
     from pm_os_reporting.tools.sprint_report_generator import SprintReportGenerator
-    from pm_os_reporting.tools.tribe_quarterly_update import QuarterlyUpdate
+    from pm_os_reporting.tools.tribe_quarterly_update import TribeQuarterlyUpdate
     from pm_os_reporting.tools.performance_updater import PerformanceUpdater
 """
 
@@ -27,12 +27,12 @@ except ImportError:
 try:
     from pm_os_reporting.tools.tribe_quarterly_update import (
         SECTIONS,
-        QuarterlyUpdate,
+        TribeQuarterlyUpdate,
     )
 except ImportError:
     from tribe_quarterly_update import (
         SECTIONS,
-        QuarterlyUpdate,
+        TribeQuarterlyUpdate,
     )
 
 try:
@@ -59,7 +59,7 @@ __all__ = [
     "PriorityCluster",
     "CSV_HEADERS",
     # Tribe update
-    "QuarterlyUpdate",
+    "TribeQuarterlyUpdate",
     "SECTIONS",
     # Performance updater
     "PerformanceUpdater",

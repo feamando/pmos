@@ -1,9 +1,16 @@
 {
   "name": "pm-os-reporting",
   "version": "5.0.0",
-  "description": "Sprint reports, performance updates, and organizational reporting",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
-  }
+  "description": "Sprint reports, performance updates, and tribe-level reporting",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "reporting", "sprint", "performance", "metrics"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/report.md", "commands/analytics-report.md"],
+  "skills": [
+    "skills/metric-interpretation/SKILL.md",
+    "skills/reporting-patterns/SKILL.md"
+  ],
+  "mcpServers": {}
 }

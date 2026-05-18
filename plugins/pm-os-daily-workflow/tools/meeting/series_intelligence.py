@@ -382,7 +382,7 @@ if __name__ == "__main__":
         {
             "date": "2026-01-13",
             "summary": (
-                "Product metrics came up again. Sarah to create shelf doc. "
+                "Product metrics came up again. Beatrice to create shelf doc. "
                 "Agreed to escalate payment bug."
             ),
             "key_points": [

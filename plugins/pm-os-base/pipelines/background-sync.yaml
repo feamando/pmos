@@ -1,0 +1,63 @@
+name: background-sync
+description: "Background data gathering — safe for unattended execution (no LLM, no browser, no Slack posts)"
+version: "1.0"
+error_strategy: continue
+
+variables:
+  quiet: true
+
+steps:
+  - name: google-token-check
+    action: util.google_token_refresh
+    description: "Refresh Google token if expired (no browser, no interactive flow)"
+    on_error: skip
+
+  - name: slack-channel-sync
+    action: slack.channel_sync
+    description: "Sync Slack channel registry"
+    on_error: skip
+
+  - name: slackbot-scan
+    action: slack.mention_scan
+    description: "Scan Slack channels for bot mentions and classify tasks"
+    on_error: skip
+
+  - name: context-update
+    action: context.update
+    args:
+      timeout: 300
+    description: "Fetch daily context from integrations (GDocs, Gmail, Slack, Calendar)"
+    on_error: skip
+
+  - name: brain-ingest
+    action: brain.ingest
+    args:
+      mode: quick
+      timeout: 120
+    description: "Ingest inbox data into Brain (GDocs + Jira)"
+    on_error: skip
+
+  - name: brain-index
+    action: brain.index
+    description: "Regenerate BRAIN.md compressed index"
+    on_error: skip
+
+  - name: feature-index
+    action: feature.index
+    description: "Regenerate FEATURES.md feature index"
+    on_error: skip
+
+  - name: master-sheet
+    action: master_sheet.sync
+    description: "Sync Master Sheet priorities"
+    on_error: skip
+
+  - name: hellotech-sync
+    action: util.hellotech_sync
+    description: "Sync HelloTech tribe sprint report"
+    on_error: skip
+
+  - name: roadmap-capture
+    action: roadmap.capture
+    description: "Capture roadmap items from Slack"
+    on_error: skip

@@ -1,9 +1,72 @@
 {
   "name": "pm-os-daily-workflow",
   "version": "5.0.0",
-  "description": "Daily PM operating rhythm \u2014 context synthesis, meeting intelligence, integration sync, Slack operations",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
+  "description": "Daily PM operating rhythm: context synthesis, meeting intelligence, integration sync, Slack operations",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "daily", "context", "meetings", "slack", "sync", "jira"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/session.md", "commands/slackbot.md", "commands/sync.md"],
+  "skills": [
+    "skills/context-synthesis/SKILL.md",
+    "skills/daily-rhythm/SKILL.md",
+    "skills/meeting-intelligence/SKILL.md"
+  ],
+  "mcpServers": {},
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_starter.py",
+        "timeout": 5000,
+        "statusMessage": "Starting session..."
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_prompt_logger.py; python3 tools/hooks/session_transcript_sync.py",
+        "timeout": 5000
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_breadcrumb.py; python3 tools/hooks/session_transcript_sync.py",
+        "timeout": 5000
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_breadcrumb.py; python3 tools/hooks/session_transcript_sync.py",
+        "timeout": 5000
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_transcript_sync.py",
+        "timeout": 10000,
+        "statusMessage": "Checkpointing session..."
+      }
+    ],
+    "PostCompact": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_compact_saver.py",
+        "timeout": 15000,
+        "statusMessage": "Saving conversation context..."
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 tools/hooks/session_archiver.py",
+        "timeout": 15000,
+        "statusMessage": "Archiving session..."
+      }
+    ]
   }
 }

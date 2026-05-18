@@ -50,6 +50,23 @@ DEFAULT_MAX_JIRA_CHARS = 3000
 DEFAULT_MAX_GITHUB_CHARS = 3000
 
 
+def _has_google_token() -> bool:
+    """Check if Google OAuth token file exists directly (bypasses connector_bridge)."""
+    try:
+        try:
+            from pm_os_base.tools.core.config_loader import get_google_paths
+        except ImportError:
+            try:
+                from config_loader import get_google_paths
+            except ImportError:
+                return False
+        paths = get_google_paths()
+        token = paths.get("token", "")
+        return bool(token and __import__("os").path.exists(token))
+    except Exception:
+        return False
+
+
 def _smart_truncate(content: str, max_chars: int) -> str:
     """Truncate content keeping start (60%) and end (40%) for context.
 
@@ -115,9 +132,13 @@ class ContextSource(ABC):
 
     def is_available(self) -> bool:
         """Check if this source has auth available."""
-        if is_service_available is None:
-            return False
-        return is_service_available(self.service_name)
+        if is_service_available is not None and is_service_available(self.service_name):
+            return True
+        return self._has_direct_auth()
+
+    def _has_direct_auth(self) -> bool:
+        """Check for direct auth (token files) when connector_bridge is unavailable."""
+        return False
 
     def _get_auth(self):
         """Get auth for this source via connector_bridge."""
@@ -138,6 +159,10 @@ class GoogleDocsContextSource(ContextSource):
     service_name = "google"
     display_name = "Google Docs"
 
+    def _has_direct_auth(self) -> bool:
+        """Check for Google OAuth token file directly."""
+        return _has_google_token()
+
     def fetch(
         self,
         config: Any,
@@ -153,7 +178,7 @@ class GoogleDocsContextSource(ContextSource):
         """
         processed_files = processed_files or {}
         auth = self._get_auth()
-        if auth is None or auth.source == "none":
+        if (auth is None or auth.source == "none") and not _has_google_token():
             logger.info("Google auth not available, skipping Docs fetch")
             return {"items": [], "source": self.service_name}
 
@@ -195,7 +220,7 @@ class GoogleDocsContextSource(ContextSource):
                 f"{mime_query} and modifiedTime > '{since_str}' and trashed = false"
             )
 
-            if auth.source == "env":
+            if auth is None or auth.source in ("none", "env"):
                 items = self._fetch_with_api(
                     auth, search_terms, base_filters, processed_files, since_str
                 )
@@ -345,7 +370,7 @@ class GoogleDocsContextSource(ContextSource):
 class GmailContextSource(ContextSource):
     """Fetch recent Gmail messages, filtering promotional emails."""
 
-    service_name = "google"
+    service_name = "gmail"
     display_name = "Gmail"
 
     # Default promotional filter keywords (can be overridden via config)
@@ -358,6 +383,9 @@ class GmailContextSource(ContextSource):
         "noreply", "marketing", "promotions", "deals", "updates", "newsletter",
     ]
 
+    def _has_direct_auth(self) -> bool:
+        return _has_google_token()
+
     def fetch(
         self,
         config: Any,
@@ -367,13 +395,13 @@ class GmailContextSource(ContextSource):
         """Fetch Gmail messages since timestamp, filtering promotions."""
         processed_files = processed_files or {}
         auth = self._get_auth()
-        if auth is None or auth.source == "none":
+        if (auth is None or auth.source == "none") and not _has_google_token():
             logger.info("Google auth not available, skipping Gmail fetch")
             return {"items": [], "source": "gmail"}
 
         items = []
         try:
-            if auth.source == "env":
+            if auth is None or auth.source in ("none", "env"):
                 items = self._fetch_with_api(config, since, processed_files)
             else:
                 logger.info(
@@ -875,6 +903,174 @@ class GitHubContextSource(ContextSource):
 
 
 # =============================================================================
+# Google Calendar Source
+# =============================================================================
+
+
+class GoogleCalendarContextSource(ContextSource):
+    """Fetch today's calendar events from Google Calendar."""
+
+    service_name = "google_calendar"
+    display_name = "Google Calendar"
+
+    def is_available(self) -> bool:
+        """Calendar reuses Google OAuth."""
+        if is_service_available is not None and is_service_available("google"):
+            return True
+        return _has_google_token()
+
+    def _get_auth(self):
+        if get_auth is None:
+            return None
+        return get_auth("google")
+
+    def fetch(
+        self,
+        config: Any,
+        since: datetime,
+        processed_files: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        processed_files = processed_files or {}
+        auth = self._get_auth()
+        if (auth is None or auth.source == "none") and not _has_google_token():
+            logger.info("Google auth not available, skipping Calendar fetch")
+            return {"items": [], "source": self.service_name}
+
+        items = []
+        try:
+            if auth is None or auth.source in ("none", "env"):
+                items = self._fetch_with_api(processed_files)
+            else:
+                logger.info(
+                    "Calendar available via connector — use Claude MCP tool for interactive fetch"
+                )
+        except Exception as e:
+            logger.error("Calendar fetch failed: %s", e)
+
+        return {"items": items, "source": self.service_name}
+
+    def _fetch_with_api(
+        self, processed_files: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        import os
+        try:
+            from google.oauth2.credentials import Credentials
+            from googleapiclient.discovery import build
+        except ImportError:
+            logger.warning("Google API client not installed")
+            return []
+
+        try:
+            from pm_os_base.tools.core.config_loader import get_google_paths
+        except ImportError:
+            try:
+                from config_loader import get_google_paths
+            except ImportError:
+                return []
+
+        google_paths = get_google_paths()
+        token_file = google_paths.get("token")
+        if not token_file or not os.path.exists(token_file):
+            logger.warning("Google token not found")
+            return []
+
+        try:
+            creds = Credentials.from_authorized_user_file(token_file)
+        except Exception as e:
+            logger.error("Failed to load Google credentials: %s", e)
+            return []
+
+        now = datetime.now()
+        start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = now.replace(hour=23, minute=59, second=59, microsecond=0)
+
+        events = []
+        try:
+            service = build("calendar", "v3", credentials=creds)
+            result = (
+                service.events()
+                .list(
+                    calendarId="primary",
+                    timeMin=start_of_day.astimezone().isoformat(),
+                    timeMax=end_of_day.astimezone().isoformat(),
+                    singleEvents=True,
+                    orderBy="startTime",
+                    maxResults=50,
+                )
+                .execute()
+            )
+
+            for event in result.get("items", []):
+                event_id = event.get("id", "")
+                updated = event.get("updated", "")
+
+                if event.get("status") == "cancelled":
+                    continue
+                start = event.get("start", {})
+                if "dateTime" not in start:
+                    continue
+
+                attendees = event.get("attendees", [])
+                my_status = "accepted"
+                for a in attendees:
+                    if a.get("self"):
+                        my_status = a.get("responseStatus", "accepted")
+                        break
+                if my_status == "declined":
+                    continue
+
+                other_attendees = [
+                    {
+                        "name": a.get("displayName", a.get("email", "Unknown")),
+                        "email": a.get("email", ""),
+                        "status": a.get("responseStatus", "unknown"),
+                    }
+                    for a in attendees
+                    if not a.get("self")
+                    and "resource.calendar.google.com" not in a.get("email", "")
+                ]
+
+                events.append({
+                    "id": event_id,
+                    "summary": event.get("summary", "Untitled"),
+                    "start": start.get("dateTime", ""),
+                    "end": event.get("end", {}).get("dateTime", ""),
+                    "attendees": other_attendees,
+                    "htmlLink": event.get("htmlLink", ""),
+                    "description": (event.get("description", "") or "")[:1000],
+                    "location": event.get("location", ""),
+                    "updated": updated,
+                })
+
+        except Exception as e:
+            logger.warning("Calendar API request failed: %s", e)
+
+        return events
+
+    def format(self, data: Dict[str, Any]) -> str:
+        items = data.get("items", [])
+        if not items:
+            return ""
+
+        lines = []
+        lines.append("## GOOGLE CALENDAR")
+        lines.append("")
+        for event in items:
+            try:
+                start_dt = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
+                end_dt = datetime.fromisoformat(event["end"].replace("Z", "+00:00"))
+                time_str = f"{start_dt.strftime('%H:%M')}-{end_dt.strftime('%H:%M')}"
+            except (ValueError, KeyError):
+                time_str = "TBD"
+            attendee_count = len(event.get("attendees", []))
+            lines.append(
+                f"- [CAL] {time_str} | {event.get('summary', 'Untitled')} | {attendee_count} attendees"
+            )
+        lines.append("")
+        return "\n".join(lines)
+
+
+# =============================================================================
 # Source Registry
 # =============================================================================
 
@@ -885,6 +1081,7 @@ ALL_SOURCES = [
     GitHubContextSource(),
     GoogleDocsContextSource(),
     GmailContextSource(),
+    GoogleCalendarContextSource(),
 ]
 
 

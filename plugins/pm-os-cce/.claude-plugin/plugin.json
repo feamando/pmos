@@ -1,9 +1,23 @@
 {
   "name": "pm-os-cce",
   "version": "5.0.0",
-  "description": "Context Creation Engine \u2014 feature lifecycle, document generation, FPF reasoning, research",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
-  }
+  "description": "Context Creation Engine: feature lifecycle, document generation, FPF reasoning, research",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "features", "documents", "prd", "adr", "rfc", "reasoning", "research"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/doc.md", "commands/feature.md", "commands/reason.md", "commands/roadmap.md"],
+  "skills": [
+    "skills/evidence-reasoning/SKILL.md",
+    "skills/feature-workflow/SKILL.md",
+    "skills/framework-matching/SKILL.md",
+    "skills/research-methodology/SKILL.md",
+    "skills/stress-test/SKILL.md",
+    "skills/tcva/SKILL.md",
+    "skills/spec-brief/SKILL.md",
+    "skills/spec-pipeline/SKILL.md",
+    "skills/wireframe/SKILL.md"
+  ],
+  "mcpServers": {}
 }

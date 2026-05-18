@@ -45,8 +45,72 @@ def _run_tool(cmd: list, timeout: int = 120) -> Dict[str, Any]:
         return {"success": False, "message": f"Tool not found: {e}", "data": {}}
 
 
+TOOL_REGISTRY = {
+    ("brain", "brain_enrich.py"): ("pm-os-brain", "enrichment", "brain_enrich.py"),
+    ("brain", "brain_loader.py"): ("pm-os-brain", "brain_core", "brain_loader.py"),
+    ("brain", "brain_index_generator.py"): ("pm-os-brain", "index", "brain_index_generator.py"),
+    ("brain", "ingestion_orchestrator.py"): ("pm-os-brain", "enrichment", "ingestion_orchestrator.py"),
+    ("brain", "enrichers", "session_enricher.py"): ("pm-os-brain", "enrichment", "session_enricher.py"),
+    ("daily_context", "daily_context_updater.py"): ("pm-os-daily-workflow", "daily_context", "daily_context_updater.py"),
+    ("daily_context", "context_synthesizer.py"): ("pm-os-daily-workflow", "daily_context", "context_synthesizer.py"),
+    ("meeting", "meeting_prep.py"): ("pm-os-daily-workflow", "meeting", "meeting_prep.py"),
+    ("slack", "slack_context_poster.py"): ("pm-os-daily-workflow", "slack", "slack_context_poster.py"),
+    ("slack", "slack_channel_sync.py"): ("pm-os-daily-workflow", "slack", "slack_channel_sync.py"),
+    ("slack", "slack_mention_handler.py"): ("pm-os-daily-workflow", "slack", "slack_mention_handler.py"),
+    ("master_sheet", "master_sheet_sync.py"): ("pm-os-daily-workflow", "integrations", "master_sheet_sync.py"),
+    ("integrations", "hellotech_sprint_sync.py"): ("pm-os-daily-workflow", "integrations", "hellotech_sprint_sync.py"),
+    ("session", "confucius_agent.py"): ("pm-os-base", "session", "confucius_agent.py"),
+    ("preflight", "preflight_runner.py"): ("pm-os-base", "preflight", "preflight_runner.py"),
+    ("integrations", "google_scope_validator.py"): ("pm-os-base", "integrations", "google_scope_validator.py"),
+    ("util", "mcp_provision.py"): ("pm-os-base", "util", "mcp_provision.py"),
+    ("features", "feature_index_generator.py"): ("pm-os-cce", "feature", "feature_index_generator.py"),
+    ("util", "command_sync.py"): ("pm-os-dev", "dev_util", "command_sync.py"),
+    ("quint", "quint_brain_sync.py"): ("pm-os-brain", "sync", "quint_brain_sync.py"),
+}
+
+
+def _get_plugin_dirs() -> list:
+    dirs = []
+    root = os.environ.get("PM_OS_ROOT", "")
+    if root:
+        for sub in ("v5/plugins", "plugins"):
+            d = Path(root) / sub
+            if d.exists():
+                dirs.append(str(d))
+    claude = Path.home() / ".claude" / "plugins"
+    if claude.exists():
+        dirs.append(str(claude))
+    return dirs
+
+
+def _get_bundle_common():
+    resources = os.environ.get("ELECTRON_RESOURCES_PATH", "")
+    if resources:
+        candidate = Path(resources) / "bundle" / "common"
+        if candidate.exists():
+            return str(candidate)
+    app_bundle = Path("/Applications/HelloAI.app/Contents/Resources/bundle/common")
+    if app_bundle.exists():
+        return str(app_bundle)
+    return None
+
+
 def _tool_path(*parts: str) -> str:
-    """Resolve tool path relative to Base plugin tools/."""
+    """Resolve tool path: plugins first, then HelloAI bundle, then common/."""
+    key = parts
+    if key in TOOL_REGISTRY:
+        plugin_id, *tool_parts = TOOL_REGISTRY[key]
+        for plugins_dir in _get_plugin_dirs():
+            candidate = Path(plugins_dir) / plugin_id / "tools" / Path(*tool_parts)
+            if candidate.exists():
+                return str(candidate)
+
+    bundle = _get_bundle_common()
+    if bundle:
+        candidate = Path(bundle) / "tools" / Path(*parts)
+        if candidate.exists():
+            return str(candidate)
+
     base_tools = Path(__file__).parent.parent
     return str(base_tools / Path(*parts))
 

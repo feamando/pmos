@@ -12,3 +12,6 @@ pm-os-career:
   team_operations:
     module: tools/team_operations.py
     description: "Team capacity planning and org operations"
+  review_generator:
+    module: tools/review_generator.py
+    description: "Performance review evidence gathering and generation"

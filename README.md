@@ -37,7 +37,7 @@ This loads your agent context, syncs daily data, enriches the Brain knowledge gr
 
 ## Plugin Architecture
 
-PM-OS v5.0 is organized into 6 self-contained plugins. Each plugin provides commands, skills, and Python tools:
+PM-OS v5.0 is organized into 7 self-contained plugins. Each plugin provides commands, skills, and Python tools:
 
 | Plugin | Description | Key Capabilities |
 |--------|-------------|-----------------|
@@ -47,6 +47,7 @@ PM-OS v5.0 is organized into 6 self-contained plugins. Each plugin provides comm
 | **pm-os-cce** | Context Creation Engine | Document generation, feature lifecycle, FPF reasoning, roadmap management |
 | **pm-os-reporting** | Reporting | Sprint reports, metric interpretation, status updates |
 | **pm-os-career** | Career & team | Career frameworks, 1:1 prep, interview scoring, team operations |
+| **pm-os-dev** | Development | Release pipeline, version management, plugin publishing, cross-CLI sync |
 
 All plugins depend on **pm-os-base** as the foundation layer.
 
@@ -80,6 +81,8 @@ plugins/pm-os-{name}/
 | `/report sprint` | Generate sprint report from Jira data |
 | `/team one-on-one "Name"` | Prepare for a 1:1 meeting |
 | `/team career-plan -create "Name"` | Initialize a career plan |
+| `/release` | Run the PM-OS release pipeline |
+| `/ralph start "feature"` | Multi-iteration feature development |
 
 ---
 
@@ -112,6 +115,7 @@ pm-os/
     pm-os-cce/             # Context Creation Engine plugin
     pm-os-reporting/       # Reporting plugin
     pm-os-career/          # Career & team plugin
+    pm-os-dev/             # Development & release plugin
   migration/               # v4.x to v5.0 migration tools
   templates/               # User onboarding templates
   LICENSE                  # MIT License

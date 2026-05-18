@@ -1,9 +1,23 @@
 {
   "name": "pm-os-brain",
   "version": "5.0.0",
-  "description": "Organizational knowledge graph \u2014 persistent, enriched entity store with MCP server for any Claude interface",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
+  "description": "Organizational knowledge graph: persistent, enriched entity store with MCP server",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/brain",
+  "keywords": ["pm-os", "knowledge-graph", "entities", "mcp", "brain"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/brain.md"],
+  "skills": [
+    "skills/entity-resolution/SKILL.md",
+    "skills/org-knowledge/SKILL.md",
+    "skills/relationship-awareness/SKILL.md"
+  ],
+  "mcpServers": {
+    "pm-os-brain": {
+      "command": "python3",
+      "args": ["tools/mcp/brain_mcp_server.py"],
+      "env": { "MCP_TRANSPORT": "stdio" }
+    }
   }
 }

@@ -1,0 +1,48 @@
+# Daily Workflow plugin preflight checks
+# Registered with the Base plugin's preflight runner to verify daily workflow tool availability
+daily-workflow:
+  daily_context_updater:
+    module: tools/daily_context/daily_context_updater.py
+    description: "Daily context raw data fetcher (GDocs, Slack, email)"
+  context_synthesizer:
+    module: tools/daily_context/context_synthesizer.py
+    description: "Context synthesis from raw data to structured daily brief"
+  context_sources:
+    module: tools/daily_context/context_sources.py
+    description: "Data source connectors for daily context"
+  meeting_prep:
+    module: tools/meeting/meeting_prep.py
+    description: "Meeting preparation with participant context and agenda"
+  series_intelligence:
+    module: tools/meeting/series_intelligence.py
+    description: "Meeting series pattern recognition and history"
+  participant_context:
+    module: tools/meeting/participant_context.py
+    description: "Participant Brain entity lookup for meeting prep"
+  slack_channel_sync:
+    module: tools/slack/slack_channel_sync.py
+    description: "Slack channel discovery and sync"
+  slack_context_poster:
+    module: tools/slack/slack_context_poster.py
+    description: "Post daily context summary to Slack"
+  slack_mention_handler:
+    module: tools/slack/slack_mention_handler.py
+    description: "Process and classify Slack mentions"
+  sync_all:
+    module: tools/integrations/sync_all.py
+    description: "Orchestrate sync across all integrations"
+  jira_sync:
+    module: tools/integrations/jira_sync.py
+    description: "Jira project and sprint data sync"
+  confluence_sync:
+    module: tools/integrations/confluence_sync.py
+    description: "Confluence page sync to Brain inbox"
+  github_sync:
+    module: tools/integrations/github_sync.py
+    description: "GitHub PR and activity sync"
+  master_sheet_sync:
+    module: tools/integrations/master_sheet_sync.py
+    description: "Google Sheets master sheet sync"
+  squad_sprint_sync:
+    module: tools/integrations/squad_sprint_sync.py
+    description: "HelloTech squad sprint report sync"

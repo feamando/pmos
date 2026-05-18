@@ -90,9 +90,9 @@ class PriorityCluster:
 # ============================================================================
 
 CSV_HEADERS = [
-    "Division",
-    "Department",
-    "Team",
+    "Mega-Alliance",
+    "Tribe",
+    "Squad",
     "KPI Movement",
     "Delivered",
     "Delivered External",
@@ -139,9 +139,9 @@ class SprintReportGenerator:
         legacy_path.mkdir(parents=True, exist_ok=True)
         return legacy_path
 
-    def _get_team_registry_path(self) -> Path:
-        """Get team registry path."""
-        return self.paths.root / "team_registry.yaml"
+    def _get_squad_registry_path(self) -> Path:
+        """Get squad registry path."""
+        return self.paths.root / "squad_registry.yaml"
 
     def _get_brain_github_dir(self) -> Path:
         """Get Brain GitHub directory."""
@@ -189,35 +189,35 @@ class SprintReportGenerator:
 
     # --- Squad registry ---
 
-    def load_team_registry(
-        self, filter_department: Optional[str] = None
+    def load_squad_registry(
+        self, filter_tribe: Optional[str] = None
     ) -> List[Dict]:
-        """Load teams from registry, optionally filtering by department.
+        """Load squads from registry, optionally filtering by tribe.
 
         Args:
-            filter_department: Department name to filter by. If None, uses config default.
+            filter_tribe: Tribe name to filter by. If None, uses config default.
         """
-        registry_path = self._get_team_registry_path()
+        registry_path = self._get_squad_registry_path()
         if not registry_path.exists():
-            logger.error("Team registry not found at %s", registry_path)
+            logger.error("Squad registry not found at %s", registry_path)
             return []
 
         if not YAML_AVAILABLE:
-            logger.error("PyYAML required for team registry")
+            logger.error("PyYAML required for squad registry")
             return []
 
         with open(registry_path, "r") as f:
             data = yaml.safe_load(f)
 
-        teams = data.get("teams", data.get("squads", []))
+        squads = data.get("squads", [])
 
-        if filter_department is None:
-            filter_department = self.config.get("reporting.default_department", None)
+        if filter_tribe is None:
+            filter_tribe = self.config.get("reporting.default_tribe", None)
 
-        if filter_department:
-            teams = [t for t in teams if t.get("department", t.get("tribe")) == filter_department]
+        if filter_tribe:
+            squads = [s for s in squads if s.get("tribe") == filter_tribe]
 
-        return teams
+        return squads
 
     # --- Detailed ticket fetching ---
 
@@ -640,10 +640,51 @@ class SprintReportGenerator:
         )
 
         # Planned: active sprint or top backlog
-        planned_jql = "AND sprint in openSprints() ORDER BY rank ASC"
-        planned_tickets = self.fetch_detailed_tickets(
-            project, planned_jql, limit=30
-        )
+        # Support multiple boards (e.g., Growth + Retention for same project)
+        jira_boards = squad.get("jira_boards", [])
+        if jira_boards and len(jira_boards) > 1:
+            planned_tickets = []
+            for board in jira_boards:
+                board_id = board["id"]
+                board_name = board.get("name", board_id)
+                logger.info(
+                    "Fetching planned items from %s board (ID: %s)...",
+                    board_name,
+                    board_id,
+                )
+                board_jql = (
+                    f"AND sprint in openSprints() AND board = {board_id} "
+                    "ORDER BY rank ASC"
+                )
+                board_tickets = self.fetch_detailed_tickets(
+                    project, board_jql, limit=20
+                )
+                if not board_tickets:
+                    board_jql = (
+                        "AND sprint in openSprints() ORDER BY rank ASC"
+                    )
+                    board_tickets = self.fetch_detailed_tickets(
+                        project, board_jql, limit=20
+                    )
+                # Tag tickets with board name for clustering
+                for t in board_tickets:
+                    if not t.epic_name:
+                        t.epic_name = board_name
+                        t.epic_key = f"board-{board_id}"
+                planned_tickets.extend(board_tickets)
+            # Deduplicate by ticket key
+            seen_keys: set = set()
+            deduped: List[TicketDetail] = []
+            for t in planned_tickets:
+                if t.key not in seen_keys:
+                    seen_keys.add(t.key)
+                    deduped.append(t)
+            planned_tickets = deduped
+        else:
+            planned_jql = "AND sprint in openSprints() ORDER BY rank ASC"
+            planned_tickets = self.fetch_detailed_tickets(
+                project, planned_jql, limit=30
+            )
 
         if not planned_tickets:
             planned_jql = "AND statusCategory != Done ORDER BY rank ASC"
@@ -689,8 +730,8 @@ class SprintReportGenerator:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Read org-level labels from config
-        division = self.config.get(
-            "reporting.division", "Division"
+        mega_alliance = self.config.get(
+            "reporting.mega_alliance", "Mega-Alliance"
         )
 
         if sprint_start:
@@ -779,8 +820,8 @@ class SprintReportGenerator:
                 # Write row
                 writer.writerow(
                     [
-                        division,
-                        squad.get("department", squad.get("tribe", "")),
+                        mega_alliance,
+                        squad.get("tribe", ""),
                         squad_name,
                         "N/A (Manual Entry)",
                         delivered_summary,
@@ -806,33 +847,33 @@ class SprintReportGenerator:
 
     def run(
         self,
-        team_filter: Optional[str] = None,
+        squad_filter: Optional[str] = None,
         output: Optional[str] = None,
         sprint_start: Optional[str] = None,
         sprint_end: Optional[str] = None,
-        department: Optional[str] = None,
+        tribe: Optional[str] = None,
     ) -> Path:
         """Run the report generator.
 
         Args:
-            team_filter: Optional team name to filter by.
+            squad_filter: Optional squad name to filter by.
             output: Optional output file path.
             sprint_start: Sprint start date (YYYY-MM-DD).
             sprint_end: Sprint end date (YYYY-MM-DD).
-            department: Optional department name override.
+            tribe: Optional tribe name override.
         """
-        squads = self.load_team_registry(filter_department=department)
+        squads = self.load_squad_registry(filter_tribe=tribe)
         if not squads:
-            raise ValueError("No teams found in registry")
+            raise ValueError("No squads found in registry")
 
-        if team_filter:
+        if squad_filter:
             squads = [
                 s
                 for s in squads
-                if s["name"].lower() == team_filter.lower()
+                if s["name"].lower() == squad_filter.lower()
             ]
             if not squads:
-                raise ValueError(f"Team '{team_filter}' not found")
+                raise ValueError(f"Squad '{squad_filter}' not found")
 
         # Determine output filename
         output_dir = self._get_report_output_dir()
@@ -863,9 +904,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Sprint Report Generator v5.0"
     )
-    parser.add_argument("--team", type=str, help="Generate for specific team")
+    parser.add_argument("--squad", type=str, help="Generate for specific squad")
     parser.add_argument("--output", type=str, help="Custom output path")
-    parser.add_argument("--department", type=str, help="Filter by department")
+    parser.add_argument("--tribe", type=str, help="Filter by tribe")
     parser.add_argument(
         "--sprint-start", type=str, help="Sprint start date (YYYY-MM-DD)"
     )
@@ -876,10 +917,10 @@ if __name__ == "__main__":
 
     generator = SprintReportGenerator()
     result = generator.run(
-        team_filter=args.team,
+        squad_filter=args.squad,
         output=args.output,
         sprint_start=args.sprint_start,
         sprint_end=args.sprint_end,
-        department=args.department,
+        tribe=args.tribe,
     )
     print(f"Report generated: {result}")

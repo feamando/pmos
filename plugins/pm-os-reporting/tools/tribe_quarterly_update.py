@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-PM-OS Reporting Quarterly Update (v5.0)
+PM-OS Reporting Tribe Quarterly Update (v5.0)
 
-Generates department-level quarterly update documents for planning offsites.
+Generates tribe-level quarterly update documents for planning offsites.
 Auto-populates from Brain, Jira, context files, and yearly plans.
 Supports orthogonal challenge for rigorous review.
 
 Usage:
-    from pm_os_reporting.tools.quarterly_update import QuarterlyUpdate
+    from pm_os_reporting.tools.tribe_quarterly_update import TribeQuarterlyUpdate
 """
 
 import json
@@ -82,17 +82,17 @@ SECTIONS = [
 # Template
 # ============================================================================
 
-QUARTERLY_UPDATE_TEMPLATE = """# {dept_name} - {quarter} Planning Update
+TRIBE_UPDATE_TEMPLATE = """# {tribe_name} - {quarter} Planning Update
 
-## Quarterly Planning Update
+## Tribe Quarterly Planning Update
 
 ---
 
-## I. {dept_name}'s Executive Summary of {prev_quarter} Performance
+## I. {tribe_name}'s Executive Summary of {prev_quarter} Performance
 
-**Division:** {division}
+**Mega Alliance:** {mega_alliance}
 
-**Mission:** {mission}
+**Tribe Mission:** {mission}
 
 **{prev_quarter} Key Metrics:**
 
@@ -145,7 +145,7 @@ QUARTERLY_UPDATE_TEMPLATE = """# {dept_name} - {quarter} Planning Update
 ---
 
 *Generated: {timestamp}*
-*Department Lead: {lead}*
+*Tribe Lead: {lead}*
 *Engineering Lead: {eng_lead}*
 """
 
@@ -155,8 +155,8 @@ QUARTERLY_UPDATE_TEMPLATE = """# {dept_name} - {quarter} Planning Update
 # ============================================================================
 
 
-class QuarterlyUpdate:
-    """Generates department-level quarterly update documents."""
+class TribeQuarterlyUpdate:
+    """Generates tribe-level quarterly update documents."""
 
     def __init__(self):
         self.paths = get_paths()
@@ -164,56 +164,55 @@ class QuarterlyUpdate:
 
     # --- Config accessors ---
 
-    def _get_dept_config(self, department: str) -> Dict[str, Any]:
-        """Get department configuration from config.yaml.
+    def _get_tribe_config(self, tribe: str) -> Dict[str, Any]:
+        """Get tribe configuration from config.yaml.
 
-        Department config lives under reporting.departments.<dept_slug>
-        with keys: division, mission, teams, jira_projects, lead, eng_lead.
+        Tribe config lives under reporting.tribes.<tribe_slug>
+        with keys: mega_alliance, mission, squads, jira_projects, lead, eng_lead.
         """
-        dept_slug = department.lower().replace(" ", "_")
-        dept_config = self.config.get(
-            f"reporting.departments.{dept_slug}", {}
+        tribe_slug = tribe.lower().replace(" ", "_")
+        tribe_config = self.config.get(
+            f"reporting.tribes.{tribe_slug}", {}
         )
 
-        if not dept_config:
-            # Fallback: build minimal config from team registry
-            teams = self._load_team_registry(department)
-            team_names = [s["name"] for s in teams]
+        if not tribe_config:
+            # Fallback: build minimal config from squad registry
+            squads = self._load_squad_registry(tribe)
+            squad_names = [s["name"] for s in squads]
             jira_projects = [
-                s["jira_project"] for s in teams if s.get("jira_project")
+                s["jira_project"] for s in squads if s.get("jira_project")
             ]
-            user_name = self.config.get("user.name", "[Department Lead]")
+            user_name = self.config.get("user.name", "[Tribe Lead]")
 
-            dept_config = {
-                "division": self.config.get(
-                    "reporting.division", "Division"
+            tribe_config = {
+                "mega_alliance": self.config.get(
+                    "reporting.mega_alliance", "Mega-Alliance"
                 ),
-                "mission": f"[{department} mission — configure in reporting.departments.{dept_slug}.mission]",
-                "teams": team_names,
+                "mission": f"[{tribe} tribe mission — configure in reporting.tribes.{tribe_slug}.mission]",
+                "squads": squad_names,
                 "jira_projects": jira_projects,
                 "lead": user_name,
                 "eng_lead": "[Engineering Lead]",
             }
 
-        return dept_config
+        return tribe_config
 
-    def _get_available_departments(self) -> List[str]:
-        """Get list of available departments from config or registry."""
-        depts_config = self.config.get("reporting.departments", {})
-        if depts_config:
-            return list(depts_config.keys())
+    def _get_available_tribes(self) -> List[str]:
+        """Get list of available tribes from config or registry."""
+        tribes_config = self.config.get("reporting.tribes", {})
+        if tribes_config:
+            return list(tribes_config.keys())
 
-        # Fallback: derive from team registry
-        registry_path = self.paths.root / "team_registry.yaml"
+        # Fallback: derive from squad registry
+        registry_path = self.paths.root / "squad_registry.yaml"
         if registry_path.exists() and YAML_AVAILABLE:
             with open(registry_path, "r") as f:
                 data = yaml.safe_load(f)
-            departments = set()
-            for team in data.get("teams", data.get("squads", [])):
-                dept = team.get("department", team.get("tribe"))
-                if dept:
-                    departments.add(dept)
-            return sorted(departments)
+            tribes = set()
+            for squad in data.get("squads", []):
+                if squad.get("tribe"):
+                    tribes.add(squad["tribe"])
+            return sorted(tribes)
 
         return []
 
@@ -225,17 +224,17 @@ class QuarterlyUpdate:
 
     # --- Data gathering ---
 
-    def _load_team_registry(self, department: str) -> List[Dict]:
-        """Load teams from registry for a specific department."""
-        registry_path = self.paths.root / "team_registry.yaml"
+    def _load_squad_registry(self, tribe: str) -> List[Dict]:
+        """Load squads from registry for a specific tribe."""
+        registry_path = self.paths.root / "squad_registry.yaml"
         if not registry_path.exists() or not YAML_AVAILABLE:
             return []
 
         with open(registry_path, "r") as f:
             data = yaml.safe_load(f)
 
-        teams = data.get("teams", data.get("squads", []))
-        return [t for t in teams if t.get("department", t.get("tribe")) == department]
+        squads = data.get("squads", [])
+        return [s for s in squads if s.get("tribe") == tribe]
 
     def _gather_context_files(self, days: int = 30) -> List[Dict[str, Any]]:
         """Gather recent context files for insights."""
@@ -263,16 +262,16 @@ class QuarterlyUpdate:
 
         return context_files
 
-    def _gather_brain_projects(self, dept_config: Dict) -> List[Dict[str, Any]]:
-        """Gather Brain project files for the department's teams."""
+    def _gather_brain_projects(self, tribe_config: Dict) -> List[Dict[str, Any]]:
+        """Gather Brain project files for the tribe's squads."""
         projects = []
-        squad_names = dept_config.get("teams", dept_config.get("squads", []))
+        squad_names = tribe_config.get("squads", [])
 
         projects_dir = self.paths.user / "brain" / "Projects"
         if not projects_dir.exists():
             return projects
 
-        # Build search patterns from team names (config-driven)
+        # Build search patterns from squad names (config-driven)
         search_patterns = []
         for squad in squad_names:
             slug = squad.lower().replace(" ", "_")
@@ -302,10 +301,10 @@ class QuarterlyUpdate:
 
         return projects
 
-    def _gather_team_entities(self, dept_config: Dict) -> List[Dict[str, Any]]:
-        """Gather Brain team entity files."""
+    def _gather_squad_entities(self, tribe_config: Dict) -> List[Dict[str, Any]]:
+        """Gather Brain squad entity files."""
         entities = []
-        squad_names = dept_config.get("teams", dept_config.get("squads", []))
+        squad_names = tribe_config.get("squads", [])
 
         entities_dir = self.paths.user / "brain" / "Entities"
         if not entities_dir.exists():
@@ -329,8 +328,8 @@ class QuarterlyUpdate:
 
         return entities
 
-    def _gather_jira_data(self, dept_config: Dict) -> Dict[str, Any]:
-        """Gather Jira data for the department's projects."""
+    def _gather_jira_data(self, tribe_config: Dict) -> Dict[str, Any]:
+        """Gather Jira data for the tribe's projects."""
         jira_data: Dict[str, Any] = {
             "blockers": [],
             "delivered": [],
@@ -594,12 +593,12 @@ class QuarterlyUpdate:
 
     def generate(
         self,
-        department: str,
+        tribe: str,
         quarter: Optional[str] = None,
         prev_quarter: Optional[str] = None,
     ) -> str:
-        """Generate complete quarterly update document."""
-        dept_config = self._get_dept_config(department)
+        """Generate complete tribe quarterly update document."""
+        tribe_config = self._get_tribe_config(tribe)
 
         # Derive quarter defaults from current date
         now = datetime.now()
@@ -618,13 +617,13 @@ class QuarterlyUpdate:
         context_files = self._gather_context_files(30)
 
         logger.info("Gathering Brain projects...")
-        projects = self._gather_brain_projects(dept_config)
+        projects = self._gather_brain_projects(tribe_config)
 
-        logger.info("Gathering team entities...")
-        _entities = self._gather_team_entities(dept_config)
+        logger.info("Gathering squad entities...")
+        _entities = self._gather_squad_entities(tribe_config)
 
         logger.info("Gathering Jira data...")
-        jira_data = self._gather_jira_data(dept_config)
+        jira_data = self._gather_jira_data(tribe_config)
 
         logger.info("Extracting blockers...")
         blockers = self._extract_blockers_from_context(context_files)
@@ -641,33 +640,33 @@ class QuarterlyUpdate:
         hot_debates = self._generate_hot_debates()
 
         # Strategic relevance from config or placeholder
-        strategic_relevance = dept_config.get(
+        strategic_relevance = tribe_config.get(
             "strategic_relevance",
-            f"[{department} strategic relevance — configure in reporting.departments config]",
+            f"[{tribe} strategic relevance — configure in reporting.tribes config]",
         )
 
         # Fill template
-        document = QUARTERLY_UPDATE_TEMPLATE.format(
-            dept_name=department,
+        document = TRIBE_UPDATE_TEMPLATE.format(
+            tribe_name=tribe,
             quarter=quarter,
             prev_quarter=prev_quarter,
-            division=dept_config.get("division", "Division"),
-            mission=dept_config.get("mission", "[Department mission]"),
+            mega_alliance=tribe_config.get("mega_alliance", "Mega-Alliance"),
+            mission=tribe_config.get("mission", "[Tribe mission]"),
             executive_metrics=executive_metrics,
             strategic_relevance=strategic_relevance,
             systemic_blockers=systemic_blockers,
             root_cause_analysis="[Analyze root causes — focus on process gaps, data misalignment, or policy ambiguity]",
             key_learnings=key_learnings,
             mitigation_plan=f"[Describe how internal processes will change in {quarter} to minimize impact]",
-            goals_intro=f"The {department} department will focus on the following key initiatives in {quarter}:",
+            goals_intro=f"The {tribe} tribe will focus on the following key initiatives in {quarter}:",
             roadmap_table=roadmap_table,
             dependencies=dependencies,
             hot_debates=hot_debates,
             timestamp=datetime.now().strftime("%Y-%m-%d %H:%M"),
-            lead=dept_config.get(
-                "lead", self.config.get("user.name", "[Department Lead]")
+            lead=tribe_config.get(
+                "lead", self.config.get("user.name", "[Tribe Lead]")
             ),
-            eng_lead=dept_config.get("eng_lead", "[Engineering Lead]"),
+            eng_lead=tribe_config.get("eng_lead", "[Engineering Lead]"),
         )
 
         return document
@@ -675,16 +674,16 @@ class QuarterlyUpdate:
     # --- Orthogonal challenge ---
 
     def run_orthogonal_challenge(
-        self, department: str, output_path: Optional[Path] = None
+        self, tribe: str, output_path: Optional[Path] = None
     ) -> Dict[str, Any]:
-        """Run orthogonal challenge process for the quarterly update."""
+        """Run orthogonal challenge process for the tribe update."""
         if not HAS_ORTHOGONAL:
             return {"error": "Orthogonal challenge module not available (pm-os-cce not installed)"}
 
-        topic = f"{department} Quarterly Update"
+        topic = f"{tribe} Tribe Quarterly Update"
         challenge = OrthogonalChallenge()
         result = challenge.run(
-            doc_type="quarterly-update",
+            doc_type="tribe-update",
             topic=topic,
             research_sources=["brain", "jira", "gdrive", "slack"],
         )
@@ -695,7 +694,7 @@ class QuarterlyUpdate:
     def save_document(
         self,
         content: str,
-        department: str,
+        tribe: str,
         quarter: str,
         output_path: Optional[Path] = None,
     ) -> Path:
@@ -704,8 +703,8 @@ class QuarterlyUpdate:
 
         if output_path is None:
             date_str = datetime.now().strftime("%Y-%m-%d")
-            dept_slug = department.lower().replace(" ", "_")
-            output_path = output_dir / f"{dept_slug}_{quarter}_{date_str}.md"
+            tribe_slug = tribe.lower().replace(" ", "_")
+            output_path = output_dir / f"{tribe_slug}_{quarter}_{date_str}.md"
 
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(content)
@@ -716,52 +715,52 @@ class QuarterlyUpdate:
 
     def run(
         self,
-        department: Optional[str] = None,
+        tribe: Optional[str] = None,
         quarter: Optional[str] = None,
         prev_quarter: Optional[str] = None,
         orthogonal: bool = False,
         output: Optional[str] = None,
         as_json: bool = False,
     ) -> str:
-        """Run the quarterly update generator.
+        """Run the tribe update generator.
 
         Args:
-            department: Department name. Falls back to config default.
+            tribe: Tribe name. Falls back to config default.
             quarter: Target quarter (e.g., "Q2-2026").
             prev_quarter: Previous quarter for review.
             orthogonal: Run orthogonal challenge.
             output: Custom output path.
             as_json: Return JSON output.
         """
-        if department is None:
-            department = self.config.get("reporting.default_department", "")
-            if not department:
-                available = self._get_available_departments()
+        if tribe is None:
+            tribe = self.config.get("reporting.default_tribe", "")
+            if not tribe:
+                available = self._get_available_tribes()
                 if available:
-                    department = available[0]
+                    tribe = available[0]
                 else:
-                    return "Error: No department configured. Set reporting.default_department in config."
+                    return "Error: No tribe configured. Set reporting.default_tribe in config."
 
         if orthogonal:
             output_path = Path(output) if output else None
-            result = self.run_orthogonal_challenge(department, output_path)
+            result = self.run_orthogonal_challenge(tribe, output_path)
             if as_json:
                 return json.dumps(result, indent=2)
             if result.get("error"):
                 return f"Error: {result['error']}"
             return f"Orthogonal challenge complete! Final document: {result.get('v3_path')}"
 
-        content = self.generate(department, quarter, prev_quarter)
+        content = self.generate(tribe, quarter, prev_quarter)
 
         now = datetime.now()
         quarter = quarter or f"Q{(now.month - 1) // 3 + 1}-{now.year}"
         output_path = Path(output) if output else None
-        saved_path = self.save_document(content, department, quarter, output_path)
+        saved_path = self.save_document(content, tribe, quarter, output_path)
 
         if as_json:
             return json.dumps(
                 {
-                    "department": department,
+                    "tribe": tribe,
                     "quarter": quarter,
                     "output_path": str(saved_path),
                     "timestamp": datetime.now().isoformat(),
@@ -770,8 +769,8 @@ class QuarterlyUpdate:
             )
 
         return (
-            f"Quarterly Update Generated!\n"
-            f"Department: {department}\n"
+            f"Tribe Quarterly Update Generated!\n"
+            f"Tribe: {tribe}\n"
             f"Quarter: {quarter}\n"
             f"Output: {saved_path}\n\n"
             f"Next steps:\n"
@@ -785,9 +784,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Quarterly Update Generator v5.0"
+        description="Tribe Quarterly Update Generator v5.0"
     )
-    parser.add_argument("--department", type=str, help="Department name")
+    parser.add_argument("--tribe", type=str, help="Tribe name")
     parser.add_argument("--quarter", type=str, help="Target quarter (e.g., Q2-2026)")
     parser.add_argument("--prev-quarter", type=str, help="Previous quarter for review")
     parser.add_argument(
@@ -800,11 +799,11 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    updater = QuarterlyUpdate()
+    updater = TribeQuarterlyUpdate()
 
     if args.status:
         output_dir = updater._get_output_dir()
-        print("Quarterly Updates:")
+        print("Tribe Quarterly Updates:")
         if output_dir.exists():
             for f in sorted(output_dir.glob("*.md"), reverse=True):
                 print(f"  - {f.name}")
@@ -812,7 +811,7 @@ if __name__ == "__main__":
             print("  No updates found.")
     else:
         result = updater.run(
-            department=args.department,
+            tribe=args.tribe,
             quarter=args.quarter,
             prev_quarter=args.prev_quarter,
             orthogonal=args.orthogonal,

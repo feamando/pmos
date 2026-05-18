@@ -100,6 +100,7 @@ class PathResolver:
             ("env_direct", self._try_env_direct),
             ("marker_walkup", self._try_marker_walkup),
             ("global_config", self._try_global_config),
+            ("home_default", self._try_home_default),
             ("structure_inference", self._try_structure_inference),
         ]
 
@@ -109,7 +110,7 @@ class PathResolver:
                 if result and self._validate_paths(result):
                     self._resolved = ResolvedPaths(
                         root=result["root"],
-                        common=result["common"],
+                        common=result.get("common", result["root"] / "common"),
                         user=result["user"],
                         strategy=name,
                     )
@@ -122,9 +123,10 @@ class PathResolver:
         raise PathResolutionError(
             "Could not resolve PM-OS paths. Options:\n"
             "  1. Set PM_OS_ROOT environment variable\n"
-            "  2. Run from within pm-os/ directory\n"
+            "  2. Run from within ~/pm-os/ directory\n"
             "  3. Create ~/.pm-os/config.yaml with root_path\n"
-            "  4. Ensure .pm-os-root marker file exists in pm-os/"
+            "  4. Ensure .pm-os-root marker file exists in pm-os/\n"
+            "  5. Run /base setup to initialize PM-OS"
         )
 
     def _try_env_variables(self) -> Optional[Dict[str, Path]]:
@@ -133,29 +135,36 @@ class PathResolver:
         if not root_path:
             return None
         root = Path(root_path)
-        return {"root": root, "common": root / "common", "user": root / "user"}
+        result = {"root": root, "user": root / "user"}
+        if (root / "common").exists():
+            result["common"] = root / "common"
+        return result
 
     def _try_env_direct(self) -> Optional[Dict[str, Path]]:
-        """Strategy 1b: Use direct PM_OS_COMMON and PM_OS_USER variables."""
-        common_path = os.getenv(self.ENV_COMMON)
+        """Strategy 1b: Use direct PM_OS_USER (and optionally PM_OS_COMMON) variables."""
         user_path = os.getenv(self.ENV_USER)
-        if not common_path or not user_path:
+        if not user_path:
             return None
-        common = Path(common_path)
         user = Path(user_path)
-        return {"root": common.parent, "common": common, "user": user}
+        root = user.parent
+        common_path = os.getenv(self.ENV_COMMON)
+        result = {"root": root, "user": user}
+        if common_path:
+            result["common"] = Path(common_path)
+        elif (root / "common").exists():
+            result["common"] = root / "common"
+        return result
 
     def _try_marker_walkup(self) -> Optional[Dict[str, Path]]:
-        """Strategy 2: Walk up directory tree looking for marker."""
+        """Strategy 2: Walk up directory tree looking for .pm-os-root marker."""
         current = self.start_path.resolve()
         while current != current.parent:
             marker = current / self.ROOT_MARKER
             if marker.exists():
-                return {
-                    "root": current,
-                    "common": current / "common",
-                    "user": current / "user",
-                }
+                result = {"root": current, "user": current / "user"}
+                if (current / "common").exists():
+                    result["common"] = current / "common"
+                return result
             current = current.parent
         return None
 
@@ -169,52 +178,71 @@ class PathResolver:
             if not config or "root_path" not in config:
                 return None
             root = Path(config["root_path"])
-            return {"root": root, "common": root / "common", "user": root / "user"}
+            result = {"root": root, "user": root / "user"}
+            if (root / "common").exists():
+                result["common"] = root / "common"
+            return result
         except Exception as e:
             logger.debug("Failed to read global config: %s", e)
             return None
 
+    def _try_home_default(self) -> Optional[Dict[str, Path]]:
+        """Strategy 4: Check ~/pm-os/ (canonical location for all surfaces)."""
+        home_root = Path.home() / "pm-os"
+        if not home_root.exists():
+            return None
+        if not (home_root / "user").exists() and not (home_root / self.ROOT_MARKER).exists():
+            return None
+        result = {"root": home_root, "user": home_root / "user"}
+        if (home_root / "common").exists():
+            result["common"] = home_root / "common"
+        return result
+
     def _try_structure_inference(self) -> Optional[Dict[str, Path]]:
-        """Strategy 4: Infer from current directory structure."""
+        """Strategy 5: Infer from current directory structure (requires marker to prevent contamination)."""
         cwd = self.start_path.resolve()
 
         # Check if we're in common/
         if cwd.name == "common" and (cwd / self.COMMON_MARKER).exists():
             root = cwd.parent
-            return {"root": root, "common": cwd, "user": root / "user"}
+            result = {"root": root, "common": cwd, "user": root / "user"}
+            return result
 
         # Check if we're in user/
         if cwd.name == "user" and (cwd / self.USER_MARKER).exists():
             root = cwd.parent
-            return {"root": root, "common": root / "common", "user": cwd}
+            result = {"root": root, "user": cwd}
+            if (root / "common").exists():
+                result["common"] = root / "common"
+            return result
 
-        # Check if we're inside common/ or user/
+        # Check if we're inside a user/ tree
         for parent in cwd.parents:
-            if parent.name == "common":
+            if parent.name == "user" and (parent / self.USER_MARKER).exists():
                 root = parent.parent
-                if (root / "user").exists():
-                    return {"root": root, "common": parent, "user": root / "user"}
-            if parent.name == "user":
-                root = parent.parent
+                result = {"root": root, "user": parent}
                 if (root / "common").exists():
-                    return {"root": root, "common": root / "common", "user": parent}
+                    result["common"] = root / "common"
+                return result
 
-        # Check if cwd IS the root
-        if (cwd / "common").exists() and (cwd / "user").exists():
-            return {"root": cwd, "common": cwd / "common", "user": cwd / "user"}
+        # Check if cwd IS the root (must have marker or user/ to match)
+        if (cwd / self.ROOT_MARKER).exists() or (cwd / "user").exists():
+            result = {"root": cwd, "user": cwd / "user"}
+            if (cwd / "common").exists():
+                result["common"] = cwd / "common"
+            return result
 
         return None
 
     def _validate_paths(self, paths: Dict[str, Path]) -> bool:
-        """Validate that resolved paths exist."""
+        """Validate that resolved paths exist. Only root and user/ are required; common/ is optional."""
         root = paths.get("root")
-        common = paths.get("common")
         user = paths.get("user")
-        if not all([root, common, user]):
+        if not root or not user:
             return False
         if not root.exists():
             return False
-        return common.exists() and user.exists()
+        return user.exists()
 
     @property
     def root(self) -> Path:

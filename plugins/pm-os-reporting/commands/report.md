@@ -1,5 +1,5 @@
 ---
-description: Sprint reports, performance updates, and organizational reporting
+description: Sprint reports, performance updates, and tribe reporting
 ---
 
 # /report -- Reporting & Performance Updates
@@ -10,7 +10,7 @@ Parse the first argument to determine which subcommand to run:
 |------------|-------------|
 | `sprint` | Generate sprint report (CSV with clustered Jira data) |
 | `pupdate` | Generate performance update with metrics and WoW/YoY |
-| `quarterly-update` | Generate department-level quarterly planning document |
+| `tribe-update` | Generate tribe-level quarterly planning document |
 | `sprint-learnings` | Generate sprint learnings from delivered work |
 | *(no args)* | Show available subcommands |
 
@@ -25,13 +25,13 @@ If no arguments provided, display:
 Report -- Reporting & Performance Updates
 
   /report sprint                        - Generate sprint report (CSV)
-  /report sprint --team "My Team"     - Report for specific team
+  /report sprint --squad "My Squad"     - Report for specific squad
   /report sprint --sprint-start 2026-03-17 --sprint-end 2026-03-31  - Historical
   /report pupdate "Product Name"        - Generate performance update
   /report pupdate "Product Name" --output path.md  - Custom output
-  /report quarterly-update                       - Generate quarterly update
-  /report quarterly-update --department "Dept"   - Specific department
-  /report quarterly-update --orthogonal          - With orthogonal challenge review
+  /report tribe-update                  - Generate tribe quarterly update
+  /report tribe-update --tribe "Tribe"  - Specific tribe
+  /report tribe-update --orthogonal     - With orthogonal challenge review
   /report sprint-learnings              - Generate sprint learnings
 
 Usage: /report <subcommand> [options]
@@ -60,11 +60,11 @@ python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py"
 
 **With options:**
 ```bash
-# Specific team
-python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --team "My Team"
+# Specific squad
+python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --squad "My Squad"
 
-# Specific department
-python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --department "My Department"
+# Specific tribe
+python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --tribe "My Tribe"
 
 # Historical date range
 python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --sprint-start 2026-03-17 --sprint-end 2026-03-31
@@ -75,7 +75,7 @@ python3 "$PLUGIN_ROOT/tools/sprint_report_generator.py" --output "/path/to/repor
 
 ### Step 3: Synthesize Narrative Summaries
 
-The generator produces structured data (clustered tickets, ticket keys, GitHub PRs). After running, **you must synthesize** the Delivered, Planned, and External columns into narrative prose. For each team's clusters:
+The generator produces structured data (clustered tickets, ticket keys, GitHub PRs). After running, **you must synthesize** the Delivered, Planned, and External columns into narrative prose. For each squad's clusters:
 
 #### Cluster Summary (Delivered / Planned columns)
 
@@ -116,9 +116,9 @@ Convert internal learnings to external bullet format:
 
 ### Step 4: Present Results
 
-Report: Output CSV path, teams processed, tickets fetched per team.
+Report: Output CSV path, squads processed, tickets fetched per squad.
 
-**Output format:** CSV with columns: Division, Department, Team, KPI Movement, Delivered, Delivered External, Key Learnings, Learnings External, Planned, Planned External, GitHub Activity, Active Experiments, Demo, Delivered Tickets, Planned Tickets.
+**Output format:** CSV with columns: Mega-Alliance, Tribe, Squad, KPI Movement, Delivered, Delivered External, Key Learnings, Learnings External, Planned, Planned External, GitHub Activity, Active Experiments, Demo, Delivered Tickets, Planned Tickets.
 
 ---
 
@@ -158,9 +158,9 @@ Report: Headline summary, metrics table (WoW/YoY), trend indicators, output path
 
 ---
 
-## quarterly-update
+## tribe-update
 
-Generate a department-level quarterly planning document.
+Generate a tribe-level quarterly planning document.
 
 ### Step 1: Set Up Environment
 
@@ -179,8 +179,8 @@ python3 "$PLUGIN_ROOT/tools/tribe_quarterly_update.py"
 
 **With options:**
 ```bash
-# Specific department
-python3 "$PLUGIN_ROOT/tools/tribe_quarterly_update.py" --department "My Department"
+# Specific tribe
+python3 "$PLUGIN_ROOT/tools/tribe_quarterly_update.py" --tribe "My Tribe"
 
 # Specific quarter
 python3 "$PLUGIN_ROOT/tools/tribe_quarterly_update.py" --quarter Q2-2026 --prev-quarter Q1-2026
@@ -200,7 +200,7 @@ python3 "$PLUGIN_ROOT/tools/tribe_quarterly_update.py" --status
 
 ### Step 3: Present Results
 
-Report: Department name, quarter, output path, sections populated, next steps (fill brackets, add metrics, optional orthogonal review).
+Report: Tribe name, quarter, output path, sections populated, next steps (fill brackets, add metrics, optional orthogonal review).
 
 **Document sections:**
 1. Executive Summary with key metrics
@@ -228,7 +228,7 @@ Find the most recent sprint report CSV in the reporting output directory.
 
 ### Step 2: Analyze Delivered Work
 
-For each team's delivered items:
+For each squad's delivered items:
 1. Read the ticket details and synthesized summaries
 2. Identify patterns: what went well, what was challenging, what was learned
 3. Generate structured learnings in internal format:

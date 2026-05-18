@@ -1,0 +1,22 @@
+name: background-synthesize
+description: "Synthesize daily context from gathered data (uses Claude API via Haiku)"
+version: "1.0"
+error_strategy: continue
+
+variables:
+  quiet: true
+
+steps:
+  - name: context-synthesize
+    action: context.synthesize
+    args:
+      timeout: 180
+    description: "Generate context markdown from raw data"
+    on_error: skip
+
+  - name: slack-post
+    action: slack.post
+    args:
+      type: update
+    description: "Post updated context to Slack"
+    on_error: skip

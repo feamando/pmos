@@ -1,0 +1,65 @@
+# Base plugin preflight checks
+# Registered with the preflight runner via standard plugin discovery
+core:
+  config_loader:
+    module: tools/core/config_loader.py
+    classes: ["ConfigLoader", "ConfigMetadata", "ConfigError"]
+    functions: ["get_config", "reset_config", "get_user_name"]
+    description: "Configuration Loader"
+  path_resolver:
+    module: tools/core/path_resolver.py
+    classes: ["PathResolver", "ResolvedPaths"]
+    functions: ["get_paths", "reset_paths", "get_root", "get_common", "get_user"]
+    description: "Path Resolution"
+  entity_validator:
+    module: tools/core/entity_validator.py
+    classes: ["EntityValidator", "ValidationResult", "EntityType"]
+    functions: ["validate_entity", "validate_all_entities"]
+    description: "Entity Validator"
+  plugin_deps:
+    module: tools/core/plugin_deps.py
+    functions: ["check_plugin", "require_plugin", "get_installed_plugins"]
+    description: "Plugin Dependency Checker"
+  connector_bridge:
+    module: tools/core/connector_bridge.py
+    functions: ["get_auth", "is_service_available", "get_available_services"]
+    description: "Auth Abstraction (connector/env/error)"
+
+pipeline:
+  pipeline_executor:
+    module: tools/pipeline/pipeline_executor.py
+    classes: ["PipelineExecutor"]
+    description: "YAML Pipeline Runner"
+  pipeline_schema:
+    module: tools/pipeline/pipeline_schema.py
+    classes: ["PipelineStep", "PipelineDefinition", "StepResult", "PipelineResult"]
+    description: "Pipeline Schema Definitions"
+  action_registry:
+    module: tools/pipeline/action_registry.py
+    classes: ["ActionRegistry"]
+    description: "Pipeline Action Registry"
+  builtin_actions:
+    module: tools/pipeline/builtin_actions.py
+    functions: ["register_all"]
+    description: "Built-in Pipeline Actions"
+
+session:
+  session_manager:
+    module: tools/session/session_manager.py
+    classes: ["SessionManager"]
+    description: "Session Persistence"
+  confucius_agent:
+    module: tools/session/confucius_agent.py
+    functions: ["main"]
+    description: "Confucius Note-Taking Agent"
+
+util:
+  model_bridge:
+    module: tools/util/model_bridge.py
+    functions: ["detect_active_model", "invoke_model", "invoke_challenger"]
+    description: "LLM Model Bridge"
+  file_chunker:
+    module: tools/util/file_chunker.py
+    classes: ["FileInfo", "Chunk", "ChunkingResult"]
+    functions: ["analyze_file", "split_file"]
+    description: "File Chunking Utility"

@@ -36,7 +36,7 @@ class TeamMember:
     """A team member with metadata."""
     name: str
     role: str = ""
-    team: str = ""
+    squad: str = ""
     category: str = "report"  # report, manager, stakeholder
     cadence: str = "weekly"
 
@@ -54,7 +54,7 @@ class HiringPipelineEntry:
 class CapacityOverview:
     """Team capacity summary."""
     total_headcount: int = 0
-    by_team: Dict[str, int] = field(default_factory=dict)
+    by_squad: Dict[str, int] = field(default_factory=dict)
     open_positions: int = 0
     members: List[TeamMember] = field(default_factory=list)
 
@@ -68,15 +68,15 @@ class OrgChart:
     user_role: str = ""
     reports: List[TeamMember] = field(default_factory=list)
     stakeholders: List[TeamMember] = field(default_factory=list)
-    department: str = ""
+    tribe: str = ""
 
     def to_text(self) -> str:
         """Render as a text-based org chart."""
         lines = []
 
-        if self.department:
-            lines.append("  %s" % self.department)
-            lines.append("  %s" % ("=" * len(self.department)))
+        if self.tribe:
+            lines.append("  %s" % self.tribe)
+            lines.append("  %s" % ("=" * len(self.tribe)))
             lines.append("")
 
         # Manager
@@ -92,8 +92,8 @@ class OrgChart:
             for i, report in enumerate(self.reports):
                 is_last = i == len(self.reports) - 1
                 prefix = "  `-- " if is_last else "  |-- "
-                team_str = " [%s]" % report.team if report.team else ""
-                lines.append("%s%s (%s)%s" % (prefix, report.name, report.role, team_str))
+                squad_str = " [%s]" % report.squad if report.squad else ""
+                lines.append("%s%s (%s)%s" % (prefix, report.name, report.role, squad_str))
 
         # Stakeholders
         if self.stakeholders:
@@ -143,7 +143,7 @@ class TeamOperations:
                 members.append(TeamMember(
                     name=item.get("name", ""),
                     role=item.get("role", ""),
-                    team=item.get("team", ""),
+                    squad=item.get("squad", ""),
                     category=category,
                     cadence=item.get("cadence", "weekly"),
                 ))
@@ -157,11 +157,11 @@ class TeamOperations:
             self.config.get("team.reports", []), "report",
         )
 
-        # Count by team
-        by_team: Dict[str, int] = {}
+        # Count by squad
+        by_squad: Dict[str, int] = {}
         for member in reports:
-            team = member.team or "Unassigned"
-            by_team[team] = by_team.get(team, 0) + 1
+            squad = member.squad or "Unassigned"
+            by_squad[squad] = by_squad.get(squad, 0) + 1
 
         # Count open positions from recruiting directory
         open_positions = 0
@@ -173,7 +173,7 @@ class TeamOperations:
 
         return CapacityOverview(
             total_headcount=len(reports),
-            by_team=by_team,
+            by_squad=by_squad,
             open_positions=open_positions,
             members=reports,
         )
@@ -219,7 +219,7 @@ class TeamOperations:
         elif isinstance(manager, str):
             mgr_name = manager
 
-        department = self.config.get("team.department", "")
+        tribe = self.config.get("team.tribe", "")
 
         return OrgChart(
             manager_name=mgr_name,
@@ -228,7 +228,7 @@ class TeamOperations:
             user_role=self.user_role,
             reports=reports,
             stakeholders=stakeholders,
-            department=department,
+            tribe=tribe,
         )
 
     def get_team_context_path(self) -> Optional[Path]:
@@ -251,8 +251,8 @@ if __name__ == "__main__":
     # Capacity
     cap = ops.get_capacity()
     print("Capacity: %d HC" % cap.total_headcount)
-    for team, count in cap.by_team.items():
-        print("  %s: %d" % (team, count))
+    for squad, count in cap.by_squad.items():
+        print("  %s: %d" % (squad, count))
     print("Open positions: %d" % cap.open_positions)
     print()
 

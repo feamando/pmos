@@ -40,46 +40,94 @@ Usage: /base <subcommand> [options]
 
 ## setup
 
-First-time setup or re-configure PM-OS.
+First-time setup or re-configure PM-OS. Idempotent: safe to run multiple times, never overwrites existing user data.
 
-### Step 1: Check Config
+### Path Resolution
+
+Resolve `PM_OS_ROOT` and `PLUGIN_BASE` (where pm-os-base tools live):
 
 ```bash
-python3 tools/core/config_loader.py --check
+export PM_OS_ROOT="${PM_OS_ROOT:-$HOME/pm-os}"
+# Find plugin base dir
+if [ -d "$PM_OS_ROOT/common/tools" ]; then
+  PLUGIN_BASE="$PM_OS_ROOT/common"
+elif [ -d "$PM_OS_ROOT/v5/plugins/pm-os-base/tools" ]; then
+  PLUGIN_BASE="$PM_OS_ROOT/v5/plugins/pm-os-base"
+else
+  for candidate in "$PM_OS_ROOT/plugins/pm-os-base" "$HOME/.claude/plugins/pm-os-base"; do
+    if [ -d "$candidate/tools" ]; then
+      PLUGIN_BASE="$candidate"
+      break
+    fi
+  done
+fi
+TEMPLATES="$PM_OS_ROOT/v5/templates"
+if [ ! -d "$TEMPLATES" ]; then
+  TEMPLATES="$PLUGIN_BASE/../templates"
+fi
 ```
 
-If config.yaml doesn't exist:
+### Step 1: Create Directory Structure
+
+Only create directories that do not already exist:
+
+```bash
+mkdir -p "$PM_OS_ROOT/user/brain"
+mkdir -p "$PM_OS_ROOT/user/personal/context"
+mkdir -p "$PM_OS_ROOT/user/sessions"
+mkdir -p "$PM_OS_ROOT/user/products"
+mkdir -p "$PM_OS_ROOT/user/team"
+touch "$PM_OS_ROOT/.pm-os-root"
+```
+
+### Step 2: Create Config Files (if missing)
+
+**config.yaml** — only if `$PM_OS_ROOT/user/config.yaml` does not exist:
 1. Ask user for `name` and `email`
-2. Create config.yaml from template with those values
-3. Set sensible defaults for all other fields
+2. Read `$TEMPLATES/config.yaml.template`
+3. Replace `{{user_name}}` and `{{user_email}}` with user's answers
+4. Write to `$PM_OS_ROOT/user/config.yaml`
 
-### Step 2: Generate CLAUDE.md
+**.env** — only if `$PM_OS_ROOT/user/.env` does not exist:
+1. Copy `$TEMPLATES/.env.template` to `$PM_OS_ROOT/user/.env`
+2. Tell user: "Edit user/.env to add your API tokens"
+
+**USER.md** — only if `$PM_OS_ROOT/user/USER.md` does not exist:
+1. Ask user for `role`, `company`, and `location` (optional, can skip)
+2. Read `$TEMPLATES/USER.md.template`
+3. Replace placeholders with user's answers (use empty string for skipped fields)
+4. Replace `{{generated_date}}` with today's date (YYYY-MM-DD)
+5. Write to `$PM_OS_ROOT/user/USER.md`
+
+### Step 3: Generate CLAUDE.md
 
 ```bash
-python3 tools/util/claudemd_generator.py
+python3 "$PLUGIN_BASE/tools/util/claudemd_generator.py"
 ```
 
-### Step 3: Generate Cowork Context Files
+### Step 4: Generate Cowork Context Files
 
 ```bash
-python3 tools/util/cowork_context_generator.py
+python3 "$PLUGIN_BASE/tools/util/cowork_context_generator.py"
 ```
 
-### Step 4: Run Preflight
+### Step 5: Run Preflight
 
 ```bash
-python3 tools/preflight/preflight_runner.py --quick
+python3 "$PLUGIN_BASE/tools/preflight/preflight_runner.py" --quick
 ```
 
-### Step 5: Report
+### Step 6: Report
 
 Print setup summary:
-- Config location and status
-- Installed plugins
-- CLAUDE.md generated
-- Cowork context files generated
+- PM-OS root: `$PM_OS_ROOT`
+- Config: created or already existed
+- USER.md: created or already existed
+- .env: created or already existed
+- Installed plugins (list from plugin_deps)
 - Preflight results
-- Reminder: "Connect Google/Jira/GitHub/Slack in Claude > Settings > Connectors"
+- Next steps: "Run `/session boot` to start your first session"
+- Reminder: "Connect Google/Jira/GitHub/Slack in Claude > Settings > Connectors for full integration"
 
 ---
 

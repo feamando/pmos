@@ -35,14 +35,14 @@ def _get_plugins_dir() -> Optional[Path]:
     root = os.getenv("PM_OS_ROOT")
     if root:
         root_path = Path(root)
-        # Production: common/plugins/
-        prod = root_path / "common" / "plugins"
-        if prod.exists():
-            return prod
         # Development: v5/plugins/
         dev = root_path / "v5" / "plugins"
         if dev.exists():
             return dev
+        # Direct: plugins/ at root (plugin-only install)
+        direct = root_path / "plugins"
+        if direct.exists():
+            return direct
 
     # Walk up from this file to find plugins/
     current = Path(__file__).resolve().parent

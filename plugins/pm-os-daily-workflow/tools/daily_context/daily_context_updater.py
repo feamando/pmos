@@ -58,6 +58,8 @@ try:
     from pm_os_base.tools.core.config_loader import get_config, get_root_path
 except ImportError:
     try:
+        _PLUGIN_ROOT = Path(__file__).resolve().parent.parent.parent
+        sys.path.insert(0, str(_PLUGIN_ROOT.parent / "pm-os-base" / "tools" / "core"))
         from config_loader import get_config, get_root_path
     except ImportError:
         get_config = None
@@ -427,6 +429,7 @@ def format_output(
     slack_msgs = source_results.get("slack", {}).get("items", [])
     jira_items = source_results.get("jira", {}).get("items", [])
     github_items = source_results.get("github", {}).get("items", [])
+    calendar_events = source_results.get("google_calendar", {}).get("items", [])
 
     lines = []
     lines.append("=" * 60)
@@ -435,6 +438,7 @@ def format_output(
     lines.append(f"Documents: {len(docs)}")
     lines.append(f"Emails: {len(emails)}")
     lines.append(f"Slack messages: {len(slack_msgs)}")
+    lines.append(f"Calendar events: {len(calendar_events)}")
     lines.append(f"Jira issues: {len(jira_items)}")
     lines.append(f"GitHub notifications: {len(github_items)}")
 
@@ -486,6 +490,25 @@ def format_output(
         channel = msg.get("channel_name", "Unknown")
         preview = msg.get("text", "").replace("\n", " ")[:50]
         lines.append(f"- [SLACK] {channel} | {user}: {preview}...")
+    lines.append("")
+
+    # --- Calendar Index ---
+    lines.append("## CALENDAR INDEX")
+    lines.append("")
+    if calendar_events:
+        for event in calendar_events:
+            try:
+                start_dt = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
+                end_dt = datetime.fromisoformat(event["end"].replace("Z", "+00:00"))
+                time_str = f"{start_dt.strftime('%H:%M')}-{end_dt.strftime('%H:%M')}"
+            except (ValueError, KeyError):
+                time_str = "TBD"
+            attendee_count = len(event.get("attendees", []))
+            lines.append(
+                f"- [CAL] {time_str} | {event.get('summary', 'Untitled')} | {attendee_count} attendees"
+            )
+    else:
+        lines.append("- No calendar events for today")
     lines.append("")
 
     # --- Jira Index ---
@@ -569,6 +592,44 @@ def format_output(
         lines.append("")
         lines.append("")
 
+    # --- Calendar Contents ---
+    if calendar_events:
+        lines.append("=" * 60)
+        lines.append("## CALENDAR CONTENTS")
+        lines.append("=" * 60)
+        lines.append("")
+
+        for event in calendar_events:
+            lines.append("-" * 40)
+            lines.append(f"### CAL: {event.get('summary', 'Untitled')}")
+            lines.append(f"ID: {event.get('id', 'N/A')}")
+            lines.append(f"Link: {event.get('htmlLink', 'N/A')}")
+            lines.append("-" * 40)
+            lines.append("")
+
+            # Inline content formatting
+            try:
+                start_dt = datetime.fromisoformat(event["start"].replace("Z", "+00:00"))
+                end_dt = datetime.fromisoformat(event["end"].replace("Z", "+00:00"))
+                lines.append(f"Time: {start_dt.strftime('%H:%M')} - {end_dt.strftime('%H:%M')}")
+            except (ValueError, KeyError):
+                lines.append("Time: TBD")
+
+            if event.get("location"):
+                lines.append(f"Location: {event['location']}")
+
+            attendees = event.get("attendees", [])
+            if attendees:
+                lines.append(f"Attendees ({len(attendees)}):")
+                for a in attendees:
+                    lines.append(f"  - {a['name']} ({a.get('status', 'unknown')})")
+
+            if event.get("description"):
+                lines.append(f"\nDescription:\n{event['description']}")
+
+            lines.append("")
+            lines.append("")
+
     # --- FPF Reasoning State ---
     if reasoning_state:
         lines.append("=" * 60)
@@ -644,6 +705,9 @@ def main():
         "--no-gmail", action="store_true", help="Skip Gmail"
     )
     parser.add_argument(
+        "--no-calendar", action="store_true", help="Skip Calendar events"
+    )
+    parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable debug logging"
     )
 
@@ -705,6 +769,9 @@ def main():
     if args.no_gmail and "gmail" in source_results:
         source_results["gmail"] = {"items": [], "source": "gmail"}
         logger.info("Skipping Gmail (--no-gmail or --quick)")
+    if args.no_calendar and "google_calendar" in source_results:
+        source_results["google_calendar"] = {"items": [], "source": "google_calendar"}
+        logger.info("Skipping Calendar (--no-calendar)")
 
     # Count total items
     total_items = sum(

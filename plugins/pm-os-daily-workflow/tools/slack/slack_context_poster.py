@@ -35,8 +35,9 @@ except ImportError:
         from config_loader import get_config
         from connector_bridge import get_auth
     except ImportError:
-        logger.error("Cannot import pm_os_base core modules")
-        raise
+        logger.warning("pm_os_base core modules not available, running with limited functionality")
+        get_config = None
+        get_auth = None
 
 
 def _get_timezone() -> str:

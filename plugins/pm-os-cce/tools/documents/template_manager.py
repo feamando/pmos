@@ -50,13 +50,16 @@ DOC_TYPES = {
 
 
 def _get_frameworks_dir() -> Path:
-    """Resolve the frameworks directory via path resolver."""
+    """Resolve the frameworks directory via path resolver or plugin-relative lookup."""
     try:
         paths = get_paths()
-        return paths.common / "frameworks"
+        common_fw = paths.common / "frameworks"
+        if common_fw.exists():
+            return common_fw
     except Exception:
-        # Fallback: assume common/ sibling to this plugin
-        return Path(__file__).parent.parent.parent.parent.parent / "common" / "frameworks"
+        pass
+    plugin_root = Path(__file__).parent.parent.parent
+    return plugin_root / "frameworks"
 
 
 class TemplateManager:

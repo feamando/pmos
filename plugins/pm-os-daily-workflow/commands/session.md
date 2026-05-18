@@ -28,25 +28,50 @@ If no arguments provided, display available subcommands.
 - `search <query>` — Search sessions by keyword
 - `notes` — Note session status. Options: `--list`, `--export`, `--end`, `--start "topic"`
 
+## Path Resolution
+
+All subcommands below use these resolved paths. Run this block first:
+
+```bash
+export PM_OS_ROOT="${PM_OS_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/pm-os")}"
+export PM_OS_USER="$PM_OS_ROOT/user"
+source "$PM_OS_ROOT/user/.env" 2>/dev/null
+
+# Resolve tools: prefer common/ (dev), fall back to plugin base dir
+if [ -d "$PM_OS_ROOT/common/tools/pipeline" ]; then
+  PM_OS_TOOLS="$PM_OS_ROOT/common/tools"
+  PM_OS_PIPELINES="$PM_OS_ROOT/common/pipelines"
+else
+  # Plugin-only install: find pm-os-base plugin
+  for candidate in \
+    "$PM_OS_ROOT/v5/plugins/pm-os-base" \
+    "$PM_OS_ROOT/plugins/pm-os-base" \
+    "$(dirname "$(dirname "$(dirname "$0")")")/pm-os-base" \
+    "$HOME/.claude/plugins/pm-os-base"; do
+    if [ -d "$candidate/tools/pipeline" ]; then
+      PM_OS_TOOLS="$candidate/tools"
+      PM_OS_PIPELINES="$candidate/pipelines"
+      break
+    fi
+  done
+fi
+```
+
 ## boot
 
 Run the boot pipeline to initialize a PM-OS session:
 
 ```bash
-export PM_OS_ROOT="${PM_OS_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/pm-os")}"
-export PM_OS_COMMON="$PM_OS_ROOT/common"
-export PM_OS_USER="$PM_OS_ROOT/user"
-source "$PM_OS_ROOT/user/.env" 2>/dev/null
-cd "$PM_OS_COMMON/tools/pipeline"
-python3 pipeline_executor.py --run "$PM_OS_COMMON/pipelines/boot.yaml" \
-  --fallback "source $PM_OS_ROOT/user/.env && python3 $PM_OS_COMMON/tools/boot/boot_orchestrator.py"
+cd "$PM_OS_TOOLS/pipeline"
+python3 pipeline_executor.py --run "$PM_OS_PIPELINES/boot.yaml" \
+  --fallback "source $PM_OS_ROOT/user/.env && python3 $PM_OS_TOOLS/boot/boot_orchestrator.py"
 ```
 
 For `--quick`: add `--var quick=true`
 For `--quiet`: add `--var quiet=true`
 
 After running the pipeline, read core context files:
-1. Read: `common/AGENT.md`
+1. Read: `$PM_OS_ROOT/common/AGENT.md` (if exists, else skip)
 2. Read: `user/brain/BRAIN.md`
 3. Read: `user/USER.md`
 4. Read: `user/personal/context/YYYY-MM-DD-context.md` (today's date)
@@ -56,12 +81,8 @@ After running the pipeline, read core context files:
 Run the logout pipeline, then git sync:
 
 ```bash
-export PM_OS_ROOT="${PM_OS_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || echo "$HOME/pm-os")}"
-export PM_OS_COMMON="$PM_OS_ROOT/common"
-export PM_OS_USER="$PM_OS_ROOT/user"
-source "$PM_OS_ROOT/user/.env" 2>/dev/null
-cd "$PM_OS_COMMON/tools/pipeline"
-python3 pipeline_executor.py --run "$PM_OS_COMMON/pipelines/logout.yaml" \
+cd "$PM_OS_TOOLS/pipeline"
+python3 pipeline_executor.py --run "$PM_OS_PIPELINES/logout.yaml" \
   --fallback "echo 'Pipeline failed'"
 ```
 
@@ -79,17 +100,17 @@ cd "$PM_OS_ROOT" && git pull origin main && git add . && \
 Check for active session, then create or update:
 
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --status
+python3 "$PM_OS_TOOLS/session/session_manager.py" --status
 ```
 
 If no active session, create:
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --create "Title" --objectives "obj1,obj2" --tags "tag1,tag2"
+python3 "$PM_OS_TOOLS/session/session_manager.py" --create "Title" --objectives "obj1,obj2" --tags "tag1,tag2"
 ```
 
 If active, update:
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --save --files-created "f1,f2" --files-modified "f3" --tags "tag"
+python3 "$PM_OS_TOOLS/session/session_manager.py" --save --files-created "f1,f2" --files-modified "f3" --tags "tag"
 ```
 
 For `--log`: `python3 ... --log "entry"`
@@ -99,12 +120,12 @@ For `--question`: `python3 ... --question "question text"`
 ## load
 
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --load "SESSION_ID"
+python3 "$PM_OS_TOOLS/session/session_manager.py" --load "SESSION_ID"
 ```
 
 If no ID provided, list recent:
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --list 5
+python3 "$PM_OS_TOOLS/session/session_manager.py" --list 5
 ```
 
 Read session file, extract objectives, progress, decisions, open questions.
@@ -112,19 +133,19 @@ Read session file, extract objectives, progress, decisions, open questions.
 ## status
 
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --status
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --list 5
+python3 "$PM_OS_TOOLS/session/session_manager.py" --status
+python3 "$PM_OS_TOOLS/session/session_manager.py" --list 5
 ```
 
 ## search
 
 ```bash
-python3 "$PM_OS_COMMON/tools/session/session_manager.py" --search "QUERY"
+python3 "$PM_OS_TOOLS/session/session_manager.py" --search "QUERY"
 ```
 
 ## notes
 
-Default: `python3 "$PM_OS_COMMON/tools/session/confucius_agent.py" --status`
+Default: `python3 "$PM_OS_TOOLS/session/confucius_agent.py" --status`
 `--list`: `python3 ... --list 5`
 `--export`: `python3 ... --export`
 `--end`: `python3 ... --end`

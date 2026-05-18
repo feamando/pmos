@@ -1,0 +1,13 @@
+# PM-OS Dev plugin boot extension
+# Runs sync-commands on boot when developer_enabled is true
+name: dev-boot-extension
+description: "Sync plugin commands to CLI environments on boot"
+
+steps:
+  - id: sync-commands
+    action: dev_util.command_sync
+    description: "Sync plugin commands across CLIs"
+    condition: developer_enabled
+    on_error: skip
+    params:
+      quiet: true

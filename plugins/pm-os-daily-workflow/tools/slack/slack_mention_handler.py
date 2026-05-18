@@ -43,8 +43,10 @@ except ImportError:
         from connector_bridge import get_auth
         from path_resolver import get_paths
     except ImportError:
-        logger.error("Cannot import pm_os_base core modules")
-        raise
+        logger.warning("pm_os_base core modules not available, running with limited functionality")
+        get_config = None
+        get_auth = None
+        get_paths = None
 
 # Sibling imports
 try:

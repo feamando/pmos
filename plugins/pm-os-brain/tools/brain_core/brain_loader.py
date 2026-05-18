@@ -39,12 +39,12 @@ try:
     from pm_os_base.tools.core.config_loader import get_config
 except ImportError:
     sys.path.insert(0, str(PLUGIN_ROOT.parent / "pm-os-base" / "tools" / "core"))
-    from core.config_loader import get_config
+    from config_loader import get_config
 
 try:
     from pm_os_base.tools.core.path_resolver import get_paths
 except ImportError:
-    from core.path_resolver import get_paths
+    from path_resolver import get_paths
 
 # Try to import yaml, fall back to basic parsing if not available
 try:

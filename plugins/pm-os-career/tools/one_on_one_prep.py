@@ -46,7 +46,7 @@ class PersonContext:
     name: str
     slug: str
     role: str = ""
-    team: str = ""
+    squad: str = ""
     category: str = "reports"  # reports, manager, stakeholders
     oneonone_dir: Optional[Path] = None
     career_dir: Optional[Path] = None
@@ -164,11 +164,11 @@ class OneOnOnePreparer:
         for report in reports:
             report_name = ""
             report_role = ""
-            report_team = ""
+            report_squad = ""
             if isinstance(report, dict):
                 report_name = report.get("name", "")
                 report_role = report.get("role", "")
-                report_team = report.get("team", "")
+                report_squad = report.get("squad", "")
             elif isinstance(report, str):
                 report_name = report
 
@@ -178,7 +178,7 @@ class OneOnOnePreparer:
                     name=report_name,
                     slug=slug,
                     role=report_role,
-                    team=report_team,
+                    squad=report_squad,
                     category="reports",
                     oneonone_dir=self.team_dir / "reports" / slug / "1on1s",
                     career_dir=self.team_dir / "reports" / slug / "career",
@@ -347,8 +347,8 @@ class OneOnOnePreparer:
 
         # Projects
         project_items = []
-        if person.team:
-            project_items.append("Team: %s" % person.team)
+        if person.squad:
+            project_items.append("Squad: %s" % person.squad)
         project_items.append("Quick status on key initiatives")
         sections.append(PrepSection(title="Projects", items=project_items))
 

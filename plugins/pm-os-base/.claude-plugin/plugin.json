@@ -1,9 +1,19 @@
 {
   "name": "pm-os-base",
   "version": "5.0.0",
-  "description": "PM-OS foundation \u2014 config, pipelines, session management, plugin orchestration",
-  "author": {
-    "name": "feamando",
-    "email": "feamando@gmail.com"
-  }
+  "description": "PM-OS foundation: config, pipelines, session management, plugin orchestration",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "product-management", "foundation", "config", "pipeline"],
+  "dependencies": [],
+  "commands": ["commands/base.md"],
+  "skills": [
+    "skills/config-awareness/SKILL.md",
+    "skills/connector-awareness/SKILL.md",
+    "skills/persona/SKILL.md",
+    "skills/plugin-orchestration/SKILL.md",
+    "skills/preflight-discipline/SKILL.md"
+  ],
+  "mcpServers": {}
 }

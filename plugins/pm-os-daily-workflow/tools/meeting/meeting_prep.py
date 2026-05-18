@@ -421,6 +421,7 @@ class MeetingManager:
         description = event.get("description", "") or ""
         attendees = event.get("attendees", [])
         recurrence_id = event.get("recurringEventId")
+        is_organizer = event.get("organizer", {}).get("self", False)
 
         title_names = extract_names_from_title(event.get("summary", ""))
         user_name = self.config.get("user.name", "").split()[0].lower()
@@ -493,6 +494,7 @@ class MeetingManager:
             "start": event.get("start", {}).get("dateTime", ""),
             "event_id": event.get("id", ""),
             "html_link": event.get("htmlLink", ""),
+            "is_organizer": is_organizer,
         }
 
     def _get_recurrence_frequency(self, event: Dict) -> str:
@@ -1227,8 +1229,15 @@ def _process_single_meeting(
 
         link = None
         if upload:
-            link = manager.upload_to_drive(filepath)
-            manager.link_to_calendar(classified["event_id"], link)
+            stripped = content.replace("#", "").replace("*", "").replace("-", "").replace("\n", "").strip()
+            if len(stripped) < 100:
+                logger.info("Skipping upload: content too thin (%d chars)", len(stripped))
+            else:
+                link = manager.upload_to_drive(filepath)
+                if classified.get("is_organizer"):
+                    manager.link_to_calendar(classified["event_id"], link)
+                else:
+                    logger.info("Skipping calendar link: not organizer")
 
         return {
             "summary": summary, "success": True, "filepath": filepath,

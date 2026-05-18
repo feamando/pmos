@@ -31,8 +31,8 @@ Flag the confidence level when referencing Brain data so the user knows how trus
 ## Examples
 
 <example>
-User: "What's Alex working on?"
-Assistant: [checks Brain for alex entity, finds role as Staff PM on Platform Squad, lists active projects from relationships, references recent context]
+User: "What's Hamed working on?"
+Assistant: [checks Brain for hamed entity, finds role as Staff PM on Factor Form Squad, lists active projects from relationships, references recent context]
 </example>
 
 <example>

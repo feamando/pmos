@@ -4,9 +4,9 @@ reporting:
   sprint_report_generator:
     module: tools/sprint_report_generator.py
     description: "Sprint report generator with Jira clustering and LLM synthesis"
-  quarterly_update:
+  tribe_quarterly_update:
     module: tools/tribe_quarterly_update.py
-    description: "Department-level quarterly update document generator"
+    description: "Tribe-level quarterly update document generator"
   performance_updater:
     module: tools/performance_updater.py
     description: "Performance update (pupdate) generator with metrics and synthesis"

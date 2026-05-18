@@ -51,11 +51,18 @@ description: When working on product features, follow the 5-phase feature lifecy
 
 | Activity | Output | Tool |
 |----------|--------|------|
-| Wireframes | Design artifacts | `/feature prototype` |
+| Wireframes | Design artifacts | `/feature prototype` (Spec Machine if available, internal fallback) |
+| Prototype iteration | Refined prototypes | `/feature prototype-update` (requires Spec Machine) |
+| Quality verification | Quality report | `/feature prototype-verify` (requires Spec Machine) |
 | Technical design | Architecture document | `/doc rfc` or `/doc adr` |
 | Edge case analysis | Edge case document | `/reason` reasoning |
 | User validation | Usability findings | research skill |
 | Spec export | Confluence/Jira spec | `/doc export-to-spec` |
+
+**Prototyping notes:**
+- `/feature prototype` auto-detects Spec Machine (specx-ux) availability. With Spec Machine: production-quality output with Zest tokens, CDN images, device chrome. Without: basic-fidelity internal engine.
+- Use `/feature prototype-preflight` to verify Spec Machine prerequisites before first use.
+- Fidelity levels map to Spec Machine thresholds: `low` = freeform, `medium` = balanced, `high` = strict.
 
 **Gate Criteria:**
 - Prototype reviewed with users
@@ -117,7 +124,8 @@ Feature context persists across sessions:
 - `tools/feature/feature_engine.py` -- Feature lifecycle management
 - `tools/feature/feature_state.py` -- State persistence
 - `tools/feature/context_doc_generator.py` -- Context management
-- `tools/prototype/prototype_engine.py` -- Prototype generation
+- `tools/prototype/prototype_engine.py` -- Prototype generation (internal engine)
+- `tools/prototype/specx_bridge.py` -- Spec Machine delegation bridge (availability, translation, output adaptation)
 - `tools/reasoning/fpf_engine.py` -- Evidence-based reasoning
 - `tools/integration/jira_integration.py` -- Jira synchronization
 

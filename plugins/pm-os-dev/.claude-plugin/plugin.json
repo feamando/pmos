@@ -1,0 +1,15 @@
+{
+  "name": "pm-os-dev",
+  "version": "5.0.0",
+  "description": "PM-OS platform development: Ralph iterations, release pipeline, push/publish, command sync",
+  "author": "PM-OS Contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/feamando/pmos",
+  "keywords": ["pm-os", "dev", "release", "publish", "ralph", "development"],
+  "dependencies": ["pm-os-base"],
+  "commands": ["commands/push.md", "commands/ralph.md", "commands/release.md", "commands/sync-commands.md"],
+  "skills": [
+    "skills/pmos-dev-patterns/SKILL.md"
+  ],
+  "mcpServers": {}
+}

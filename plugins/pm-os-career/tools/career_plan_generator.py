@@ -46,7 +46,7 @@ class PersonInfo:
     name: str
     slug: str
     role: str = ""
-    team: str = ""
+    squad: str = ""
     category: str = "reports"  # reports, manager, stakeholders
     career_dir: Optional[Path] = None
 
@@ -111,7 +111,7 @@ CAREER_PLAN_TEMPLATE = """# Career Plan: {person_name}
 | Time in current role (in months) | |
 | # of Direct Reports | |
 | Current Career Step | |
-| Organization / Department / Team | {org_context} |
+| Alliance / Department / Tribe / Team | {org_context} |
 
 ---
 
@@ -285,11 +285,11 @@ class CareerPlanGenerator:
         for report in reports:
             report_name = ""
             report_role = ""
-            report_team = ""
+            report_squad = ""
             if isinstance(report, dict):
                 report_name = report.get("name", "")
                 report_role = report.get("role", "")
-                report_team = report.get("team", "")
+                report_squad = report.get("squad", "")
             elif isinstance(report, str):
                 report_name = report
 
@@ -300,7 +300,7 @@ class CareerPlanGenerator:
                     name=report_name,
                     slug=person_slug,
                     role=report_role,
-                    team=report_team,
+                    squad=report_squad,
                     category="reports",
                     career_dir=career_dir,
                 )
@@ -397,11 +397,11 @@ class CareerPlanGenerator:
 
         # Determine org context
         org_parts = []
-        department = self.config.get("team.department", "")
-        if department:
-            org_parts.append(department)
-        if person.team:
-            org_parts.append(person.team)
+        tribe = self.config.get("team.tribe", "")
+        if tribe:
+            org_parts.append(tribe)
+        if person.squad:
+            org_parts.append(person.squad)
         org_context = " / ".join(org_parts) if org_parts else ""
 
         created_files = []

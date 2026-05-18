@@ -1,0 +1,30 @@
+# Dev plugin preflight checks
+# Registered with the Base plugin's preflight runner to verify dev tool availability
+dev:
+  ralph_manager:
+    module: tools/ralph/ralph_manager.py
+    description: "Ralph multi-iteration feature manager"
+  release_pipeline:
+    module: tools/release/release_pipeline.py
+    description: "Release orchestration pipeline"
+  version_manager:
+    module: tools/release/version_manager.py
+    description: "Semantic version bumping and changelog"
+  push_publisher:
+    module: tools/push/push_publisher.py
+    description: "Clone-then-compare publisher with sanitization"
+  pypi_push:
+    module: tools/push/pypi_push.py
+    description: "PyPI package builder and publisher"
+  command_sync:
+    module: tools/dev_util/command_sync.py
+    description: "Cross-CLI command synchronization"
+  cross_cli_validator:
+    module: tools/dev_util/cross_cli_validator.py
+    description: "Cross-CLI parity validator"
+  pmos_scrubber:
+    module: tools/dev_util/pmos_scrubber.py
+    description: "Data scrubbing for distribution"
+  roadmap_parser:
+    module: tools/roadmap/roadmap_parser.py
+    description: "LLM-based roadmap inbox parser"

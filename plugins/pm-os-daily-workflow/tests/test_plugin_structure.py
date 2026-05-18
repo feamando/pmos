@@ -29,11 +29,10 @@ class TestPluginManifest:
         assert len(parts) == 3
         assert all(p.isdigit() for p in parts)
 
-    def test_author_is_object(self):
+    def test_author_present(self):
         author = self.manifest["author"]
-        assert isinstance(author, dict), "author must be an object per HF spec"
-        for field in ["name", "email", "tribe", "squad"]:
-            assert field in author, f"Missing author field: {field}"
+        assert author, "author must be present"
+        assert isinstance(author, (str, dict)), "author must be a string or object"
 
     def test_commands_discovered(self):
         """Commands are auto-discovered from commands/ directory."""

@@ -39,98 +39,7 @@ except ImportError:
 # BASE PLUGIN CHECKS (only tools that ship with pm-os-base)
 # ============================================================================
 
-BASE_CHECKS: Dict[str, Dict[str, Any]] = {
-    "core": {
-        "config_loader": {
-            "path": "tools/core/config_loader.py",
-            "module": "tools.core.config_loader",
-            "classes": ["ConfigLoader", "ConfigMetadata", "ConfigError"],
-            "functions": ["get_config", "reset_config", "get_user_name"],
-            "description": "Configuration Loader",
-        },
-        "path_resolver": {
-            "path": "tools/core/path_resolver.py",
-            "module": "tools.core.path_resolver",
-            "classes": ["PathResolver", "ResolvedPaths"],
-            "functions": ["get_paths", "reset_paths", "get_root", "get_common", "get_user"],
-            "description": "Path Resolution",
-        },
-        "entity_validator": {
-            "path": "tools/core/entity_validator.py",
-            "module": "tools.core.entity_validator",
-            "classes": ["EntityValidator", "ValidationResult", "EntityType"],
-            "functions": ["validate_entity", "validate_all_entities"],
-            "description": "Entity Validator",
-        },
-        "plugin_deps": {
-            "path": "tools/core/plugin_deps.py",
-            "module": "tools.core.plugin_deps",
-            "functions": ["check_plugin", "require_plugin", "get_installed_plugins"],
-            "description": "Plugin Dependency Checker",
-        },
-        "connector_bridge": {
-            "path": "tools/core/connector_bridge.py",
-            "module": "tools.core.connector_bridge",
-            "functions": ["get_auth", "get_data"],
-            "description": "Auth Abstraction (connector/env/error)",
-        },
-    },
-    "pipeline": {
-        "pipeline_executor": {
-            "path": "tools/pipeline/pipeline_executor.py",
-            "module": "tools.pipeline.pipeline_executor",
-            "classes": ["PipelineExecutor"],
-            "description": "YAML Pipeline Runner",
-        },
-        "pipeline_schema": {
-            "path": "tools/pipeline/pipeline_schema.py",
-            "module": "tools.pipeline.pipeline_schema",
-            "classes": ["PipelineStep", "PipelineDefinition", "StepResult", "PipelineResult"],
-            "description": "Pipeline Schema Definitions",
-        },
-        "action_registry": {
-            "path": "tools/pipeline/action_registry.py",
-            "module": "tools.pipeline.action_registry",
-            "classes": ["ActionRegistry"],
-            "description": "Pipeline Action Registry",
-        },
-        "builtin_actions": {
-            "path": "tools/pipeline/builtin_actions.py",
-            "module": "tools.pipeline.builtin_actions",
-            "functions": ["register_all"],
-            "description": "Built-in Pipeline Actions",
-        },
-    },
-    "session": {
-        "session_manager": {
-            "path": "tools/session/session_manager.py",
-            "module": "tools.session.session_manager",
-            "classes": ["SessionManager"],
-            "description": "Session Persistence",
-        },
-        "confucius_agent": {
-            "path": "tools/session/confucius_agent.py",
-            "module": "tools.session.confucius_agent",
-            "functions": ["main"],
-            "description": "Confucius Note-Taking Agent",
-        },
-    },
-    "util": {
-        "model_bridge": {
-            "path": "tools/util/model_bridge.py",
-            "module": "tools.util.model_bridge",
-            "functions": ["detect_active_model", "invoke_model", "invoke_challenger"],
-            "description": "LLM Model Bridge",
-        },
-        "file_chunker": {
-            "path": "tools/util/file_chunker.py",
-            "module": "tools.util.file_chunker",
-            "classes": ["FileInfo", "Chunk", "ChunkingResult"],
-            "functions": ["analyze_file", "split_file"],
-            "description": "File Chunking Utility",
-        },
-    },
-}
+BASE_CHECKS: Dict[str, Dict[str, Any]] = {}
 
 
 class CheckRegistry:
@@ -169,10 +78,6 @@ class CheckRegistry:
             if not plugin_dir.is_dir() or not plugin_dir.name.startswith("pm-os-"):
                 continue
 
-            # Skip base — already loaded
-            if plugin_dir.name == "pm-os-base":
-                continue
-
             checks_file = plugin_dir / "preflight-checks.yaml"
             if not checks_file.exists():
                 continue
@@ -185,11 +90,23 @@ class CheckRegistry:
                     continue
 
                 plugin_name = plugin_dir.name
+                plugin_tools_dir = str(plugin_dir)
+                # Add plugin root to sys.path so its tools/ are importable
+                if plugin_tools_dir not in sys.path:
+                    sys.path.insert(0, plugin_tools_dir)
+
                 for category, tools in plugin_checks.items():
                     if category not in self._checks:
                         self._checks[category] = {}
                     for tool_name, tool_meta in tools.items():
                         tool_meta["_source_plugin"] = plugin_name
+                        tool_meta["_plugin_dir"] = str(plugin_dir)
+                        # Normalize module path: file notation -> module notation
+                        # e.g. "tools/core/brain_loader.py" -> "tools.core.brain_loader"
+                        module_val = tool_meta.get("module", "")
+                        if module_val and ("/" in module_val or module_val.endswith(".py")):
+                            module_val = module_val.replace("/", ".").removesuffix(".py")
+                            tool_meta["module"] = module_val
                         self._checks[category][tool_name] = tool_meta
                         added += 1
 

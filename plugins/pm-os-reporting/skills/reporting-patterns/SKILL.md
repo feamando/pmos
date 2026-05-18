@@ -5,7 +5,7 @@ description: When generating any report, update, or status document, follow thes
 # Reporting Patterns
 
 ## When to Apply
-- Generating sprint reports, pupdates, quarterly updates, or any status document
+- Generating sprint reports, pupdates, tribe updates, or any status document
 - Writing executive summaries or leadership-facing content
 - Structuring metric-heavy communications
 
@@ -26,7 +26,7 @@ description: When generating any report, update, or status document, follow thes
 ## Report Types
 
 ### Sprint Report
-- **Structure:** Team -> Delivered (clustered by priority) -> Planned -> Learnings -> Experiments
+- **Structure:** Squad -> Delivered (clustered by priority) -> Planned -> Learnings -> Experiments
 - **Priority levels:** Sprint Focus, Secondary Priority
 - **Synthesis:** 1-3 sentences per cluster, business language, no ticket numbers in narrative
 - **External format:** Numbered milestones with sub-feature bullets
@@ -36,7 +36,7 @@ description: When generating any report, update, or status document, follow thes
 - **Data density:** High — include raw numbers and % changes
 - **Hypothesis-driven:** Always explain WHY a metric moved, not just the number
 
-### Quarterly Update
+### Tribe Quarterly Update
 - **Structure:** Executive Summary -> Systemic Blockers -> Learnings -> Roadmap -> Dependencies -> Hot Debates
 - **Fill brackets:** Template sections in [brackets] require manual input
 - **Root cause focus:** Blockers need root cause analysis, not just description

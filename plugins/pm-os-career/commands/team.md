@@ -40,6 +40,8 @@ Team - Team management
   /team operations --org               - Org chart
 
 Usage: /team <subcommand> [options]
+
+Note: Performance reviews moved to /review (top-level command).
 ```
 
 ---
@@ -52,11 +54,11 @@ Career planning system for team members, tracking projects and feedback over rev
 
 | Flag | Example | Purpose |
 |------|---------|---------|
-| `-create` | `/team career-plan -create "Alex"` | Initialize career plan |
-| `-WHAT` | `/team career-plan -WHAT "Alex" S2026` | Generate "What" (projects) section |
-| `-HOW` | `/team career-plan -HOW "Alex" S2026` | Generate "How" (behavioral) section |
-| `-status` | `/team career-plan -status "Alex"` | Show tracking status |
-| `-sync` | `/team career-plan -sync "Alex"` | Force sync projects and feedback |
+| `-create` | `/team career-plan -create "Daniel"` | Initialize career plan |
+| `-WHAT` | `/team career-plan -WHAT "Daniel" S2026` | Generate "What" (projects) section |
+| `-HOW` | `/team career-plan -HOW "Daniel" S2026` | Generate "How" (behavioral) section |
+| `-status` | `/team career-plan -status "Daniel"` | Show tracking status |
+| `-sync` | `/team career-plan -sync "Daniel"` | Force sync projects and feedback |
 
 **Cycle Format:** Main cycles: `S2025`, `S2026` (Summer/May-to-May). Off-cycles: `W2025`, `W2026` (Winter check-ins).
 
@@ -215,7 +217,7 @@ Generate a structured interview scorecard for a candidate.
 
 Ask the user (if not already provided):
 1. **Candidate name** — from the flag value
-2. **Role** - e.g., "Senior Product Manager, Growth Squad"
+2. **Role** — e.g., "Senior Product Manager — Good Chop"
 3. **Verdict** — one of: Strong Yes `(++)`, Soft Yes `(+)`, Soft No `(-)`, Strong No `(--)`.
 4. **Interview date** — ask or infer from transcript
 
@@ -390,7 +392,7 @@ Team capacity planning, hiring pipeline, and org chart.
 #### --capacity
 
 Scan team config and generate capacity overview:
-- Total headcount by team
+- Total headcount by squad
 - Open positions (from config or user/team/recruiting/)
 - Allocation by initiative
 
@@ -405,15 +407,17 @@ Show hiring pipeline status from `user/team/recruiting/`:
 
 Generate a text-based org chart from config:
 - Manager at top
-- Direct reports with team assignments
+- Direct reports with squad assignments
 - Stakeholders as dotted lines
 
 ---
 
 **Examples:**
-- `/team career-plan -create "Alex"` - Initialize career plan for Alex
-- `/team career-plan -WHAT "Jordan" S2026` - Generate WHAT section
-- `/team interview --scorecard "Sam Chen"` - Generate scorecard
-- `/team interview --list` - List all scorecards
-- `/team one-on-one "Taylor"` - Prep 1:1 for Taylor
-- `/team operations --org` - Show org chart
+- `/team career-plan -create "Daniel"` — Initialize career plan for Daniel
+- `/team career-plan -WHAT "Hamed" S2026` — Generate WHAT section
+- `/team interview --scorecard "Jane Doe"` — Generate scorecard
+- `/team interview --list` — List all scorecards
+- `/team one-on-one "Alex"` — Prep 1:1 for Alex
+- `/team operations --org` — Show org chart
+- `/review --peer --6m --4 "Alex Partner, alex.partner@example.com"` — Peer review (top-level command)
+- `/review --self --6m --3` — Self-review (top-level command)

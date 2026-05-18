@@ -35,6 +35,8 @@ try:
     from pm_os_base.tools.core.config_loader import get_config
 except ImportError:
     try:
+        _PLUGIN_ROOT = Path(__file__).resolve().parent.parent.parent
+        sys.path.insert(0, str(_PLUGIN_ROOT.parent / "pm-os-base" / "tools" / "core"))
         from config_loader import get_config
     except ImportError:
         get_config = None
@@ -147,7 +149,7 @@ def prefilter_raw_content(raw_content: str, config: Any) -> str:
 
     for line in lines:
         # Check for section start
-        if line.startswith("### DOC: ") or line.startswith("### SLACK: ") or line.startswith("### EMAIL: "):
+        if line.startswith("### DOC: ") or line.startswith("### SLACK: ") or line.startswith("### EMAIL: ") or line.startswith("### CAL: "):
             in_noise_doc = False
             current_doc_chars = 0
             doc_capped = False
@@ -304,7 +306,7 @@ Generate a markdown file following this EXACT structure:
 
 | Time | Event |
 |------|-------|
-[Extract from calendar emails/meeting notes if available]
+[Extract from CALENDAR INDEX section. List all events sorted by time. If no calendar data, write "No calendar data available"]
 
 ---
 
@@ -657,6 +659,7 @@ def parse_raw_data(raw_content: str) -> Dict[str, Any]:
         "documents": [],
         "emails": [],
         "slack_messages": [],
+        "calendar_events": [],
         "mention_tasks": [],
         "doc_contents": {},
         "generated_time": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -679,6 +682,15 @@ def parse_raw_data(raw_content: str) -> Dict[str, Any]:
             "subject": match.group(1),
             "from": match.group(2),
             "date": match.group(3),
+        })
+
+    # Calendar index
+    cal_pattern = r"\[CAL\] (\S+) \| (.+?) \| (\d+) attendees"
+    for match in re.finditer(cal_pattern, raw_content):
+        data["calendar_events"].append({
+            "time": match.group(1),
+            "summary": match.group(2),
+            "attendees": int(match.group(3)),
         })
 
     # Mention tasks
@@ -757,7 +769,11 @@ def generate_context_file_rulebased(
     lines.append("")
     lines.append("| Time | Event |")
     lines.append("|------|-------|")
-    lines.append("| - | Check calendar for meetings |")
+    if raw_data.get("calendar_events"):
+        for event in raw_data["calendar_events"]:
+            lines.append(f"| {event['time']} | {event['summary']} ({event['attendees']} attendees) |")
+    else:
+        lines.append("| - | No calendar data available |")
     lines.append("")
     lines.append("---")
     lines.append("")

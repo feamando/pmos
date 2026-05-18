@@ -49,10 +49,10 @@ class CanonicalResolver:
     Resolves any entity reference to canonical $id format.
 
     Supports resolution from:
-    - Slug: onboarding-flow
-    - Path: Projects/Onboarding_Flow.md
-    - $id: entity/project/onboarding-flow
-    - Alias: Onboarding Flow, OF
+    - Slug: factor-form
+    - Path: Projects/Factor_Form.md
+    - $id: entity/project/factor-form
+    - Alias: Factor Form, FF
     """
 
     # Type inference from directory structure
@@ -472,7 +472,7 @@ class CanonicalResolver:
         Generate alias candidates from an entity name, type-aware.
 
         Args:
-            name: Entity display name (e.g., "Jane Smith", "Onboarding Flow")
+            name: Entity display name (e.g., "Jane Smith", "Factor Form")
             entity_type: Entity type (person, project, system, etc.)
 
         Returns:
