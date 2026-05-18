@@ -10,6 +10,7 @@ const CATEGORIES: Array<{ id: SettingsCategory; label: string }> = [
   { id: 'integrations', label: 'Integrations' },
   { id: 'pmos', label: 'PM-OS' },
   { id: 'wcr', label: 'WCR' },
+  { id: 'sync', label: 'Sync' },
   { id: 'app', label: 'App' },
 ]
 
@@ -35,7 +36,7 @@ export default function SettingsCategoryList({ active, onChange }: SettingsCateg
             fontWeight: active === cat.id ? 600 : 400,
             color: active === cat.id ? 'var(--text-primary)' : 'var(--text-secondary)',
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
             whiteSpace: 'nowrap',
           }}
         >

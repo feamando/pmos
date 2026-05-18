@@ -22,14 +22,13 @@ interface ReportingChainProps {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 12px',
-  background: '#0a1929',
-  border: '1px solid #ff008844',
+  background: '#ffffff',
+  border: '1px solid #cccccc',
   borderRadius: 4,
   fontSize: 14,
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "'Source Sans Pro', sans-serif",
   boxSizing: 'border-box' as const,
   outline: 'none',
-  color: '#ffffff',
 }
 
 const labelStyle: React.CSSProperties = {
@@ -38,19 +37,19 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 600,
   color: 'var(--text-primary)',
   marginBottom: 4,
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "'Source Sans Pro', sans-serif",
 }
 
 export default function ReportingChain({ manager, reports, onManagerChange, onReportsChange }: ReportingChainProps) {
   return (
     <div>
-      <h3 style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Krub', sans-serif", marginBottom: 16, marginTop: 0 }}>
+      <h3 style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", marginBottom: 16, marginTop: 0 }}>
         Reporting Chain
       </h3>
 
       {/* Manager */}
-      <div style={{ marginBottom: 20, padding: 16, border: '1px solid #ff008844', borderRadius: 6 }}>
-        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 0, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ marginBottom: 20, padding: 16, border: '1px solid #e0e0e0', borderRadius: 6 }}>
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 0, marginBottom: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
           Manager
         </h4>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -78,8 +77,8 @@ export default function ReportingChain({ manager, reports, onManagerChange, onRe
       </div>
 
       {/* Reports */}
-      <div style={{ padding: 16, border: '1px solid #ff008844', borderRadius: 6 }}>
-        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 0, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ padding: 16, border: '1px solid #e0e0e0', borderRadius: 6 }}>
+        <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 0, marginBottom: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
           Direct Reports
         </h4>
         <DynamicList

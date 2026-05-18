@@ -64,20 +64,20 @@ describe('brain-health', () => {
 
     it('includes target values', () => {
       const data = getSyntheticBrainHealth()
-      expect(data.targets.connectivityRate).toBe(85)
+      expect(data.targets.connectivityRate).toBe(75)
       expect(data.targets.entityCount).toBe(500)
-      expect(data.targets.medianRelationships).toBe(3)
-      expect(data.targets.graphComponents).toBe(1)
-      expect(data.targets.orphanRate).toBe(10)
-      expect(data.targets.staleEntityRate).toBe(15)
-      expect(data.targets.enrichmentVelocity7d).toBe(10)
+      expect(data.targets.medianRelationships).toBe(2)
+      expect(data.targets.graphComponents).toBe(500)
+      expect(data.targets.orphanRate).toBe(20)
+      expect(data.targets.staleEntityRate).toBe(25)
+      expect(data.targets.enrichmentVelocity7d).toBe(5)
     })
 
     it('has synthetic values that exercise all indicator states', () => {
       const data = getSyntheticBrainHealth()
       // Connectivity 72% vs 85% target = ~85% → green
       // Entity count 347 vs 500 = ~69% → yellow
-      // Stale 22% vs ≤15% = over target → yellow
+      // Stale 28% vs ≤25% = over target → yellow
       // These ensure we can visually test all indicator colors
       expect(data.connectivityRate).toBeLessThan(data.targets.connectivityRate)
       expect(data.entityCount).toBeLessThan(data.targets.entityCount)

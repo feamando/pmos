@@ -105,11 +105,29 @@ export async function distributePmos(
       }
     }
 
+    // Distribute plugins (bundle/plugins/ -> target/v5/plugins/)
+    const bundlePlugins = path.join(bundlePath, 'plugins')
+    let pluginFileCount = 0
+    if (fs.existsSync(bundlePlugins)) {
+      const targetPlugins = path.join(targetPath, 'v5', 'plugins')
+      logInfo('installer', `Distributing plugins from ${bundlePlugins} to ${targetPlugins}`)
+      pluginFileCount = copyRecursive(bundlePlugins, targetPlugins)
+      logOk('installer', `Distributed ${pluginFileCount} plugin files`)
+    }
+
+    // Distribute templates (bundle/templates/ -> target/v5/templates/)
+    const bundleTemplates = path.join(bundlePath, 'templates')
+    if (fs.existsSync(bundleTemplates)) {
+      const targetTemplates = path.join(targetPath, 'v5', 'templates')
+      copyRecursive(bundleTemplates, targetTemplates)
+    }
+
     const duration = (Date.now() - start) / 1000
-    logOk('installer', `Distributed ${fileCount} files (${duration.toFixed(1)}s)`)
+    const allFiles = fileCount + pluginFileCount
+    logOk('installer', `Distributed ${allFiles} files (${duration.toFixed(1)}s)`)
     return {
       success: true,
-      message: `${fileCount} files distributed${verifyOk ? '' : ' (checksum warnings)'}`,
+      message: `${allFiles} files distributed${verifyOk ? '' : ' (checksum warnings)'}`,
       duration,
     }
   } catch (err: any) {

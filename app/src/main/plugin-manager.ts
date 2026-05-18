@@ -1,5 +1,5 @@
 import path from 'path'
-import { existsSync, readdirSync, readFileSync, copyFileSync, mkdirSync, unlinkSync, writeFileSync } from 'fs'
+import { existsSync, readdirSync, readFileSync, copyFileSync, mkdirSync, unlinkSync, writeFileSync, cpSync, rmSync } from 'fs'
 import type { PluginInfo, PluginHealth, PluginActionResult } from '../shared/types'
 
 interface PluginManifest {
@@ -8,9 +8,9 @@ interface PluginManifest {
   description: string
   author: string
   dependencies: string[]
-  commands: string[]
-  skills: string[]
-  mcp_servers: string[]
+  commands?: string[]
+  skills?: string[]
+  mcp_servers?: string[]
   requires?: { python?: string; config_keys?: string[] }
 }
 
@@ -34,15 +34,14 @@ function getSkillsDir(pmosPath: string): string {
 
 function isPluginInstalled(pmosPath: string, manifest: PluginManifest, pluginDir: string): boolean {
   const commandsDir = getCommandsDir(pmosPath)
-  for (const cmd of manifest.commands) {
+  for (const cmd of manifest.commands || []) {
     const cmdName = path.basename(cmd)
     if (existsSync(path.join(commandsDir, cmdName))) return true
   }
-  // Also check if skills are registered
   const skillsDir = getSkillsDir(pmosPath)
-  for (const skill of manifest.skills) {
-    const skillName = path.basename(skill)
-    if (existsSync(path.join(skillsDir, skillName))) return true
+  for (const skill of manifest.skills || []) {
+    const skillDirName = path.basename(path.dirname(skill))
+    if (existsSync(path.join(skillsDir, skillDirName, 'SKILL.md'))) return true
   }
   return false
 }
@@ -64,6 +63,7 @@ export function getAllPlugins(pmosPath: string): PluginInfo[] {
 
   for (const entry of entries) {
     if (!entry.isDirectory() || !entry.name.startsWith('pm-os-')) continue
+    if (entry.name === 'pm-os-hellodev-chatbot') continue
     const pluginDir = path.join(pluginsDir, entry.name)
     const manifest = readPluginManifest(pluginDir)
     if (!manifest) continue
@@ -75,17 +75,47 @@ export function getAllPlugins(pmosPath: string): PluginInfo[] {
       name: manifest.name,
       version: manifest.version,
       description: manifest.description,
-      author: manifest.author,
-      dependencies: manifest.dependencies,
+      author: typeof manifest.author === 'string' ? manifest.author : (manifest.author as any)?.name || 'Unknown',
+      dependencies: manifest.dependencies || [],
       status: installed ? 'installed' : 'available',
-      commands: manifest.commands,
+      commands: manifest.commands || [],
       skills: manifest.skills || [],
-      mcpServers: manifest.mcp_servers || [],
+      mcpServers: (manifest as any).mcpServers || manifest.mcp_servers || [],
       requires: manifest.requires,
     })
   }
 
   return plugins
+}
+
+export function installAllPlugins(pmosPath: string): { success: boolean; installed: string[]; errors: string[] } {
+  const all = getAllPlugins(pmosPath)
+  const installed: string[] = []
+  const errors: string[] = []
+
+  // Install base first (other plugins depend on it)
+  const base = all.find((p) => p.id === 'pm-os-base')
+  if (base && base.status !== 'installed') {
+    const r = installPlugin(pmosPath, 'pm-os-base')
+    if (r.success) installed.push('pm-os-base')
+    else errors.push(`pm-os-base: ${r.error}`)
+  } else if (base) {
+    installed.push('pm-os-base')
+  }
+
+  // Then install the rest
+  for (const plugin of all) {
+    if (plugin.id === 'pm-os-base') continue
+    if (plugin.status === 'installed') {
+      installed.push(plugin.id)
+      continue
+    }
+    const r = installPlugin(pmosPath, plugin.id)
+    if (r.success) installed.push(plugin.id)
+    else errors.push(`${plugin.id}: ${r.error}`)
+  }
+
+  return { success: errors.length === 0, installed, errors }
 }
 
 export function installPlugin(pmosPath: string, pluginId: string): PluginActionResult {
@@ -114,19 +144,24 @@ export function installPlugin(pmosPath: string, pluginId: string): PluginActionR
     // Copy commands
     const commandsDir = getCommandsDir(pmosPath)
     mkdirSync(commandsDir, { recursive: true })
-    for (const cmd of manifest.commands) {
+    for (const cmd of manifest.commands || []) {
       const src = path.join(pluginDir, cmd)
       const dest = path.join(commandsDir, path.basename(cmd))
       if (existsSync(src)) copyFileSync(src, dest)
     }
 
-    // Copy skills
+    // Copy skills (each skill is a directory containing SKILL.md)
     const skillsDir = getSkillsDir(pmosPath)
     mkdirSync(skillsDir, { recursive: true })
     for (const skill of manifest.skills || []) {
-      const src = path.join(pluginDir, skill)
-      const dest = path.join(skillsDir, path.basename(skill))
-      if (existsSync(src)) copyFileSync(src, dest)
+      const skillDir = path.dirname(skill)
+      const skillName = path.basename(skillDir)
+      const src = path.join(pluginDir, skillDir)
+      const dest = path.join(skillsDir, skillName)
+      if (existsSync(src)) {
+        mkdirSync(dest, { recursive: true })
+        cpSync(src, dest, { recursive: true })
+      }
     }
 
     // Merge MCP servers
@@ -153,16 +188,18 @@ export function disablePlugin(pmosPath: string, pluginId: string): PluginActionR
   try {
     // Remove commands
     const commandsDir = getCommandsDir(pmosPath)
-    for (const cmd of manifest.commands) {
+    for (const cmd of manifest.commands || []) {
       const dest = path.join(commandsDir, path.basename(cmd))
       if (existsSync(dest)) unlinkSync(dest)
     }
 
-    // Remove skills
+    // Remove skill directories
     const skillsDir = getSkillsDir(pmosPath)
     for (const skill of manifest.skills || []) {
-      const dest = path.join(skillsDir, path.basename(skill))
-      if (existsSync(dest)) unlinkSync(dest)
+      const skillDir = path.dirname(skill)
+      const skillName = path.basename(skillDir)
+      const dest = path.join(skillsDir, skillName)
+      if (existsSync(dest)) rmSync(dest, { recursive: true })
     }
 
     // Remove MCP entries

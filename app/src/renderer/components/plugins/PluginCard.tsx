@@ -9,9 +9,9 @@ interface PluginCardProps {
 }
 
 const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  installed: { bg: '#0a2a1a', text: '#4ade80', label: 'Installed' },
-  available: { bg: '#0a1a2e', text: '#60a5fa', label: 'Available' },
-  disabled: { bg: '#2a0a0a', text: '#f87171', label: 'Disabled' },
+  installed: { bg: '#f0fdf4', text: '#166534', label: 'Installed' },
+  available: { bg: '#eff6ff', text: '#1e40af', label: 'Available' },
+  disabled: { bg: '#fef2f2', text: '#991b1b', label: 'Disabled' },
 }
 
 export default function PluginCard({ plugin, onInstall, onDisable, busy }: PluginCardProps) {
@@ -20,7 +20,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
 
   return (
     <div style={{
-      background: '#0a1929',
+      background: 'white',
       border: '1px solid var(--border)',
       borderRadius: 8,
       padding: 16,
@@ -32,17 +32,17 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
           <span style={{
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
             fontWeight: 600,
             fontSize: 14,
-            color: '#ffffff',
+            color: '#111',
           }}>
             {plugin.name}
           </span>
           <span style={{
             fontSize: 11,
             color: 'var(--text-muted)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             v{plugin.version}
           </span>
@@ -53,7 +53,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
             borderRadius: 4,
             background: statusStyle.bg,
             color: statusStyle.text,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             {statusStyle.label}
           </span>
@@ -63,7 +63,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
           margin: '4px 0 8px',
           fontSize: 13,
           color: 'var(--text-secondary)',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           lineHeight: 1.4,
         }}>
           {plugin.description}
@@ -74,7 +74,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
           gap: 12,
           fontSize: 11,
           color: 'var(--text-muted)',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           {plugin.commands.length > 0 && (
             <span>{plugin.commands.length} command{plugin.commands.length !== 1 ? 's' : ''}</span>
@@ -92,7 +92,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
             marginTop: 6,
             fontSize: 11,
             color: plugin.health.status === 'healthy' ? '#166534' : plugin.health.status === 'degraded' ? '#92400e' : '#dc2626',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             {plugin.health.message}
           </div>
@@ -111,14 +111,14 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
               fontWeight: 500,
               border: '1px solid var(--border)',
               borderRadius: 4,
-              background: '#0a1929',
+              background: 'white',
               cursor: busy ? 'not-allowed' : 'pointer',
               opacity: busy ? 0.5 : 1,
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              fontFamily: "'Inter', sans-serif",
-              color: '#aabbcc',
+              fontFamily: "'Source Sans Pro', sans-serif",
+              color: '#666',
             }}
           >
             <Power size={12} />
@@ -143,7 +143,7 @@ export default function PluginCard({ plugin, onInstall, onDisable, busy }: Plugi
               display: 'flex',
               alignItems: 'center',
               gap: 4,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             <Download size={12} />

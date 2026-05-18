@@ -7,7 +7,7 @@ import https from 'https'
 import http from 'http'
 import { logInfo, logError } from '../installer/logger'
 
-const UPDATE_DIR = path.join(tmpdir(), 'pmos-update')
+const UPDATE_DIR = path.join(tmpdir(), 'helloai-update')
 
 export function getUpdateDir(): string {
   if (!existsSync(UPDATE_DIR)) {

@@ -32,9 +32,8 @@ async function runPreflightChecks(splash: BrowserWindow): Promise<void> {
     const sessionTool = path.join(pmosRoot, 'common', 'tools', 'session', 'session_manager.py')
     if (existsSync(sessionTool)) {
       const { execFile } = await import('child_process')
-      // Use venv python if available — bare 'python3' isn't on PATH in packaged Electron apps
       const venvPython = path.join(pmosRoot, '.venv', 'bin', 'python3')
-      const pythonBin = existsSync(venvPython) ? venvPython : '/usr/bin/python3'
+      const pythonBin = existsSync(venvPython) ? venvPython : 'python3'
       await new Promise<void>((resolve) => {
         execFile(pythonBin, [sessionTool, '--status'], { timeout: 5000, env: { ...process.env, PM_OS_ROOT: pmosRoot } }, (err) => {
           updateCheck(splash, 'session', err ? 'fail' : 'done')

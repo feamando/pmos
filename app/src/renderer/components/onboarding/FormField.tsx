@@ -16,12 +16,11 @@ export default function FormField({ field, value, onChange, error }: FormFieldPr
   const inputStyle: React.CSSProperties = {
     width: '100%',
     padding: isPassword ? '10px 40px 10px 12px' : '10px 12px',
-    background: '#0a1929',
-    border: `1px solid ${error ? '#ef4444' : '#ff008844'}`,
-    color: '#ffffff',
+    background: '#ffffff',
+    border: `1px solid ${error ? '#ef4444' : '#cccccc'}`,
     borderRadius: 4,
     fontSize: 14,
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: "'Source Sans Pro', sans-serif",
     boxSizing: 'border-box' as const,
     outline: 'none',
     transition: 'border-color 0.2s ease',
@@ -35,7 +34,7 @@ export default function FormField({ field, value, onChange, error }: FormFieldPr
         fontWeight: 600,
         color: 'var(--text-primary)',
         marginBottom: 6,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         {field.label}
         {field.required && <span style={{ color: '#ef4444', marginLeft: 2 }}>*</span>}
@@ -47,8 +46,8 @@ export default function FormField({ field, value, onChange, error }: FormFieldPr
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.placeholder}
           style={inputStyle}
-          onFocus={(e) => { e.target.style.borderColor = '#ff0088' }}
-          onBlur={(e) => { e.target.style.borderColor = error ? '#ef4444' : '#ff008844' }}
+          onFocus={(e) => { e.target.style.borderColor = '#111111' }}
+          onBlur={(e) => { e.target.style.borderColor = error ? '#ef4444' : '#cccccc' }}
         />
         {isPassword && (
           <button

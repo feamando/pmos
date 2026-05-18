@@ -16,7 +16,7 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
 
   return (
     <div style={{
-      background: '#0a1929',
+      background: 'white',
       border: '1px solid var(--border)',
       borderRadius: 8,
       overflow: 'hidden',
@@ -35,7 +35,7 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
           cursor: 'pointer',
           textAlign: 'left',
         }}
-        onMouseEnter={(e) => { e.currentTarget.style.background = '#0d2137' }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = '#f9fafb' }}
         onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -43,15 +43,15 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
             ? <ChevronDown size={16} color="#6b7280" />
             : <ChevronRight size={16} color="#6b7280" />
           }
-          <span style={{ fontWeight: 600, fontSize: 14, fontFamily: "'Krub', sans-serif", color: '#ffffff' }}>
+          <span style={{ fontWeight: 600, fontSize: 14, fontFamily: "'Agrandir', sans-serif", color: '#111827' }}>
             {cleanDisplayName(product.name)}
           </span>
           {product.isWcrProduct && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               fontSize: 10, fontWeight: 600, padding: '1px 6px', borderRadius: 4,
-              background: '#0a2a1a', color: '#4ade80',
-              fontFamily: "'Inter', sans-serif",
+              background: '#ecfdf5', color: '#059669',
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
               WCR
@@ -59,7 +59,7 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
           )}
           {product.meta.status && (
             <span style={{
-              fontSize: 10, color: '#6b7280', fontFamily: "'Inter', sans-serif",
+              fontSize: 10, color: '#6b7280', fontFamily: "'Source Sans Pro', sans-serif",
               textTransform: 'capitalize',
             }}>
               {product.meta.status.toLowerCase()}
@@ -68,12 +68,12 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {product.wcrMeta?.squad && (
-            <span style={{ fontSize: 10, color: '#9ca3af', fontFamily: "'Inter', sans-serif" }}>
+            <span style={{ fontSize: 10, color: '#9ca3af', fontFamily: "'Source Sans Pro', sans-serif" }}>
               {product.wcrMeta.squad}
             </span>
           )}
           <span style={{
-            fontSize: 11, color: '#6b7280', fontFamily: "'Inter', sans-serif",
+            fontSize: 11, color: '#6b7280', fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             {featureCount} {featureCount === 1 ? 'feature' : 'features'}
           </span>
@@ -87,7 +87,7 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
           <div style={{
             padding: '0 16px 8px',
             display: 'flex', gap: 12, flexWrap: 'wrap',
-            fontSize: 11, color: '#9ca3af', fontFamily: "'Inter', sans-serif",
+            fontSize: 11, color: '#9ca3af', fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             <span>Org: {product.org}</span>
             {product.wcrMeta?.tribe && <span>Tribe: {product.wcrMeta.tribe}</span>}
@@ -100,7 +100,7 @@ export default function ProductCard({ product, onOpenFolder, defaultExpanded = f
             <div style={{
               padding: '16px',
               fontSize: 12, color: '#9ca3af',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
               borderTop: '1px solid var(--border)',
             }}>
               No tracked features

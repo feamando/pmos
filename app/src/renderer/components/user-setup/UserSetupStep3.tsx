@@ -57,19 +57,19 @@ export default function UserSetupStep3({ data, devConfig, onChange }: UserSetupS
   }
 
   const orgField: FieldConfig = { envKey: 'org', label: 'GitHub Organization', type: 'text', required: false, placeholder: 'my-org' }
-  const reposField: FieldConfig = { envKey: 'tracked_repos', label: 'Tracked Repositories', type: 'text', required: false, placeholder: 'my-org/web, my-org/api' }
-  const slackChannelField: FieldConfig = { envKey: 'channel', label: 'Personal Bot Channel', type: 'text', required: false, placeholder: 'e.g. C0XXXXXXXXX' }
-  const slackContextField: FieldConfig = { envKey: 'context_output_channel', label: 'Daily Context Publishing Channel', type: 'text', required: false, placeholder: 'e.g. C0XXXXXXXXX' }
+  const reposField: FieldConfig = { envKey: 'tracked_repos', label: 'Tracked Repositories', type: 'text', required: false, placeholder: 'my-org/repo-1, my-org/repo-2' }
+  const slackChannelField: FieldConfig = { envKey: 'channel', label: 'Personal Bot Channel', type: 'text', required: false, placeholder: 'e.g. C0A6ZAS1MSQ' }
+  const slackContextField: FieldConfig = { envKey: 'context_output_channel', label: 'Daily Context Publishing Channel', type: 'text', required: false, placeholder: 'e.g. C0A6ZAS1MSQ' }
 
   return (
     <div>
-      <h3 style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Krub', sans-serif", marginTop: 0, marginBottom: 16 }}>
+      <h3 style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", marginTop: 0, marginBottom: 16 }}>
         GitHub
       </h3>
       <FormField field={orgField} value={github.org || ''} onChange={(v) => updateGithub('org', v)} />
       <FormField field={reposField} value={github.tracked_repos || ''} onChange={(v) => updateGithub('tracked_repos', v)} />
 
-      <h3 style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Krub', sans-serif", marginTop: 24, marginBottom: 16 }}>
+      <h3 style={{ fontSize: 15, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", marginTop: 24, marginBottom: 16 }}>
         Slack
       </h3>
       <FormField field={slackChannelField} value={slack.channel || ''} onChange={(v) => updateSlack('channel', v)} />

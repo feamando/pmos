@@ -53,13 +53,13 @@ export default function CCEPage() {
       <div style={{ padding: '32px 32px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Krub', sans-serif" }}>
+            <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Agrandir', sans-serif" }}>
               Context Creation Engine
             </h2>
             {devMode && (
               <span style={{
                 fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4,
-                background: '#fef3c7', color: '#92400e', fontFamily: "'Inter', sans-serif",
+                background: '#fef3c7', color: '#92400e', fontFamily: "'Source Sans Pro', sans-serif",
               }}>
                 DEV MODE
               </span>
@@ -71,7 +71,7 @@ export default function CCEPage() {
             title="Refresh"
             style={{
               width: 32, height: 32, borderRadius: 6, border: '1px solid var(--border)',
-              background: '#0a1929', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: refreshing ? 'not-allowed' : 'pointer', opacity: refreshing ? 0.5 : 1,
             }}
           >
@@ -80,7 +80,7 @@ export default function CCEPage() {
         </div>
 
         {data && (
-          <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 0, fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 0, fontFamily: "'Source Sans Pro', sans-serif" }}>
             {data.summary.products} products &middot; {data.summary.features} features &middot; {data.summary.active} active
           </p>
         )}
@@ -93,16 +93,16 @@ export default function CCEPage() {
           </div>
         ) : error ? (
           <div style={{
-            padding: 20, background: '#2a0a0a', border: '1px solid #fecaca', borderRadius: 8,
+            padding: 20, background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8,
             fontSize: 13, color: '#dc2626', lineHeight: 1.6,
           }}>
             Unable to load CCE projects. Ensure PM-OS is properly configured and feature index generator is available.
-            <div style={{ marginTop: 8, fontSize: 12, color: '#778899' }}>{error}</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>{error}</div>
           </div>
         ) : data && data.products.length === 0 ? (
           <div style={{
             textAlign: 'center', padding: 48, color: 'var(--text-muted)', fontSize: 13,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}>
             No projects found. Add feature context files to user/products/ to get started.
           </div>

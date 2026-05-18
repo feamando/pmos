@@ -325,6 +325,23 @@ export interface AppVersionInfo {
   electronVersion: string
 }
 
+// --- Background Sync types (v0.12) ---
+
+export interface SyncStatus {
+  lastRun: number | null
+  lastSuccess: boolean
+  lastMessage: string
+  running: boolean
+  nextRun: number | null
+}
+
+export interface SyncConfig {
+  enabled: boolean
+  gatherIntervalMinutes: number
+  synthesizeIntervalMinutes: number
+  enableSynthesis: boolean
+}
+
 // --- Plugin types (v0.11) ---
 
 export interface PluginInfo {
@@ -384,7 +401,7 @@ export interface MigrationResult {
 
 // --- API ---
 
-export interface PmosAPI {
+export interface HelloAIAPI {
   getEnvPath(): Promise<string | null>
   setEnvPath(path: string): Promise<void>
   detectPmosInstallation(): Promise<string[]>
@@ -455,6 +472,14 @@ export interface PmosAPI {
   onMigrationProgress(callback: (progress: MigrationProgress) => void): void
   removeMigrationProgressListener(): void
   rollbackMigration(): Promise<{ success: boolean; error?: string }>
+
+  // Background Sync (v0.12)
+  getSyncStatus(): Promise<SyncStatus>
+  getSyncConfig(): Promise<SyncConfig>
+  saveSyncConfig(config: SyncConfig): Promise<SaveResult>
+  triggerSyncNow(): Promise<{ success: boolean; message: string }>
+  onSyncUpdate(callback: (status: SyncStatus) => void): void
+  removeSyncUpdateListener(): void
 
   // Installer (v0.1)
   getInstallConfig(): Promise<InstallConfig>

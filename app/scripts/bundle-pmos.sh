@@ -1,6 +1,6 @@
 #!/bin/bash
 # bundle-pmos.sh — Copy PM-OS common/ into bundle/ for Electron app distribution
-# Run from pm-os-app root: bash scripts/bundle-pmos.sh
+# Run from helloai-connector root: bash scripts/bundle-pmos.sh
 
 set -euo pipefail
 
@@ -74,6 +74,34 @@ for f in config.yaml.example .env.example; do
     cp "$COMMON_SRC/$f" "$BUNDLE_COMMON/"
   fi
 done
+
+# --- Copy v5 plugins ---
+PLUGINS_SRC="$PMOS_ROOT/v5/plugins"
+BUNDLE_PLUGINS="$BUNDLE_DIR/plugins"
+if [ -d "$PLUGINS_SRC" ]; then
+  echo "Copying v5 plugins..."
+  rm -rf "$BUNDLE_PLUGINS"
+  mkdir -p "$BUNDLE_PLUGINS"
+  for plugin_dir in "$PLUGINS_SRC"/pm-os-*; do
+    [ -d "$plugin_dir" ] || continue
+    plugin_name=$(basename "$plugin_dir")
+    echo "  $plugin_name"
+    rsync -a --exclude='__pycache__' --exclude='*.pyc' --exclude='tests/' \
+      "$plugin_dir/" "$BUNDLE_PLUGINS/$plugin_name/"
+  done
+  # Copy marketplace manifest
+  if [ -f "$PLUGINS_SRC/.claude-plugin/marketplace.json" ]; then
+    mkdir -p "$BUNDLE_PLUGINS/.claude-plugin"
+    cp "$PLUGINS_SRC/.claude-plugin/marketplace.json" "$BUNDLE_PLUGINS/.claude-plugin/"
+  fi
+  # Copy templates
+  if [ -d "$PMOS_ROOT/v5/templates" ]; then
+    echo "  templates/"
+    rsync -a "$PMOS_ROOT/v5/templates/" "$BUNDLE_PLUGINS/../templates/"
+  fi
+  PLUGIN_COUNT=$(find "$BUNDLE_PLUGINS" -maxdepth 1 -type d -name "pm-os-*" | wc -l | tr -d ' ')
+  echo "  Bundled $PLUGIN_COUNT plugins"
+fi
 
 # --- Copy Google credentials if available ---
 GOOGLE_CREDS="$PMOS_ROOT/common/package/src/pm_os/data/google_client_secret.json"

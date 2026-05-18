@@ -124,6 +124,22 @@ export const CONNECTION_CONFIGS: ConnectionConfig[] = [
       authType: 'bearer',
     },
   },
+  {
+    id: 'spec-machine',
+    name: 'Spec Machine',
+    icon: 'spec-machine.svg',
+    brandColor: '#6366F1',
+    fields: [
+      { envKey: 'SPECX_UX_PATH', label: 'Plugin Path (optional)', type: 'text', required: false, placeholder: 'Auto-detected from marketplace' },
+    ],
+    helpText: 'Spec Machine (specx-ux) enables production-quality prototyping with Zest design tokens, Figma extraction, and brand-aware UI generation. Auto-detected from claude-plugins-marketplace.',
+    testEndpoint: {
+      method: 'GET',
+      urlTemplate: '',
+      headers: {},
+      authType: 'file-check',
+    },
+  },
 ]
 
 export function getConnectionConfig(id: string): ConnectionConfig | undefined {

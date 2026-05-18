@@ -46,7 +46,7 @@ const StepForm = forwardRef<StepFormRef, StepFormProps>(({ configs, initialValue
               color: 'var(--text-primary)',
               marginBottom: 12,
               marginTop: configs.indexOf(config) > 0 ? 24 : 0,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               {config.name}
             </h3>

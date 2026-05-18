@@ -3,11 +3,11 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { logInfo, logWarn } from './logger'
 
-const DEV_DIR_NAME = 'pmos-dev'
-const DEV_LOG_DIR_NAME = 'pmos-dev-logs'
+const DEV_DIR_NAME = 'helloai-dev-pmos'
+const DEV_LOG_DIR_NAME = 'helloai-dev-logs'
 
 export function isDevMode(): boolean {
-  return process.env.PMOS_DEV_MODE === 'true'
+  return process.env.HELLOAI_DEV_MODE === 'true'
 }
 
 export function getDevPmosPath(): string {

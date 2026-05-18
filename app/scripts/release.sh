@@ -14,7 +14,7 @@ DATE_STAMP=$(date +%Y%m%d)
 FULL_VERSION="${BASE_VERSION}-${DATE_STAMP}"
 
 echo "=========================================="
-echo "  PM-OS Release Pipeline"
+echo "  HelloAI Release Pipeline"
 echo "  Version: $FULL_VERSION"
 echo "=========================================="
 echo ""

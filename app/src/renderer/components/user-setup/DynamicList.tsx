@@ -58,12 +58,12 @@ export default function DynamicList<T>({
             gap: 6,
             padding: '8px 16px',
             background: 'none',
-            border: '1px dashed #ff008844',
+            border: '1px dashed #cccccc',
             borderRadius: 4,
-            color: '#ffffff',
+            color: '#111111',
             fontSize: 13,
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
             marginTop: 4,
           }}
         >

@@ -12,7 +12,7 @@ export default function SettingsFooter({ onSave, onCancel, saving }: SettingsFoo
       gap: 12,
       padding: '16px 24px',
       borderTop: '1px solid var(--border)',
-      background: '#0a1929',
+      background: 'white',
     }}>
       <button
         onClick={onCancel}
@@ -25,7 +25,7 @@ export default function SettingsFooter({ onSave, onCancel, saving }: SettingsFoo
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}
       >
         Cancel
@@ -43,7 +43,7 @@ export default function SettingsFooter({ onSave, onCancel, saving }: SettingsFoo
           fontWeight: 600,
           cursor: saving ? 'not-allowed' : 'pointer',
           opacity: saving ? 0.6 : 1,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}
       >
         {saving ? 'Saving...' : 'Save'}

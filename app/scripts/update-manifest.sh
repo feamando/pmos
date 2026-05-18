@@ -1,7 +1,7 @@
 #!/bin/bash
-# update-manifest.sh — Update pmos-manifest.json with new release info
+# update-manifest.sh — Update helloai-manifest.json with new release info
 # Usage: bash scripts/update-manifest.sh <version> <gdrive-file-id> <zip-path>
-# Example: bash scripts/update-manifest.sh 0.8.0-20260331 1ABC123def /path/to/PM-OS-0.8.0-mac.zip
+# Example: bash scripts/update-manifest.sh 0.8.0-20260331 1ABC123def /path/to/HelloAI-0.8.0-mac.zip
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ ZIP_PATH="${3:?Missing zip file path}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 APP_ROOT="$(dirname "$SCRIPT_DIR")"
 PMOS_ROOT="${PM_OS_ROOT:-$(cd "$APP_ROOT/../.." && pwd)}"
-MANIFEST="$PMOS_ROOT/common/releases/pmos-manifest.json"
+MANIFEST="$PMOS_ROOT/common/releases/helloai-manifest.json"
 
 if [ ! -f "$ZIP_PATH" ]; then
   echo "ERROR: Zip file not found: $ZIP_PATH"
@@ -21,7 +21,7 @@ fi
 
 SHA256=$(shasum -a 256 "$ZIP_PATH" | awk '{print $1}')
 SIZE=$(stat -f%z "$ZIP_PATH" 2>/dev/null || stat -c%s "$ZIP_PATH" 2>/dev/null)
-FILENAME="PM-OS-${VERSION}-mac.zip"
+FILENAME="HelloAI-${VERSION}-mac.zip"
 URL="https://drive.google.com/uc?id=${FILE_ID}&export=download"
 PUBLISHED=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -50,8 +50,8 @@ echo "  Size: $SIZE"
 
 # Commit to PM-OS repo
 cd "$PMOS_ROOT"
-git add common/releases/pmos-manifest.json
-git commit -m "Release PM-OS $VERSION — update manifest"
+git add common/releases/helloai-manifest.json
+git commit -m "Release HelloAI $VERSION — update manifest"
 echo "  Committed to PM-OS repo"
 echo ""
 echo "Run 'git push origin main' to publish."

@@ -15,26 +15,26 @@ vi.mock('../../../src/main/installer/logger', () => ({
 import { isDevMode, getDevPmosPath, cleanupDevInstall, getTargetPmosPath } from '../../../src/main/installer/dev-mode'
 
 describe('dev-mode', () => {
-  const origEnv = process.env.PMOS_DEV_MODE
+  const origEnv = process.env.HELLOAI_DEV_MODE
 
   afterEach(() => {
-    if (origEnv === undefined) delete process.env.PMOS_DEV_MODE
-    else process.env.PMOS_DEV_MODE = origEnv
+    if (origEnv === undefined) delete process.env.HELLOAI_DEV_MODE
+    else process.env.HELLOAI_DEV_MODE = origEnv
   })
 
   it('detects dev mode from env var', () => {
-    process.env.PMOS_DEV_MODE = 'true'
+    process.env.HELLOAI_DEV_MODE = 'true'
     expect(isDevMode()).toBe(true)
   })
 
   it('returns false when env var not set', () => {
-    delete process.env.PMOS_DEV_MODE
+    delete process.env.HELLOAI_DEV_MODE
     expect(isDevMode()).toBe(false)
   })
 
   it('getDevPmosPath returns temp dir', () => {
     const devPath = getDevPmosPath()
-    expect(devPath).toContain('pmos-dev')
+    expect(devPath).toContain('helloai-dev-pmos')
     expect(devPath.startsWith(os.tmpdir())).toBe(true)
   })
 
@@ -54,12 +54,12 @@ describe('dev-mode', () => {
   })
 
   it('getTargetPmosPath returns dev path in dev mode', () => {
-    process.env.PMOS_DEV_MODE = 'true'
-    expect(getTargetPmosPath()).toContain('pmos-dev')
+    process.env.HELLOAI_DEV_MODE = 'true'
+    expect(getTargetPmosPath()).toContain('helloai-dev-pmos')
   })
 
   it('getTargetPmosPath returns home dir in normal mode', () => {
-    delete process.env.PMOS_DEV_MODE
+    delete process.env.HELLOAI_DEV_MODE
     expect(getTargetPmosPath()).toBe(path.join(os.homedir(), 'pm-os'))
   })
 })

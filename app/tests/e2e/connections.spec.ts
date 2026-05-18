@@ -11,7 +11,7 @@ const FIXTURE_ENV = path.join(__dirname, 'fixtures/test.env')
 let electronApp: ElectronApplication
 
 function tmpEnvCopy(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pmos-e2e-'))
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'helloai-e2e-'))
   const dest = path.join(dir, 'user')
   fs.mkdirSync(dest, { recursive: true })
   const envDest = path.join(dest, '.env')
@@ -27,7 +27,7 @@ async function launchApp(envOverrides: Record<string, string> = {}): Promise<{ a
       ...process.env,
       SKIP_SPLASH: 'true',
       NODE_ENV: 'test',
-      PMOS_TEST_ENV_PATH: tmpEnv,
+      HELLOAI_TEST_ENV_PATH: tmpEnv,
       ...envOverrides,
     },
   })

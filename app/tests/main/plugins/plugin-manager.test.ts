@@ -25,9 +25,9 @@ function writeCommand(pmosPath: string, pluginName: string, cmdName: string) {
 }
 
 function writeSkill(pmosPath: string, pluginName: string, skillName: string) {
-  const dir = path.join(pmosPath, 'v5', 'plugins', pluginName, 'skills')
+  const dir = path.join(pmosPath, 'v5', 'plugins', pluginName, 'skills', skillName)
   mkdirSync(dir, { recursive: true })
-  writeFileSync(path.join(dir, skillName), `# ${skillName}`)
+  writeFileSync(path.join(dir, 'SKILL.md'), `---\ndescription: ${skillName}\n---\n# ${skillName}`)
 }
 
 beforeEach(() => {
@@ -112,15 +112,15 @@ describe('plugin-manager', () => {
     it('copies commands and skills to .claude/', () => {
       writeManifest(tmpDir, 'pm-os-base', {
         name: 'pm-os-base', version: '5.0.0', description: 'Base', author: 'PM-OS',
-        dependencies: [], commands: ['commands/base.md'], skills: ['skills/base-skill.md'], mcp_servers: [],
+        dependencies: [], commands: ['commands/base.md'], skills: ['skills/config-awareness/SKILL.md'], mcp_servers: [],
       })
       writeCommand(tmpDir, 'pm-os-base', 'base.md')
-      writeSkill(tmpDir, 'pm-os-base', 'base-skill.md')
+      writeSkill(tmpDir, 'pm-os-base', 'config-awareness')
 
       const result = installPlugin(tmpDir, 'pm-os-base')
       expect(result.success).toBe(true)
       expect(existsSync(path.join(tmpDir, '.claude', 'commands', 'base.md'))).toBe(true)
-      expect(existsSync(path.join(tmpDir, '.claude', 'skills', 'base-skill.md'))).toBe(true)
+      expect(existsSync(path.join(tmpDir, '.claude', 'skills', 'config-awareness', 'SKILL.md'))).toBe(true)
     })
 
     it('fails when dependency is not installed', () => {
@@ -152,23 +152,23 @@ describe('plugin-manager', () => {
     it('removes commands and skills from .claude/', () => {
       writeManifest(tmpDir, 'pm-os-brain', {
         name: 'pm-os-brain', version: '5.0.0', description: 'Brain', author: 'PM-OS',
-        dependencies: ['pm-os-base'], commands: ['commands/brain.md'], skills: ['skills/entity.md'], mcp_servers: [],
+        dependencies: ['pm-os-base'], commands: ['commands/brain.md'], skills: ['skills/entity-resolution/SKILL.md'], mcp_servers: [],
       })
       writeCommand(tmpDir, 'pm-os-brain', 'brain.md')
-      writeSkill(tmpDir, 'pm-os-brain', 'entity.md')
+      writeSkill(tmpDir, 'pm-os-brain', 'entity-resolution')
 
       // Simulate installed state
       const cmdDir = path.join(tmpDir, '.claude', 'commands')
-      const skillDir = path.join(tmpDir, '.claude', 'skills')
+      const skillDir = path.join(tmpDir, '.claude', 'skills', 'entity-resolution')
       mkdirSync(cmdDir, { recursive: true })
       mkdirSync(skillDir, { recursive: true })
       writeFileSync(path.join(cmdDir, 'brain.md'), '# brain')
-      writeFileSync(path.join(skillDir, 'entity.md'), '# entity')
+      writeFileSync(path.join(skillDir, 'SKILL.md'), '# entity')
 
       const result = disablePlugin(tmpDir, 'pm-os-brain')
       expect(result.success).toBe(true)
       expect(existsSync(path.join(cmdDir, 'brain.md'))).toBe(false)
-      expect(existsSync(path.join(skillDir, 'entity.md'))).toBe(false)
+      expect(existsSync(path.join(tmpDir, '.claude', 'skills', 'entity-resolution'))).toBe(false)
     })
 
     it('refuses to disable pm-os-base', () => {

@@ -1,5 +1,5 @@
-appId: com.feamando.pmos
-productName: PM-OS
+appId: com.hellofresh.helloai
+productName: HelloAI
 directories:
   output: dist
   buildResources: assets
@@ -14,14 +14,14 @@ extraResources:
       - "**/*"
 mac:
   category: public.app-category.developer-tools
-  artifactName: "${productName}-${version}-${arch}-${os}-${env.BUILD_TIMESTAMP}.${ext}"
+  artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
     - dmg
     - zip
   icon: assets/icons/icon.icns
   identity: null
 dmg:
-  title: "PM-OS"
+  title: "HelloAI: PM-OS"
   iconSize: 80
   contents:
     - x: 130
@@ -41,6 +41,6 @@ linux:
   category: Development
 publish:
   provider: github
-  owner: feamando
-  repo: pm-os-app
-  private: false
+  owner: hellofresh
+  repo: helloai-connector
+  private: true

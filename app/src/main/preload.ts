@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { PmosAPI } from '../shared/types'
+import type { HelloAIAPI } from '../shared/types'
 
-const api: PmosAPI = {
+const api: HelloAIAPI = {
   getEnvPath: () => ipcRenderer.invoke('get-env-path'),
   setEnvPath: (path) => ipcRenderer.invoke('set-env-path', path),
   detectPmosInstallation: () => ipcRenderer.invoke('detect-pmos'),
@@ -88,6 +88,18 @@ const api: PmosAPI = {
     ipcRenderer.removeAllListeners('migration-progress')
   },
   rollbackMigration: () => ipcRenderer.invoke('rollback-migration'),
+
+  // Background Sync (v0.12)
+  getSyncStatus: () => ipcRenderer.invoke('get-sync-status'),
+  getSyncConfig: () => ipcRenderer.invoke('get-sync-config'),
+  saveSyncConfig: (config: any) => ipcRenderer.invoke('save-sync-config', config),
+  triggerSyncNow: () => ipcRenderer.invoke('trigger-sync-now'),
+  onSyncUpdate: (callback: (status: any) => void) => {
+    ipcRenderer.on('sync-update', (_event, status) => callback(status))
+  },
+  removeSyncUpdateListener: () => {
+    ipcRenderer.removeAllListeners('sync-update')
+  },
 
   // Installer (v0.1)
   getInstallConfig: () => ipcRenderer.invoke('get-install-config'),

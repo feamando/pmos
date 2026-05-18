@@ -62,12 +62,12 @@ describe('save-user-setup-step config mapping', () => {
   it('saves github and slack settings', () => {
     writeConfigYaml(tmpDir, {
       integrations: {
-        github: { org: 'my-org', tracked_repos: ['web', 'api'] },
+        github: { org: 'hellofresh', tracked_repos: ['web', 'api'] },
         slack: { channel: 'C123', context_output_channel: 'C456' },
       },
     })
     const config = readConfigYaml(tmpDir)
-    expect(config.integrations.github.org).toBe('my-org')
+    expect(config.integrations.github.org).toBe('hellofresh')
     expect(config.integrations.github.tracked_repos).toEqual(['web', 'api'])
     expect(config.integrations.slack.channel).toBe('C123')
   })

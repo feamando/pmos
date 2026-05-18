@@ -36,7 +36,7 @@ export default function MetricCard({ label, value, unit, target, targetLabel, in
   return (
     <div style={{
       padding: compact ? '12px 14px' : '16px 18px',
-      background: '#0a1929',
+      background: 'white',
       border: '1px solid var(--border)',
       borderRadius: 8,
       display: 'flex',
@@ -44,19 +44,19 @@ export default function MetricCard({ label, value, unit, target, targetLabel, in
       gap: 6,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif", fontWeight: 500 }}>
+        <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: "'Source Sans Pro', sans-serif", fontWeight: 500 }}>
           {label}
         </span>
         <Icon size={14} color={color} />
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-        <span style={{ fontSize: compact ? 20 : 24, fontWeight: 700, fontFamily: "'Krub', sans-serif", color: 'var(--text-primary)' }}>
+        <span style={{ fontSize: compact ? 20 : 24, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", color: 'var(--text-primary)' }}>
           {typeof value === 'number' ? value.toLocaleString() : value}
         </span>
-        {unit && <span style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif" }}>{unit}</span>}
+        {unit && <span style={{ fontSize: 12, color: 'var(--text-muted)', fontFamily: "'Source Sans Pro', sans-serif" }}>{unit}</span>}
       </div>
       {target !== undefined && (
-        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif" }}>
+        <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: "'Source Sans Pro', sans-serif" }}>
           Target: {targetLabel || target.toLocaleString()}{unit ? ` ${unit}` : ''}
         </span>
       )}

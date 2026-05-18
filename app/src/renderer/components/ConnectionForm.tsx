@@ -83,7 +83,7 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
           onClick={handleCopyFromJira}
           style={{
             padding: '8px 16px',
-            background: '#0a1929',
+            background: 'white',
             color: 'var(--text-primary)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius)',
@@ -117,7 +117,7 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
               display: 'block',
               fontSize: 12,
               fontWeight: 600,
-              color: '#ffffff',
+              color: '#333',
               marginBottom: 6,
               textTransform: 'uppercase',
               letterSpacing: '0.5px',
@@ -142,12 +142,10 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
                   style={{
                     width: '100%',
                     padding: '10px 12px',
-                    border: '1px solid #ff008844',
-                    background: '#0a1929',
-                    color: '#ffffff',
+                    border: '1px solid #ddd',
                     borderRadius: 'var(--radius)',
                     fontSize: 14,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: "'Source Sans Pro', sans-serif",
                     boxSizing: 'border-box',
                     opacity: editLocked[field.envKey] ? 0.5 : 1,
                   }}
@@ -162,8 +160,7 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
                       transform: 'translateY(-50%)',
                       padding: '4px 8px',
                       fontSize: 11,
-                      background: '#0a1929',
-                      color: '#ffffff',
+                      background: 'white',
                       border: '1px solid var(--border)',
                       borderRadius: 4,
                       cursor: 'pointer',
@@ -202,9 +199,9 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
           disabled={testing}
           style={{
             padding: '10px 24px',
-            background: '#0a1929',
+            background: 'white',
             color: 'var(--text-primary)',
-            border: '1px solid var(--border)',
+            border: '1px solid #222',
             borderRadius: 'var(--radius)',
             fontSize: 14,
             fontWeight: 500,
@@ -225,10 +222,10 @@ export default function ConnectionForm({ config, initialValues, healthStatus, on
           alignItems: 'center',
           gap: 8,
           borderRadius: 'var(--radius)',
-          background: (testResult?.success ?? false) ? '#0a2a1a' : '#2a0a0a',
+          background: (testResult?.success ?? false) ? '#f0fdf4' : '#fef2f2',
           border: `1px solid ${(testResult?.success ?? false) ? '#bbf7d0' : '#fecaca'}`,
           fontSize: 13,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           {(testResult?.success ?? false) ? (
             <CheckCircle size={16} color="#22c55e" style={{ flexShrink: 0 }} />

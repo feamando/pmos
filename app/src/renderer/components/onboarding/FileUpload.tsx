@@ -41,7 +41,7 @@ export default function FileUpload({ label, accept, onUpload }: FileUploadProps)
         fontWeight: 600,
         color: 'var(--text-primary)',
         marginBottom: 6,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         {label}
       </label>
@@ -53,11 +53,11 @@ export default function FileUpload({ label, accept, onUpload }: FileUploadProps)
             padding: '10px 20px',
             background: 'transparent',
             color: 'var(--text-primary)',
-            border: '1px solid #ff008844',
+            border: '1px solid #cccccc',
             borderRadius: 4,
             fontSize: 14,
             cursor: uploading ? 'not-allowed' : 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
             display: 'flex',
             alignItems: 'center',
             gap: 8,
@@ -67,7 +67,7 @@ export default function FileUpload({ label, accept, onUpload }: FileUploadProps)
           {uploading ? 'Uploading...' : 'Browse...'}
         </button>
         {fileName && (
-          <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif" }}>
+          <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontFamily: "'Source Sans Pro', sans-serif" }}>
             {fileName}
           </span>
         )}

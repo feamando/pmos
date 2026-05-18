@@ -5,7 +5,7 @@ import { tmpdir } from 'os'
 import path from 'path'
 
 vi.mock('electron', () => ({
-  app: { getVersion: () => '0.8.0', getPath: () => '/tmp/pmos-test' },
+  app: { getVersion: () => '0.8.0', getPath: () => '/tmp/helloai-test' },
   ipcMain: { handle: vi.fn() },
   shell: { openPath: vi.fn() },
 }))
@@ -22,7 +22,7 @@ vi.mock('electron-store', () => ({
 import { verifyChecksum } from '../../../src/main/updater/downloader'
 
 describe('downloader', () => {
-  const testDir = path.join(tmpdir(), 'pmos-downloader-test')
+  const testDir = path.join(tmpdir(), 'helloai-downloader-test')
   const testFile = path.join(testDir, 'test-file.bin')
   const testContent = 'hello world test content'
   const expectedHash = createHash('sha256').update(testContent).digest('hex')

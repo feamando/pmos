@@ -5,13 +5,13 @@ import yaml from 'js-yaml'
 import type { BrainHealthData, OrphanBreakdown, RelationshipTypeCount } from '../../shared/types'
 
 const DEFAULT_TARGETS = {
-  connectivityRate: 85,
+  connectivityRate: 75,
   entityCount: 500,
-  medianRelationships: 3,
-  graphComponents: 1,
-  orphanRate: 10,
-  staleEntityRate: 15,
-  enrichmentVelocity7d: 10,
+  medianRelationships: 2,
+  graphComponents: 500,
+  orphanRate: 20,
+  staleEntityRate: 25,
+  enrichmentVelocity7d: 5,
 }
 
 // Python tool output — primary source of truth for graph metrics
@@ -250,7 +250,7 @@ export function getSyntheticBrainHealth(): BrainHealthData {
       { reason: 'standalone', count: 3 },
       { reason: 'enrichment_failed', count: 2 },
     ],
-    staleEntityRate: 22,
+    staleEntityRate: 28,
     enrichmentVelocity7d: 6,
     lastEnrichmentTimestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     densityScore: 0.64,

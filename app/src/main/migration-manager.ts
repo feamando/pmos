@@ -7,28 +7,36 @@ import type { MigrationProgress } from '../shared/types'
 export function detectV4Installation(pmosPath: string): { isV4: boolean; path?: string } {
   if (!pmosPath) return { isV4: false }
 
-  // v4.x marker: common/.claude/commands/brain.md exists
-  const v4Marker = path.join(pmosPath, 'common', '.claude', 'commands', 'brain.md')
-  // v5 marker: v5/plugins directory with marketplace
-  const v5Marker = path.join(pmosPath, 'v5', 'plugins', 'pm-os-base', '.claude-plugin', 'plugin.json')
+  // Check version from both locations, take the higher one
+  const versionPaths = [
+    path.join(pmosPath, 'hf-pm-os', 'package', 'VERSION'),
+    path.join(pmosPath, 'hf-pm-os', 'VERSION'),
+    path.join(pmosPath, 'package', 'VERSION'),
+    path.join(pmosPath, 'VERSION'),
+  ]
 
-  const hasV4Commands = existsSync(v4Marker)
-  const hasV5Plugins = existsSync(v5Marker)
-
-  // v4.x if old commands exist but v5 plugins not yet installed (commands not registered)
-  if (hasV4Commands && !hasV5Plugins) {
-    return { isV4: true, path: pmosPath }
+  for (const vp of versionPaths) {
+    if (existsSync(vp)) {
+      try {
+        const version = require('fs').readFileSync(vp, 'utf-8').trim()
+        if (version.startsWith('5.')) return { isV4: false }
+      } catch { /* continue to next */ }
+    }
   }
 
-  // Also detect if v5 plugins exist but are not registered (available but not installed)
-  // This means migration hasn't completed the install step
-  if (hasV4Commands && hasV5Plugins) {
-    const commandsDir = path.join(pmosPath, '.claude', 'commands')
-    // Check if v5 base command is registered
-    const v5BaseCommand = path.join(commandsDir, 'base.md')
-    if (!existsSync(v5BaseCommand)) {
-      return { isV4: true, path: pmosPath }
-    }
+  // v5 plugin markers: check both v5/ workspace and .claude/ plugin registration
+  const v5Markers = [
+    path.join(pmosPath, 'v5', 'plugins', 'pm-os-base', '.claude-plugin', 'plugin.json'),
+    path.join(pmosPath, '.claude', 'commands', 'base.md'),
+    path.join(pmosPath, '.claude', 'skills', 'pm-os-base:base'),
+  ]
+
+  if (v5Markers.some(m => existsSync(m))) return { isV4: false }
+
+  // v4.x marker: common/.claude/commands/brain.md exists without any v5 signal
+  const v4Marker = path.join(pmosPath, 'common', '.claude', 'commands', 'brain.md')
+  if (existsSync(v4Marker)) {
+    return { isV4: true, path: pmosPath }
   }
 
   return { isV4: false }

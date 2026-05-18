@@ -107,7 +107,7 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
         transform: 'translate(-50%, -50%)',
         width: 480,
         maxHeight: '80vh',
-        background: '#0a1929',
+        background: 'white',
         borderRadius: 8,
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
         zIndex: 25,
@@ -125,7 +125,7 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
             <ArrowUpCircle size={20} color="var(--hf-green)" />
             <h3 style={{
               margin: 0, fontSize: 18, fontWeight: 700,
-              fontFamily: "'Inter', sans-serif", color: '#ffffff',
+              fontFamily: "'Source Sans Pro', sans-serif", color: 'black',
             }}>
               Upgrade to PM-OS v5.0
             </h3>
@@ -134,12 +134,12 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
             <button
               onClick={onClose}
               style={{
-                width: 28, height: 28, borderRadius: 4, border: '1px solid #ff008844',
-                background: '#0a1929', display: 'flex', alignItems: 'center',
+                width: 28, height: 28, borderRadius: 4, border: '1px solid #e5e7eb',
+                background: 'white', display: 'flex', alignItems: 'center',
                 justifyContent: 'center', cursor: 'pointer', padding: 0,
               }}
             >
-              <X size={14} color="#aabbcc" />
+              <X size={14} color="#666" />
             </button>
           )}
         </div>
@@ -149,14 +149,14 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
           {!started ? (
             <>
               <p style={{
-                fontSize: 14, color: '#aabbcc', lineHeight: 1.6, marginBottom: 16,
-                fontFamily: "'Inter', sans-serif",
+                fontSize: 14, color: '#444', lineHeight: 1.6, marginBottom: 16,
+                fontFamily: "'Source Sans Pro', sans-serif",
               }}>
                 A v4.x PM-OS installation was detected. Upgrade to v5.0 to unlock the new modular plugin architecture.
               </p>
               <div style={{
-                padding: 12, background: '#0a2a1a', border: '1px solid #bbf7d0', borderRadius: 6,
-                fontSize: 13, lineHeight: 1.6, fontFamily: "'Inter', sans-serif", color: '#166534',
+                padding: 12, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6,
+                fontSize: 13, lineHeight: 1.6, fontFamily: "'Source Sans Pro', sans-serif", color: '#166534',
               }}>
                 <strong>What&apos;s new in v5.0:</strong>
                 <ul style={{ margin: '8px 0 0', paddingLeft: 18 }}>
@@ -171,7 +171,7 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
             <div>
               {/* Progress bar */}
               <div style={{
-                width: '100%', height: 6, background: '#0d2137', borderRadius: 3,
+                width: '100%', height: 6, background: '#e5e7eb', borderRadius: 3,
                 marginBottom: 16, overflow: 'hidden',
               }}>
                 <div style={{
@@ -195,15 +195,15 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
                   return (
                     <div key={stepKey} style={{
                       display: 'flex', alignItems: 'center', gap: 8,
-                      fontSize: 13, fontFamily: "'Inter', sans-serif",
-                      color: isActive ? '#ffffff' : isCompleted ? '#16a34a' : '#778899',
+                      fontSize: 13, fontFamily: "'Source Sans Pro', sans-serif",
+                      color: isActive ? '#111' : isCompleted ? '#16a34a' : '#999',
                     }}>
                       {isCompleted ? (
                         <CheckCircle size={14} color="#16a34a" />
                       ) : isActive ? (
                         <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} />
                       ) : (
-                        <div style={{ width: 14, height: 14, borderRadius: '50%', border: '1px solid #ff008844' }} />
+                        <div style={{ width: 14, height: 14, borderRadius: '50%', border: '1px solid #ddd' }} />
                       )}
                       <span>{STEP_LABELS[stepKey]}</span>
                     </div>
@@ -215,11 +215,11 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
               {progress?.message && (
                 <div style={{
                   marginTop: 12, padding: '8px 12px',
-                  background: isError ? '#2a0a0a' : '#0d2137',
-                  border: `1px solid ${isError ? '#fecaca' : '#ff008844'}`,
+                  background: isError ? '#fef2f2' : '#f9fafb',
+                  border: `1px solid ${isError ? '#fecaca' : '#e5e7eb'}`,
                   borderRadius: 4, fontSize: 12,
-                  color: isError ? '#dc2626' : '#aabbcc',
-                  fontFamily: "'Inter', sans-serif",
+                  color: isError ? '#dc2626' : '#666',
+                  fontFamily: "'Source Sans Pro', sans-serif",
                 }}>
                   {progress.message}
                 </div>
@@ -228,9 +228,9 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
               {/* Report summary */}
               {isDone && progress?.report && (
                 <div style={{
-                  marginTop: 12, padding: 12, background: '#0a2a1a',
+                  marginTop: 12, padding: 12, background: '#f0fdf4',
                   border: '1px solid #bbf7d0', borderRadius: 6, fontSize: 12,
-                  fontFamily: "'Inter', sans-serif", color: '#166534',
+                  fontFamily: "'Source Sans Pro', sans-serif", color: '#166534',
                 }}>
                   <div>Plugins to install: {progress.report.pluginsToInstall.join(', ')}</div>
                 </div>
@@ -252,8 +252,8 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
                 onClick={onClose}
                 style={{
                   padding: '8px 20px', fontSize: 13, fontWeight: 500,
-                  border: '1px solid var(--border)', borderRadius: 4, background: '#0a1929',
-                  color: '#ffffff', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  border: '1px solid var(--border)', borderRadius: 4, background: 'white',
+                  cursor: 'pointer', fontFamily: "'Source Sans Pro', sans-serif",
                 }}
               >
                 Later
@@ -263,7 +263,7 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
                 style={{
                   padding: '8px 20px', fontSize: 13, fontWeight: 600,
                   border: 'none', borderRadius: 4, background: 'black', color: 'white',
-                  cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  cursor: 'pointer', fontFamily: "'Source Sans Pro', sans-serif",
                 }}
               >
                 Upgrade to v5.0
@@ -276,9 +276,9 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
               disabled={rollingBack}
               style={{
                 padding: '8px 20px', fontSize: 13, fontWeight: 500,
-                border: '1px solid #fecaca', borderRadius: 4, background: '#2a0a0a',
+                border: '1px solid #fecaca', borderRadius: 4, background: '#fef2f2',
                 color: '#dc2626', cursor: rollingBack ? 'not-allowed' : 'pointer',
-                opacity: rollingBack ? 0.5 : 1, fontFamily: "'Inter', sans-serif",
+                opacity: rollingBack ? 0.5 : 1, fontFamily: "'Source Sans Pro', sans-serif",
               }}
             >
               {rollingBack ? 'Rolling back...' : 'Rollback'}
@@ -290,7 +290,7 @@ export default function MigrationDialog({ isOpen, onClose }: MigrationDialogProp
               style={{
                 padding: '8px 20px', fontSize: 13, fontWeight: 600,
                 border: 'none', borderRadius: 4, background: 'black', color: 'white',
-                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                cursor: 'pointer', fontFamily: "'Source Sans Pro', sans-serif",
               }}
             >
               Close

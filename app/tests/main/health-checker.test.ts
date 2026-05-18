@@ -7,7 +7,7 @@ import { checkConnection } from '../../src/main/connections/health-checker'
 let tmpDir: string
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pmos-health-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'helloai-health-test-'))
 })
 
 afterEach(() => {

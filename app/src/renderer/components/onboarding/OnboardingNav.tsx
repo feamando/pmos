@@ -25,7 +25,7 @@ export default function OnboardingNav({
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '16px 0',
-      borderTop: '1px solid #ff008844',
+      borderTop: '1px solid #e0e0e0',
       position: 'sticky',
       bottom: 0,
       background: 'var(--bg-onboarding, #FEF9EF)',
@@ -45,7 +45,7 @@ export default function OnboardingNav({
               fontSize: 14,
               fontWeight: 500,
               cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             Back
@@ -66,7 +66,7 @@ export default function OnboardingNav({
             fontWeight: 600,
             cursor: continueDisabled ? 'not-allowed' : 'pointer',
             opacity: continueDisabled ? 0.5 : 1,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}
         >
           {label}
@@ -80,7 +80,7 @@ export default function OnboardingNav({
             color: 'var(--btn-tertiary-text)',
             fontSize: 14,
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}
         >
           Skip

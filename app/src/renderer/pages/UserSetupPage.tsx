@@ -176,7 +176,7 @@ export default function UserSetupPage() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{
-            fontFamily: "'Krub', sans-serif",
+            fontFamily: "'Agrandir', sans-serif",
             fontWeight: 700,
             fontSize: 16,
             color: 'var(--text-muted)',

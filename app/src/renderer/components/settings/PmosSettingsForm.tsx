@@ -115,7 +115,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
       {/* PM-OS Installation Path */}
       <SettingsSection title="PM-OS Installation">
         <div style={{ marginBottom: 12 }}>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Source Sans Pro', sans-serif" }}>
             PM-OS Path
           </label>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -127,12 +127,11 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
               style={{
                 flex: 1,
                 padding: '8px 10px',
-                background: '#0a1929',
-                color: '#ffffff',
-                border: `1px solid ${pmosPathStatus === 'error' ? '#dc2626' : pmosPathStatus === 'saved' ? '#16a34a' : '#ff008844'}`,
+                background: '#ffffff',
+                border: `1px solid ${pmosPathStatus === 'error' ? '#dc2626' : pmosPathStatus === 'saved' ? '#16a34a' : '#cccccc'}`,
                 borderRadius: 4,
                 fontSize: 13,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
                 boxSizing: 'border-box' as const,
                 outline: 'none',
               }}
@@ -149,7 +148,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: pmosPathStatus === 'saving' ? 'wait' : 'pointer',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
                 whiteSpace: 'nowrap',
               }}
             >
@@ -159,7 +158,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
           {pmosPathStatus === 'error' && (
             <p style={{ fontSize: 11, color: '#dc2626', marginTop: 4, marginBottom: 0 }}>{pmosPathError}</p>
           )}
-          <p style={{ fontSize: 11, fontStyle: 'italic', color: '#778899', marginTop: 4, marginBottom: 0 }}>
+          <p style={{ fontSize: 11, fontStyle: 'italic', color: '#999', marginTop: 4, marginBottom: 0 }}>
             Root directory of your PM-OS installation (contains common/ and user/ folders)
           </p>
         </div>
@@ -171,7 +170,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
         <SettingsToggle label="Confucius (Session Notes)" checked={pmos.confucius_enabled ?? true} onChange={(v) => updatePmos('confucius_enabled', v)} />
         <SettingsToggle label="Ralph (Workflow Engine)" checked={pmos.ralph_enabled ?? true} onChange={(v) => updatePmos('ralph_enabled', v)} />
         <SettingsToggle label="Auto-update on Boot" checked={pmos.auto_update ?? true} onChange={(v) => updatePmos('auto_update', v)} />
-        <SettingsField label="Ralph Slack Channel" value={pmos.ralph_slack_channel || ''} onChange={(v) => updatePmos('ralph_slack_channel', v)} placeholder="C0XXXXXXXXX" />
+        <SettingsField label="Ralph Slack Channel" value={pmos.ralph_slack_channel || ''} onChange={(v) => updatePmos('ralph_slack_channel', v)} placeholder="C0A6ZAS1MSQ" />
       </SettingsSection>
 
       {/* Paths */}
@@ -245,7 +244,7 @@ export default function PmosSettingsForm({ data, onChange }: PmosSettingsFormPro
           const def = sectionDefaults[section] || {}
           return (
             <div key={section} style={{ marginBottom: 16, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-              <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'capitalize', fontFamily: "'Inter', sans-serif" }}>
+              <span style={{ fontSize: 12, fontWeight: 600, textTransform: 'capitalize', fontFamily: "'Source Sans Pro', sans-serif" }}>
                 {section.replace('_', ' ')}
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 6 }}>

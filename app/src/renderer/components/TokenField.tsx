@@ -22,12 +22,10 @@ export default function TokenField({ value, onChange, placeholder, disabled }: T
         style={{
           width: '100%',
           padding: '10px 40px 10px 12px',
-          border: '1px solid #ff008844',
-          background: '#0a1929',
-          color: '#ffffff',
+          border: '1px solid #ddd',
           borderRadius: 'var(--radius)',
           fontSize: 14,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           boxSizing: 'border-box',
           opacity: disabled ? 0.5 : 1,
         }}

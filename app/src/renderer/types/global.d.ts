@@ -1,7 +1,7 @@
-import type { PmosAPI } from '../../shared/types'
+import type { HelloAIAPI } from '../../shared/types'
 
 declare global {
   interface Window {
-    api: PmosAPI
+    api: HelloAIAPI
   }
 }

@@ -1,4 +1,5 @@
 import fs from 'fs'
+import path from 'path'
 import type { TestResult } from '../../shared/types'
 
 const TIMEOUT_MS = 10_000
@@ -91,7 +92,7 @@ export async function validateGithub(fields: Record<string, string>): Promise<Te
   if (!GITHUB_API_TOKEN) return { success: false, message: 'Missing API token' }
   try {
     const res = await fetchWithTimeout('https://api.github.com/user', {
-      headers: { Authorization: `Bearer ${GITHUB_API_TOKEN}`, 'User-Agent': 'PM-OS-Connector' },
+      headers: { Authorization: `Bearer ${GITHUB_API_TOKEN}`, 'User-Agent': 'HelloAI-Connector' },
     })
     if (res.ok) {
       const data = await res.json() as any
@@ -120,4 +121,39 @@ export async function validateFigma(fields: Record<string, string>): Promise<Tes
     if (err.name === 'AbortError') return { success: false, message: 'Connection timeout' }
     return { success: false, message: err.message }
   }
+}
+
+export async function validateSpecMachine(fields: Record<string, string>, basePath: string): Promise<TestResult> {
+  // Search order: explicit env path, then auto-detect from marketplace
+  const searchPaths = [
+    fields.SPECX_UX_PATH,
+    path.resolve(basePath, '..', 'claude-plugins-marketplace', 'plugins', 'specx-ux'),
+    path.resolve(basePath, '..', '..', 'claude-plugins-marketplace', 'plugins', 'specx-ux'),
+  ].filter(Boolean) as string[]
+
+  for (const specxPath of searchPaths) {
+    const pluginJson = path.join(specxPath, '.claude-plugin', 'plugin.json')
+    if (!fs.existsSync(pluginJson)) continue
+
+    // Verify critical agent files
+    const creatorAgent = path.join(specxPath, 'agents', 'prototype-creator.md')
+    const verifierAgent = path.join(specxPath, 'agents', 'prototype-verifier.md')
+    if (!fs.existsSync(creatorAgent) || !fs.existsSync(verifierAgent)) {
+      return { success: false, message: `Plugin found at ${specxPath} but prototype agents missing` }
+    }
+
+    // Read version
+    try {
+      const manifest = JSON.parse(fs.readFileSync(pluginJson, 'utf-8'))
+      const commandsDir = path.join(specxPath, 'commands')
+      const cmdCount = fs.existsSync(commandsDir)
+        ? fs.readdirSync(commandsDir).filter((f) => f.endsWith('.md')).length
+        : 0
+      return { success: true, message: `Spec Machine v${manifest.version} (${cmdCount} commands, 2 agents)` }
+    } catch {
+      return { success: true, message: 'Spec Machine found (version unknown)' }
+    }
+  }
+
+  return { success: false, message: 'specx-ux plugin not found in marketplace' }
 }

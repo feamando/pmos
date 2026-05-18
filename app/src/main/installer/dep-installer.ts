@@ -23,12 +23,17 @@ export async function installXcodeTools(): Promise<StepResult> {
   const start = Date.now()
   logInfo('installer', 'Installing Xcode Command Line Tools...')
 
-  // Trigger the system install dialog
+  const trigger = await execAsync('xcode-select', ['--install'], 10000)
+  if (trigger.code !== 0 && trigger.stderr.includes('already installed')) {
+    const duration = (Date.now() - start) / 1000
+    logInfo('installer', 'Xcode CLT already installed')
+    return { success: true, message: 'Xcode Command Line Tools already installed', duration }
+  }
+
   const proc = spawn('xcode-select', ['--install'], { stdio: 'ignore' })
   proc.unref()
 
-  // Poll for completion (system dialog runs async)
-  const timeoutMs = 10 * 60 * 1000 // 10 minutes
+  const timeoutMs = 3 * 60 * 1000
   const pollInterval = 5000
   let elapsed = 0
 
@@ -46,7 +51,7 @@ export async function installXcodeTools(): Promise<StepResult> {
 
   const duration = (Date.now() - start) / 1000
   logError('installer', 'Xcode CLT install timed out')
-  return { success: false, message: 'Xcode CLT installation timed out (10min)', duration }
+  return { success: false, message: 'Xcode CLT installation timed out. Please install manually: open Terminal and run "xcode-select --install"', duration }
 }
 
 export async function installPython(): Promise<StepResult> {
@@ -65,29 +70,13 @@ export async function installPython(): Promise<StepResult> {
     logError('installer', `Homebrew Python install failed: ${result.stderr}`)
   }
 
-  // Strategy B: python.org installer
-  logInfo('installer', 'Homebrew not available, attempting python.org installer...')
-  // Download and run the pkg
-  const pkgUrl = 'https://www.python.org/ftp/python/3.12.7/python-3.12.7-macos11.pkg'
-  const tmpPkg = '/tmp/python-installer.pkg'
-
-  const download = await execAsync('curl', ['-fSL', '-o', tmpPkg, pkgUrl], 120000)
-  if (download.code !== 0) {
-    const duration = (Date.now() - start) / 1000
-    logError('installer', `Python download failed: ${download.stderr}`)
-    return { success: false, message: 'Failed to download Python installer', duration }
-  }
-
-  const install = await execAsync('sudo', ['installer', '-pkg', tmpPkg, '-target', '/'], 300000)
-  if (install.code === 0) {
-    const duration = (Date.now() - start) / 1000
-    logInfo('installer', `Python installed via python.org pkg (${duration.toFixed(1)}s)`)
-    return { success: true, message: 'Python 3.12 installed via python.org', duration }
-  }
-
   const duration = (Date.now() - start) / 1000
-  logError('installer', `Python.org install failed: ${install.stderr}`)
-  return { success: false, message: 'Failed to install Python', duration }
+  logError('installer', 'Python 3.10+ not found and Homebrew not available')
+  return {
+    success: false,
+    message: 'Python 3.10+ is required but was not found.\n\nIf you already installed Python, you may need to restart HelloAI so it can detect it.\n\nOtherwise, install from https://python.org/downloads\nor open Terminal and run: brew install python@3.12\n\nThen click Retry.',
+    duration,
+  }
 }
 
 export async function installPip(): Promise<StepResult> {

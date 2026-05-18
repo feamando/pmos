@@ -42,11 +42,11 @@ export default function PluginInstaller({ pluginId, action, onComplete, onCancel
         alignItems: 'center',
         gap: 8,
         padding: '8px 12px',
-        background: result.success ? '#0a2a1a' : '#2a0a0a',
+        background: result.success ? '#f0fdf4' : '#fef2f2',
         border: `1px solid ${result.success ? '#bbf7d0' : '#fecaca'}`,
         borderRadius: 6,
         fontSize: 13,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
         color: result.success ? '#166534' : '#dc2626',
       }}>
         {result.success ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
@@ -61,11 +61,11 @@ export default function PluginInstaller({ pluginId, action, onComplete, onCancel
       alignItems: 'center',
       gap: 8,
       padding: '8px 12px',
-      background: '#2a2200',
+      background: '#fffbeb',
       border: '1px solid #fde68a',
       borderRadius: 6,
       fontSize: 13,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Source Sans Pro', sans-serif",
     }}>
       {running ? (
         <>
@@ -86,7 +86,7 @@ export default function PluginInstaller({ pluginId, action, onComplete, onCancel
               background: action === 'install' ? 'black' : '#dc2626',
               color: 'white',
               cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             Confirm
@@ -98,10 +98,9 @@ export default function PluginInstaller({ pluginId, action, onComplete, onCancel
               fontSize: 12,
               border: '1px solid var(--border)',
               borderRadius: 4,
-              background: '#0a1929',
-              color: '#ffffff',
+              background: 'white',
               cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             Cancel

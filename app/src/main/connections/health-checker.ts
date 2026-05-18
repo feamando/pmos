@@ -1,6 +1,6 @@
 import { parseEnvFile, readAllEnvValues } from '../env/env-manager'
 import { getAllEnvKeys, CONNECTION_CONFIGS } from '../../shared/connection-configs'
-import { validateJira, validateConfluence, validateGoogle, validateSlack, validateGithub, validateFigma } from './validators'
+import { validateJira, validateConfluence, validateGoogle, validateSlack, validateGithub, validateFigma, validateSpecMachine } from './validators'
 import type { HealthStatus, TestResult } from '../../shared/types'
 import path from 'path'
 
@@ -11,18 +11,21 @@ const VALIDATORS: Record<string, (fields: Record<string, string>, basePath: stri
   slack: (f) => validateSlack(f),
   github: (f) => validateGithub(f),
   figma: (f) => validateFigma(f),
+  'spec-machine': (f, basePath) => validateSpecMachine(f, basePath),
 }
 
 export async function checkConnection(id: string, fields: Record<string, string>, basePath: string): Promise<HealthStatus> {
   const validator = VALIDATORS[id]
   if (!validator) return { connectionId: id, status: 'unknown', message: 'No validator' }
 
-  // Skip if no required fields have values
+  // Skip if no required fields have values (unless the connector has no required fields at all,
+  // in which case the validator handles auto-detection, e.g. spec-machine)
   const config = CONNECTION_CONFIGS.find((c) => c.id === id)
   if (!config) return { connectionId: id, status: 'unknown' }
 
-  const hasRequired = config.fields.some((f) => f.required && fields[f.envKey])
-  if (!hasRequired) return { connectionId: id, status: 'unknown', message: 'Not configured' }
+  const hasRequiredFields = config.fields.some((f) => f.required)
+  const hasRequiredValues = config.fields.some((f) => f.required && fields[f.envKey])
+  if (hasRequiredFields && !hasRequiredValues) return { connectionId: id, status: 'unknown', message: 'Not configured' }
 
   try {
     const result = await validator(fields, basePath)

@@ -7,7 +7,7 @@ import { validateEnvPath } from '../../src/main/env/path-detector'
 let tmpDir: string
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pmos-path-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'helloai-path-test-'))
 })
 
 afterEach(() => {

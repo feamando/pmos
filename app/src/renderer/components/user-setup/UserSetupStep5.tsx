@@ -63,14 +63,14 @@ export default function UserSetupStep5({ data, devConfig, onChange }: UserSetupS
       <p style={{
         fontSize: 16,
         fontWeight: 700,
-        fontFamily: "'Krub', sans-serif",
+        fontFamily: "'Agrandir', sans-serif",
         marginBottom: 20,
         marginTop: 0,
       }}>
         Enrich PM-OS Brain with your Context
       </p>
 
-      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+      <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
         Depth Settings
       </h4>
       <FormField field={entityCountField} value={data.target_entity_count || ''} onChange={(v) => update('target_entity_count', v)} />
@@ -79,7 +79,7 @@ export default function UserSetupStep5({ data, devConfig, onChange }: UserSetupS
       <FormField field={retentionField} value={data.retention_days || ''} onChange={(v) => update('retention_days', v)} />
       <FormField field={workersField} value={data.workers || ''} onChange={(v) => update('workers', v)} />
 
-      <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 24, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>
+      <h4 style={{ fontSize: 14, fontWeight: 600, marginTop: 24, marginBottom: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
         Meeting Prep
       </h4>
       <FormField field={prepHoursField} value={data.prep_hours || ''} onChange={(v) => update('prep_hours', v)} />

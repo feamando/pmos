@@ -4,7 +4,7 @@ import BugReportPopup from '../../src/renderer/components/BugReportPopup'
 
 const mockApi = {
   logTelemetryClick: vi.fn(),
-  getDiagnosticBundle: vi.fn().mockResolvedValue({ success: true, data: '--- PM-OS Diagnostic ---\nApp Version: 0.10.0' }),
+  getDiagnosticBundle: vi.fn().mockResolvedValue({ success: true, data: '--- HelloAI Diagnostic ---\nApp Version: 0.10.0' }),
 }
 
 Object.defineProperty(window, 'api', { value: mockApi, writable: true })
@@ -17,7 +17,7 @@ Object.defineProperty(navigator, 'clipboard', {
 describe('BugReportPopup', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockApi.getDiagnosticBundle.mockResolvedValue({ success: true, data: '--- PM-OS Diagnostic ---\nApp Version: 0.10.0' })
+    mockApi.getDiagnosticBundle.mockResolvedValue({ success: true, data: '--- HelloAI Diagnostic ---\nApp Version: 0.10.0' })
   })
 
   it('renders nothing when closed', () => {
@@ -38,7 +38,7 @@ describe('BugReportPopup', () => {
   it('shows diagnostic data in log snippet', async () => {
     render(<BugReportPopup isOpen={true} onClose={vi.fn()} />)
     await waitFor(() => {
-      expect(screen.getByText(/PM-OS Diagnostic/)).toBeDefined()
+      expect(screen.getByText(/HelloAI Diagnostic/)).toBeDefined()
     })
   })
 
@@ -49,7 +49,7 @@ describe('BugReportPopup', () => {
     })
     fireEvent.click(screen.getByText('Copy to Clipboard'))
     await waitFor(() => {
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('PM-OS Diagnostic'))
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(expect.stringContaining('HelloAI Diagnostic'))
     })
   })
 

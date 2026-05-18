@@ -36,7 +36,7 @@ const RELATIONSHIP_OPTIONS = [
 
 const iconBtnStyle: React.CSSProperties = {
   width: 24, height: 24, borderRadius: 4, border: '1px solid var(--border)',
-  background: '#0a1929', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
   cursor: 'pointer', flexShrink: 0,
 }
 
@@ -156,7 +156,7 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px' }}>
                 <button
                   onClick={() => setExpandedProduct(isExp ? null : i)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", fontSize: 13, fontWeight: 600 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Source Sans Pro', sans-serif", fontSize: 13, fontWeight: 600 }}
                 >
                   {isExp ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   {item.name || `Product ${i + 1}`}
@@ -172,15 +172,15 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
                   <SettingsField label="Market" value={item.market || ''} onChange={(v) => updateItem(i, 'market', v)} placeholder="e.g. Global" />
                   <SettingsSelect label="Status" value={item.status || 'active'} onChange={(v) => updateItem(i, 'status', v)} options={STATUS_OPTIONS} />
                   <SettingsField label="Jira Project" value={item.jira_project || ''} onChange={(v) => updateItem(i, 'jira_project', v)} placeholder="PROJ" />
-                  <SettingsField label="Squad" value={item.squad || ''} onChange={(v) => updateItem(i, 'squad', v)} placeholder="e.g. Growth Squad" />
-                  <SettingsField label="Tribe" value={item.tribe || ''} onChange={(v) => updateItem(i, 'tribe', v)} placeholder="e.g. Platform" />
+                  <SettingsField label="Squad" value={item.squad || ''} onChange={(v) => updateItem(i, 'squad', v)} placeholder="e.g. Factor Form" />
+                  <SettingsField label="Tribe" value={item.tribe || ''} onChange={(v) => updateItem(i, 'tribe', v)} placeholder="e.g. New Ventures" />
                   <SettingsField label="Board ID" value={item.board_id || ''} onChange={(v) => updateItem(i, 'board_id', v)} placeholder="Board ID" />
                 </div>
               )}
             </div>
           )
         })}
-        <button onClick={addItem} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
+        <button onClick={addItem} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif", marginTop: 4 }}>
           <Plus size={12} /> Add Product
         </button>
       </SettingsSection>
@@ -211,7 +211,7 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
           </div>
         ))}
         {reports.length < 15 && (
-          <button onClick={addReport} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={addReport} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
             <Plus size={12} /> Add Report
           </button>
         )}
@@ -233,7 +233,7 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
             </button>
           </div>
         ))}
-        <button onClick={addStakeholder} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Inter', sans-serif" }}>
+        <button onClick={addStakeholder} style={{ ...iconBtnStyle, width: '100%', height: 32, gap: 6, fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif" }}>
           <Plus size={12} /> Add Stakeholder
         </button>
       </SettingsSection>
@@ -259,7 +259,7 @@ export default function WcrSettingsForm({ data, onChange }: WcrSettingsFormProps
         <SettingsField label="Instructions Tab" value={tabs.instructions || ''} onChange={(v) => updateMasterSheetTab('instructions', v)} placeholder="Instructions" />
         <SettingsField label="Topics Tab" value={tabs.topics || ''} onChange={(v) => updateMasterSheetTab('topics', v)} placeholder="Topics" />
         <SettingsField label="Recurring Tab" value={tabs.recurring || ''} onChange={(v) => updateMasterSheetTab('recurring', v)} placeholder="Recurring" />
-        <SettingsField label="Slack Channel" value={masterSheet.slack_channel || ''} onChange={(v) => updateMasterSheet('slack_channel', v)} placeholder="C0XXXXXXXXX" />
+        <SettingsField label="Slack Channel" value={masterSheet.slack_channel || ''} onChange={(v) => updateMasterSheet('slack_channel', v)} placeholder="C0A6ZAS1MSQ" />
         <SettingsField label="Timezone" value={masterSheet.timezone || ''} onChange={(v) => updateMasterSheet('timezone', v)} placeholder="Europe/Berlin" />
       </SettingsSection>
     </div>

@@ -10,7 +10,7 @@ const COLORS = {
   active: '#16a34a',
   pending: '#d1d5db',
   deprioritized: '#dc2626',
-  deprioritizedBg: '#2a0a0a',
+  deprioritizedBg: '#fef2f2',
 }
 
 export default function StepBar({ stepIndex, compact }: StepBarProps) {
@@ -24,7 +24,7 @@ export default function StepBar({ stepIndex, compact }: StepBarProps) {
         borderRadius: 4,
         background: COLORS.deprioritizedBg,
         color: COLORS.deprioritized,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         Deprioritized
       </span>
@@ -51,7 +51,7 @@ export default function StepBar({ stepIndex, compact }: StepBarProps) {
                 width: circleSize,
                 height: circleSize,
                 borderRadius: '50%',
-                background: isCompleted ? COLORS.completed : isActive ? COLORS.completed : '#0a1929',
+                background: isCompleted ? COLORS.completed : isActive ? COLORS.completed : 'white',
                 border: `2px solid ${isCompleted || isActive ? COLORS.completed : COLORS.pending}`,
                 boxSizing: 'border-box',
                 position: 'relative',
@@ -71,8 +71,8 @@ export default function StepBar({ stepIndex, compact }: StepBarProps) {
               {/* Label */}
               <span style={{
                 fontSize,
-                color: isCompleted || isActive ? '#ffffff' : '#778899',
-                fontFamily: "'Inter', sans-serif",
+                color: isCompleted || isActive ? '#374151' : '#9ca3af',
+                fontFamily: "'Source Sans Pro', sans-serif",
                 whiteSpace: 'nowrap',
                 fontWeight: isActive ? 600 : 400,
               }}>

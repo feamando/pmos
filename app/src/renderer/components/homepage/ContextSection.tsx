@@ -8,7 +8,7 @@ interface ContextSectionProps {
 export default function ContextSection({ title, icon, children, empty }: ContextSectionProps) {
   return (
     <div style={{
-      background: '#0a1929',
+      background: 'white',
       border: '1px solid var(--border)',
       borderRadius: 8,
       marginBottom: 16,
@@ -26,7 +26,7 @@ export default function ContextSection({ title, icon, children, empty }: Context
           fontSize: 15,
           fontWeight: 700,
           margin: 0,
-          fontFamily: "'Krub', sans-serif",
+          fontFamily: "'Agrandir', sans-serif",
           color: 'var(--text-primary)',
         }}>
           {title}
@@ -34,7 +34,7 @@ export default function ContextSection({ title, icon, children, empty }: Context
       </div>
       <div style={{ padding: '14px 18px' }}>
         {empty ? (
-          <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0, fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', margin: 0, fontStyle: 'italic', fontFamily: "'Source Sans Pro', sans-serif" }}>
             No items found
           </p>
         ) : children}

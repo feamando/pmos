@@ -38,9 +38,9 @@ describe('CCEPage', () => {
   it('renders ProductCard for each product', async () => {
     render(<CCEPage />)
     await waitFor(() => {
-      expect(screen.getAllByText('Growth Platform').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('Factor Form').length).toBeGreaterThan(0)
     })
-    expect(screen.getAllByText('Analytics Suite').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Good Chop').length).toBeGreaterThan(0)
   })
 
   it('shows error state on failure', async () => {

@@ -58,7 +58,7 @@ export default function AppSettingsForm() {
       <SettingsSection title="App Version">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-            <span style={{ color: 'var(--text-secondary)' }}>PM-OS App Version</span>
+            <span style={{ color: 'var(--text-secondary)' }}>HelloAI Version</span>
             <span style={{ fontWeight: 600 }}>{versionInfo?.version || '...'}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
@@ -89,7 +89,7 @@ export default function AppSettingsForm() {
               fontWeight: 600,
               cursor: isUpdating ? 'not-allowed' : 'pointer',
               opacity: isUpdating ? 0.7 : 1,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
               width: '100%',
             }}
           >
@@ -97,7 +97,7 @@ export default function AppSettingsForm() {
           </button>
 
           {isUpdating && updateStatus === 'downloading' && (
-            <div style={{ width: '100%', height: 4, background: '#0d2137', borderRadius: 2, overflow: 'hidden' }}>
+            <div style={{ width: '100%', height: 4, background: '#e5e7eb', borderRadius: 2, overflow: 'hidden' }}>
               <div style={{ width: `${updatePercent}%`, height: '100%', background: 'var(--btn-primary-bg)', borderRadius: 2, transition: 'width 0.3s ease' }} />
             </div>
           )}
@@ -120,7 +120,7 @@ export default function AppSettingsForm() {
             Developed by <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Nikita Gorshkov</span>
           </div>
           <div style={{ color: 'var(--text-secondary)' }}>
-            Part of the PM-OS open-source project
+            Part of the PM-OS project
           </div>
           <div style={{ marginTop: 4 }}>
             <a

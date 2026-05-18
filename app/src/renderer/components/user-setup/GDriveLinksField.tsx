@@ -19,7 +19,7 @@ export default function GDriveLinksField({ urls, onChange }: GDriveLinksFieldPro
         fontWeight: 600,
         color: 'var(--text-primary)',
         marginBottom: 8,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         Google Drive File Links
       </label>
@@ -47,12 +47,11 @@ export default function GDriveLinksField({ urls, onChange }: GDriveLinksFieldPro
                 style={{
                   width: '100%',
                   padding: '10px 12px',
-                  background: '#0a1929',
-                  border: `1px solid ${invalid ? '#ef4444' : '#ff008844'}`,
-                  color: '#ffffff',
+                  background: '#ffffff',
+                  border: `1px solid ${invalid ? '#ef4444' : '#cccccc'}`,
                   borderRadius: 4,
                   fontSize: 14,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "'Source Sans Pro', sans-serif",
                   boxSizing: 'border-box' as const,
                   outline: 'none',
                 }}

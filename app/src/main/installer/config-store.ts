@@ -21,7 +21,7 @@ const defaults: InstallConfig = {
 }
 
 const store = new Store<InstallConfig>({
-  name: 'pmos-install',
+  name: 'helloai-install',
   defaults,
 })
 

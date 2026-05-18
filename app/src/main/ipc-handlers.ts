@@ -7,7 +7,9 @@ import { detectPmosInstallation, validateCustomPath } from './installer/detectio
 import { getRecentLogs, logInfo, logError } from './installer/logger'
 import { buildDiagnosticBundle, logClick, logOutputError } from './telemetry/telemetry-logger'
 import { isDevMode } from './installer/dev-mode'
-import type { ConnectionState, HealthStatus, SaveResult, TestResult, AppMode, ConfigValidationResult, BrainHealthResult, DailyContextResult, CCEHubResult, AppVersionInfo, UpdateCheckResult, PluginInfo, PluginHealth, PluginActionResult } from '../shared/types'
+import type { ConnectionState, HealthStatus, SaveResult, TestResult, AppMode, ConfigValidationResult, BrainHealthResult, DailyContextResult, CCEHubResult, AppVersionInfo, UpdateCheckResult, PluginInfo, PluginHealth, PluginActionResult, SyncStatus, SyncConfig } from '../shared/types'
+import { readSyncConfig, writeSyncConfig } from './sync/sync-config'
+import { triggerImmediateSync } from './sync/background-scheduler'
 import { getInstalledPlugins, getAvailablePlugins, installPlugin, disablePlugin, getPluginHealth } from './plugin-manager'
 import { detectV4Installation, startMigration, rollbackMigration } from './migration-manager'
 import { computeBrainHealth, getSyntheticBrainHealth } from './brain/brain-health'
@@ -606,5 +608,48 @@ export function registerIpcHandlers() {
     } catch (err: any) {
       return { success: false, error: err.message }
     }
+  })
+
+  // --- Background Sync (v0.12) ---
+
+  // These handlers reference external state (latestSyncStatus, stopBackgroundSync)
+  // that is managed by index.ts. The handlers are registered as closures here but
+  // the actual scheduler lifecycle is controlled from index.ts.
+
+  ipcMain.handle('get-sync-status', async () => {
+    return (global as any).__syncStatus ?? {
+      lastRun: null, lastSuccess: false, lastMessage: 'Not started', running: false, nextRun: null,
+    }
+  })
+
+  ipcMain.handle('get-sync-config', async () => {
+    const pmosPath = currentEnvPath ? path.dirname(currentEnvPath) : null
+    if (!pmosPath) return { enabled: false, gatherIntervalMinutes: 30, synthesizeIntervalMinutes: 120, enableSynthesis: true }
+    return readSyncConfig(pmosPath)
+  })
+
+  ipcMain.handle('save-sync-config', async (_event, config: SyncConfig) => {
+    const pmosPath = currentEnvPath ? path.dirname(currentEnvPath) : null
+    if (!pmosPath) return { success: false, error: 'PM-OS path not set' }
+    try {
+      writeSyncConfig(pmosPath, config)
+      // Notify index.ts to restart the scheduler via event
+      BrowserWindow.getAllWindows().forEach((w) => w.webContents.send('sync-config-changed', config))
+      // Also emit to main process
+      ;(global as any).__onSyncConfigChanged?.(config)
+      return { success: true }
+    } catch (err: any) {
+      return { success: false, error: err.message }
+    }
+  })
+
+  ipcMain.handle('trigger-sync-now', async () => {
+    const pmosPath = currentEnvPath ? path.dirname(currentEnvPath) : null
+    if (!pmosPath) return { success: false, message: 'PM-OS path not set' }
+    const onUpdate = (status: SyncStatus) => {
+      ;(global as any).__syncStatus = status
+      BrowserWindow.getAllWindows().forEach((w) => w.webContents.send('sync-update', status))
+    }
+    return triggerImmediateSync(pmosPath, onUpdate)
   })
 }

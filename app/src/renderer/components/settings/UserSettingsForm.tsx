@@ -40,8 +40,8 @@ export default function UserSettingsForm({ data, onChange }: UserSettingsFormPro
         <SettingsField label="Name" value={user.name || ''} onChange={(v) => updateUser('name', v)} placeholder="First Last" />
         <SettingsField label="Email" value={user.email || ''} onChange={(v) => updateUser('email', v)} placeholder="email@company.com" />
         <SettingsField label="Position / Title" value={user.position || ''} onChange={(v) => updateUser('position', v)} placeholder="e.g. Senior PM" />
-        <SettingsField label="Tribe" value={user.tribe || ''} onChange={(v) => updateUser('tribe', v)} placeholder="e.g. Platform" />
-        <SettingsField label="Team" value={user.team || ''} onChange={(v) => updateUser('team', v)} placeholder="e.g. Growth Squad" />
+        <SettingsField label="Tribe" value={user.tribe || ''} onChange={(v) => updateUser('tribe', v)} placeholder="e.g. New Ventures" />
+        <SettingsField label="Team" value={user.team || ''} onChange={(v) => updateUser('team', v)} placeholder="e.g. Factor Form" />
         <SettingsSelect label="Function" value={user.function || ''} onChange={(v) => updateUser('function', v)} options={FUNCTION_OPTIONS} />
         <SettingsSelect label="Career Step" value={String(user.career_step || '')} onChange={(v) => updateUser('career_step', v ? Number(v) : null)} options={CAREER_STEP_OPTIONS} />
       </SettingsSection>

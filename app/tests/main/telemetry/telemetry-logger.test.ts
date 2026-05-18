@@ -6,7 +6,7 @@ import * as os from 'os'
 vi.mock('electron', () => ({
   app: {
     getPath: (name: string) => {
-      if (name === 'logs') return path.join(os.tmpdir(), 'pmos-telemetry-test')
+      if (name === 'logs') return path.join(os.tmpdir(), 'helloai-telemetry-test')
       return os.tmpdir()
     },
     getVersion: () => '0.10.0-20260331',
@@ -29,12 +29,12 @@ describe('telemetry-logger', () => {
   let testLogDir: string
 
   beforeEach(() => {
-    testLogDir = path.join(os.tmpdir(), 'pmos-telemetry-test', 'PM-OS')
+    testLogDir = path.join(os.tmpdir(), 'helloai-telemetry-test', 'HelloAI')
     fs.mkdirSync(testLogDir, { recursive: true })
   })
 
   afterEach(() => {
-    fs.rmSync(path.join(os.tmpdir(), 'pmos-telemetry-test'), { recursive: true, force: true })
+    fs.rmSync(path.join(os.tmpdir(), 'helloai-telemetry-test'), { recursive: true, force: true })
   })
 
   // --- Task 4.1: Telemetry event logging ---
@@ -141,7 +141,7 @@ describe('telemetry-logger', () => {
   describe('buildDiagnosticBundle', () => {
     it('contains header with version and platform', async () => {
       const bundle = await buildDiagnosticBundle()
-      expect(bundle).toContain('--- PM-OS Diagnostic ---')
+      expect(bundle).toContain('--- HelloAI Diagnostic ---')
       expect(bundle).toContain('App Version: 0.10.0-20260331')
       expect(bundle).toContain(`Platform: ${process.platform} ${process.arch}`)
     })

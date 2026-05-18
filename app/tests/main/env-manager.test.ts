@@ -7,7 +7,7 @@ import { parseEnvContent, parseEnvFile, readEnvValue, readAllEnvValues, writeEnv
 let tmpDir: string
 
 beforeEach(() => {
-  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pmos-test-'))
+  tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'helloai-test-'))
 })
 
 afterEach(() => {

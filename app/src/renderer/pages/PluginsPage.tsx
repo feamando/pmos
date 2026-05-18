@@ -81,7 +81,7 @@ export default function PluginsPage() {
     <div style={{ position: 'relative', height: '100%', background: 'var(--bg-onboarding)', overflow: 'auto' }}>
       <div style={{ padding: '32px 32px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Krub', sans-serif" }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Agrandir', sans-serif" }}>
             Plugins
           </h2>
           <button
@@ -90,14 +90,14 @@ export default function PluginsPage() {
             title="Refresh"
             style={{
               width: 32, height: 32, borderRadius: 6, border: '1px solid var(--border)',
-              background: '#0a1929', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: refreshing ? 'not-allowed' : 'pointer', opacity: refreshing ? 0.5 : 1,
             }}
           >
             <RefreshCw size={14} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
           </button>
         </div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 0, fontFamily: "'Inter', sans-serif" }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 0, fontFamily: "'Source Sans Pro', sans-serif" }}>
           Manage PM-OS v5.0 plugins
         </p>
       </div>
@@ -109,7 +109,7 @@ export default function PluginsPage() {
           </div>
         ) : error ? (
           <div style={{
-            padding: 16, marginBottom: 16, background: '#2a0a0a', border: '1px solid #fecaca',
+            padding: 16, marginBottom: 16, background: '#fef2f2', border: '1px solid #fecaca',
             borderRadius: 8, fontSize: 13, color: '#dc2626', lineHeight: 1.6,
           }}>
             {error}
@@ -122,7 +122,7 @@ export default function PluginsPage() {
               <div style={{ marginBottom: 24 }}>
                 <h3 style={{
                   fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
-                  color: 'var(--text-muted)', marginBottom: 10, fontFamily: "'Inter', sans-serif",
+                  color: 'var(--text-muted)', marginBottom: 10, fontFamily: "'Source Sans Pro', sans-serif",
                 }}>
                   Installed
                 </h3>
@@ -143,7 +143,7 @@ export default function PluginsPage() {
               <div style={{ marginBottom: 24 }}>
                 <h3 style={{
                   fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
-                  color: 'var(--text-muted)', marginBottom: 10, fontFamily: "'Inter', sans-serif",
+                  color: 'var(--text-muted)', marginBottom: 10, fontFamily: "'Source Sans Pro', sans-serif",
                 }}>
                   Available
                 </h3>
@@ -163,7 +163,7 @@ export default function PluginsPage() {
             {installed.length === 0 && available.length === 0 && (
               <div style={{
                 textAlign: 'center', padding: 48, color: 'var(--text-muted)', fontSize: 13,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
               }}>
                 No plugins found. Ensure PM-OS v5.0 is properly installed.
               </div>
@@ -173,7 +173,7 @@ export default function PluginsPage() {
               marginTop: 8,
               fontSize: 12,
               color: 'var(--text-muted)',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
               textAlign: 'center',
             }}>
               Plugins also work in Claude Cowork.

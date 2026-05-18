@@ -34,14 +34,14 @@ const INTEGRATIONS: IntegrationDef[] = [
     id: 'github', label: 'GitHub',
     fields: [
       { key: 'org', label: 'Organization', placeholder: 'my-org' },
-      { key: 'tracked_repos', label: 'Tracked Repos', type: 'csv', placeholder: 'my-org/web, my-org/api' },
+      { key: 'tracked_repos', label: 'Tracked Repos', type: 'csv', placeholder: 'my-org/repo-1, my-org/repo-2' },
     ],
   },
   {
     id: 'slack', label: 'Slack',
     fields: [
-      { key: 'channel', label: 'Default Channel', placeholder: 'C0XXXXXXXXX' },
-      { key: 'context_output_channel', label: 'Context Output Channel', placeholder: 'C0XXXXXXXXX' },
+      { key: 'channel', label: 'Default Channel', placeholder: 'C0A6ZAS1MSQ' },
+      { key: 'context_output_channel', label: 'Context Output Channel', placeholder: 'C0A6ZAS1MSQ' },
       { key: 'mention_bot_name', label: 'Bot Name', placeholder: 'your-bot-name' },
     ],
   },
@@ -54,11 +54,11 @@ const INTEGRATIONS: IntegrationDef[] = [
     fields: [],
   },
   {
-    id: 'sprint_tracker', label: 'Sprint Tracker',
+    id: 'hellotech', label: 'HelloTech Sprint',
     fields: [
       { key: 'spreadsheet_id', label: 'Spreadsheet ID', placeholder: 'Google Sheets ID' },
       { key: 'calendar_tab', label: 'Calendar Tab', placeholder: 'Sprint Calendar' },
-      { key: 'default_tribe_filter', label: 'Tribe Filter', placeholder: 'e.g. Platform' },
+      { key: 'default_tribe_filter', label: 'Tribe Filter', placeholder: 'e.g. New Ventures' },
     ],
   },
 ]
@@ -76,15 +76,15 @@ export default function IntegrationSettingsForm({ data, onChange }: IntegrationS
     <div style={{ paddingTop: 16 }}>
       {/* Claude Connectors section */}
       <div style={{
-        marginBottom: 16, padding: 14, background: '#0a2a1a', border: '1px solid #bbf7d0',
+        marginBottom: 16, padding: 14, background: '#f0fdf4', border: '1px solid #bbf7d0',
         borderRadius: 8,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <span style={{ fontWeight: 600, fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#166534' }}>
+            <span style={{ fontWeight: 600, fontSize: 13, fontFamily: "'Source Sans Pro', sans-serif", color: '#166534' }}>
               CLAUDE CONNECTORS (Primary)
             </span>
-            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#166534', fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#166534', fontFamily: "'Source Sans Pro', sans-serif" }}>
               MCP servers are configured in Claude Settings
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function IntegrationSettingsForm({ data, onChange }: IntegrationS
             style={{
               padding: '6px 12px', fontSize: 12, fontWeight: 600, border: 'none',
               borderRadius: 4, background: 'black', color: 'white', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             Open Claude Settings
@@ -105,7 +105,7 @@ export default function IntegrationSettingsForm({ data, onChange }: IntegrationS
       <div style={{ marginBottom: 8 }}>
         <span style={{
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
-          color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif",
+          color: 'var(--text-muted)', fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           API Connections (Optional)
         </span>
@@ -128,7 +128,7 @@ export default function IntegrationSettingsForm({ data, onChange }: IntegrationS
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

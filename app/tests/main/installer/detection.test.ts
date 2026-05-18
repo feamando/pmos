@@ -15,7 +15,7 @@ vi.mock('../../../src/main/installer/config-store', () => ({
 }))
 vi.mock('../../../src/main/installer/dev-mode', () => ({
   isDevMode: () => false,
-  getDevPmosPath: () => path.join(os.tmpdir(), 'pmos-dev'),
+  getDevPmosPath: () => path.join(os.tmpdir(), 'helloai-dev-pmos'),
 }))
 
 import { detectPmosInstallation, validateCustomPath } from '../../../src/main/installer/detection'

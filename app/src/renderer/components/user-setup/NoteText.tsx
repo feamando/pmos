@@ -7,10 +7,10 @@ export default function NoteText({ text }: NoteTextProps) {
     <p style={{
       fontSize: 12,
       fontStyle: 'italic',
-      color: '#aabbcc',
+      color: '#666666',
       marginTop: 4,
       marginBottom: 12,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Source Sans Pro', sans-serif",
     }}>
       {text}
     </p>

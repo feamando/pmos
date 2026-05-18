@@ -1,5 +1,5 @@
 #!/bin/bash
-# build-release.sh — Build a versioned release of PM-OS
+# build-release.sh — Build a versioned release of HelloAI
 # Usage: bash scripts/build-release.sh [base-version]
 # Example: bash scripts/build-release.sh 0.8.0
 
@@ -14,10 +14,13 @@ BASE_VERSION="${1:-$(node -p "require('./package.json').version")}"
 DATE_STAMP=$(date +%Y%m%d)
 FULL_VERSION="${BASE_VERSION}-${DATE_STAMP}"
 
-echo "=== PM-OS Release Build ==="
+echo "=== HelloAI Release Build ==="
 echo "  Version: $FULL_VERSION"
 echo "  App root: $APP_ROOT"
 echo ""
+
+# Set BUILD_TIMESTAMP for electron-builder artifact naming
+export BUILD_TIMESTAMP="$DATE_STAMP"
 
 # Temporarily set version in package.json
 ORIGINAL_VERSION=$(node -p "require('./package.json').version")
@@ -31,7 +34,7 @@ npm run dist
 npm version "$ORIGINAL_VERSION" --no-git-tag-version --allow-same-version
 
 # Locate output
-ZIP_PATH="$APP_ROOT/dist/PM-OS-${FULL_VERSION}-mac.zip"
+ZIP_PATH="$APP_ROOT/dist/HelloAI-${FULL_VERSION}-mac.zip"
 if [ ! -f "$ZIP_PATH" ]; then
   # electron-builder may use different naming
   ZIP_PATH=$(ls "$APP_ROOT/dist/"*mac*.zip 2>/dev/null | head -1 || echo "")

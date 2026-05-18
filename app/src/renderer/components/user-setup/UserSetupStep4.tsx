@@ -26,7 +26,7 @@ export default function UserSetupStep4({ data, devConfig, onChange }: UserSetupS
         color: 'var(--text-secondary)',
         lineHeight: 1.6,
         marginBottom: 20,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         Add up to 5 Google Drive file links to seed your brain enrichment. These documents will be used as the starting point for building your PM-OS knowledge base.
       </p>

@@ -71,7 +71,7 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
           label="Connected Components"
           value={data.graphComponents}
           target={t.graphComponents}
-          targetLabel={`${t.graphComponents} (fully connected)`}
+          targetLabel={`≤${t.graphComponents}`}
           indicator={getIndicator(data.graphComponents, t.graphComponents, 'lower')}
         />
         <MetricCard
@@ -115,13 +115,13 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
 
       {/* Last Enrichment */}
       <div style={{
-        padding: '12px 16px', background: '#0a1929', border: '1px solid var(--border)', borderRadius: 8,
+        padding: '12px 16px', background: 'white', border: '1px solid var(--border)', borderRadius: 8,
         marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: "'Inter', sans-serif" }}>
+        <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontFamily: "'Source Sans Pro', sans-serif" }}>
           Last Enrichment
         </span>
-        <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+        <span style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Source Sans Pro', sans-serif" }}>
           {formatTimestamp(data.lastEnrichmentTimestamp)}
         </span>
       </div>
@@ -129,23 +129,23 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
       {/* Two-column: Relationship Distribution + Orphan Breakdown */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
         {/* Relationship Type Distribution */}
-        <div style={{ background: '#0a1929', border: '1px solid var(--border)', borderRadius: 8, padding: 16 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Krub', sans-serif" }}>
+        <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 8, padding: 16 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Agrandir', sans-serif" }}>
             Relationship Types
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {data.relationshipTypes.map((rt) => (
               <div key={rt.type}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)' }}>
+                  <span style={{ fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif", color: 'var(--text-secondary)' }}>
                     {rt.type.replace(/_/g, ' ')}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans Pro', sans-serif" }}>
                     {rt.count}
                   </span>
                 </div>
-                <div style={{ height: 6, background: '#0d2137', borderRadius: 3 }}>
-                  <div style={barStyle((rt.count / maxRelCount) * 100, '#ff0088')} />
+                <div style={{ height: 6, background: '#f0f0f0', borderRadius: 3 }}>
+                  <div style={barStyle((rt.count / maxRelCount) * 100, '#111')} />
                 </div>
               </div>
             ))}
@@ -156,22 +156,22 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
         </div>
 
         {/* Orphan Breakdown */}
-        <div style={{ background: '#0a1929', border: '1px solid var(--border)', borderRadius: 8, padding: 16 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Krub', sans-serif" }}>
+        <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 8, padding: 16 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Agrandir', sans-serif" }}>
             Orphans by Reason
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {data.orphansByReason.map((ob) => (
               <div key={ob.reason}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-                  <span style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: 'var(--text-secondary)' }}>
+                  <span style={{ fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif", color: 'var(--text-secondary)' }}>
                     {ob.reason.replace(/_/g, ' ')}
                   </span>
-                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'Source Sans Pro', sans-serif" }}>
                     {ob.count}
                   </span>
                 </div>
-                <div style={{ height: 6, background: '#0d2137', borderRadius: 3 }}>
+                <div style={{ height: 6, background: '#f0f0f0', borderRadius: 3 }}>
                   <div style={barStyle((ob.count / maxOrphanCount) * 100, '#ca8a04')} />
                 </div>
               </div>
@@ -184,8 +184,8 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
       </div>
 
       {/* Entity Type Distribution */}
-      <div style={{ background: '#0a1929', border: '1px solid var(--border)', borderRadius: 8, padding: 16, marginBottom: 24 }}>
-        <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Krub', sans-serif" }}>
+      <div style={{ background: 'white', border: '1px solid var(--border)', borderRadius: 8, padding: 16, marginBottom: 24 }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 12px', fontFamily: "'Agrandir', sans-serif" }}>
           Entities by Type
         </h4>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -193,8 +193,8 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
             .sort(([, a], [, b]) => b - a)
             .map(([type, count]) => (
               <div key={type} style={{
-                padding: '6px 12px', background: '#0d2137', borderRadius: 16,
-                fontSize: 12, fontFamily: "'Inter', sans-serif",
+                padding: '6px 12px', background: '#f5f5f5', borderRadius: 16,
+                fontSize: 12, fontFamily: "'Source Sans Pro', sans-serif",
                 display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <span style={{ color: 'var(--text-secondary)' }}>{type}</span>
@@ -218,7 +218,7 @@ export default function BrainHealthDashboard({ data, onOpenFolder }: BrainHealth
           fontSize: 14,
           fontWeight: 600,
           cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

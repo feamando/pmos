@@ -49,7 +49,7 @@ export default function UserSetupStep1({ data, devConfig, onChange }: UserSetupS
   const nameField: FieldConfig = { envKey: 'name', label: 'Name', type: 'text', required: true, placeholder: 'First Last' }
   const emailField: FieldConfig = { envKey: 'email', label: 'Email', type: 'text', required: true, placeholder: 'your.email@company.com' }
   const positionField: FieldConfig = { envKey: 'position', label: 'Position / Title', type: 'text', required: false, placeholder: 'e.g. Senior Product Manager' }
-  const tribeField: FieldConfig = { envKey: 'tribe', label: 'Tribe', type: 'text', required: false, placeholder: 'e.g. Platform' }
+  const tribeField: FieldConfig = { envKey: 'tribe', label: 'Tribe', type: 'text', required: false, placeholder: 'e.g. New Ventures' }
 
   return (
     <div>

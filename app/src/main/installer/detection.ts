@@ -13,15 +13,16 @@ export interface DetectionResult {
 }
 
 const REQUIRED_PATHS = [
-  'common',
   'user',
-  'user/.env',
 ]
 
 const OPTIONAL_MARKERS = [
   '.pm-os-root',
+  'common',
   'common/tools',
   'common/.claude/commands',
+  'user/.env',
+  'user/config.yaml',
   'CLAUDE.md',
 ]
 
@@ -54,7 +55,7 @@ export function detectPmosInstallation(): DetectionResult {
   const config = getInstallConfig()
   if (config.pmosPath) {
     const storedPath = config.pmosPath
-    const isTempPath = storedPath.includes('/T/') || storedPath.includes('/tmp/') || storedPath.includes('pmos-dev')
+    const isTempPath = storedPath.includes('/T/') || storedPath.includes('/tmp/') || storedPath.includes('helloai-dev')
     if (isTempPath) {
       logInfo('installer', `Ignoring stored temp/dev path: ${storedPath}`)
     } else {

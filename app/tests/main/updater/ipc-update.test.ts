@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 
 const mockHandle = vi.fn()
 vi.mock('electron', () => ({
-  app: { getVersion: () => '0.8.0-20260331', getPath: () => '/tmp/pmos-test' },
+  app: { getVersion: () => '0.8.0-20260331', getPath: () => '/tmp/helloai-test' },
   ipcMain: { handle: mockHandle, on: vi.fn() },
   BrowserWindow: { getAllWindows: () => [] },
   shell: { openPath: vi.fn() },

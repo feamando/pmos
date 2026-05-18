@@ -1,7 +1,7 @@
 {
   "name": "pm-os-app",
-  "version": "0.10.0",
-  "description": "PM-OS Connections Manager — manage PM-OS integrations",
+  "version": "0.12.5",
+  "description": "HelloAI Connections Manager \u2014 manage PM-OS integrations",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
@@ -15,8 +15,8 @@
     "dist": "npm run bundle && npm run build && electron-builder --mac",
     "dist:dev": "npm run bundle && npm run build && electron-builder --mac --dir"
   },
-  "author": "feamando",
-  "license": "MIT",
+  "author": "HelloFresh",
+  "license": "UNLICENSED",
   "dependencies": {
     "@types/js-yaml": "^4.0.9",
     "electron-store": "^11.0.2",

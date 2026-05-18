@@ -15,7 +15,7 @@ function runCommand(cmd: string, args: string[], cwd?: string): Promise<string> 
 
 /**
  * Resolve the .app bundle path from process.execPath.
- * macOS production: /Applications/PM-OS.app/Contents/MacOS/PM-OS
+ * macOS production: /Applications/HelloAI.app/Contents/MacOS/HelloAI
  * Walk up to find the *.app directory.
  */
 export function resolveAppBundlePath(): string | null {
@@ -38,7 +38,7 @@ export async function replaceApp(zipPath: string): Promise<void> {
   const appDir = path.dirname(appPath)
   const appName = path.basename(appPath)
   const backupPath = `${appPath}.backup`
-  const tempExtract = path.join(appDir, '.pmos-update-temp')
+  const tempExtract = path.join(appDir, '.helloai-update-temp')
 
   try {
     // Unzip to temp location

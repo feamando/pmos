@@ -153,72 +153,45 @@ export async function getCCEProjects(pmosPath: string): Promise<CCEHubData> {
 export function getSyntheticCCEData(): CCEHubData {
   return {
     generatedAt: new Date().toISOString(),
-    summary: { products: 3, features: 9, active: 5 },
+    summary: { products: 2, features: 5, active: 3 },
     products: [
       {
-        id: 'product-alpha',
-        name: 'Product Alpha Context',
-        org: 'products',
-        path: 'products/product-alpha',
-        meta: { status: 'ACTIVE', owner: 'PM Lead', type: 'product', lastUpdated: '2026-03-27' },
+        id: 'sample-product',
+        name: 'Sample Product',
+        org: 'my-org',
+        path: 'my-org/sample-product',
+        meta: { status: 'ACTIVE', owner: 'Jane Doe', type: 'brand', lastUpdated: '2026-01-15' },
         features: [
           {
-            id: 'alpha-migration', name: 'Platform Migration Context', path: 'products/product-alpha/alpha-migration',
-            meta: { title: 'Platform Migration Context', status: 'In Progress', owner: 'PM Lead', priority: 'P0', deadline: '2026-04-15', lastUpdated: '2026-03-28', description: 'Platform migration specs for Product Alpha.', actionCount: 5, latestAction: { date: '2026-03-28', action: 'Updated migration specs', status: 'In Progress' } },
+            id: 'onboarding-flow', name: 'Onboarding Flow Redesign', path: 'my-org/sample-product/onboarding-flow',
+            meta: { title: 'Onboarding Flow Redesign', status: 'In Progress', owner: 'Jane Doe', priority: 'P0', deadline: '2026-02-01', lastUpdated: '2026-01-15', description: 'Redesign the onboarding experience for new users.', actionCount: 3, latestAction: { date: '2026-01-15', action: 'Completed user research', status: 'In Progress' } },
           },
           {
-            id: 'alpha-b2b', name: 'B2B Channel Context', path: 'products/product-alpha/alpha-b2b',
-            meta: { title: 'B2B Channel Context', status: 'Planning', owner: 'Team Lead', priority: 'P0', deadline: '2026-04-01', lastUpdated: '2026-03-25', description: 'B2B channel strategy for Product Alpha market entry.', actionCount: 3, latestAction: { date: '2026-03-25', action: 'Drafted partner integration plan', status: 'Planning' } },
-          },
-          {
-            id: 'alpha-onboarding', name: 'Onboarding Quiz / User Goals', path: 'products/product-alpha/alpha-onboarding',
-            meta: { title: 'Onboarding Quiz / User Goals', status: 'Active — Initialization', owner: 'Product Manager', priority: 'P1', deadline: null, lastUpdated: '2026-03-13', description: 'User goals quiz for personalized onboarding funnel.', actionCount: 2, latestAction: null },
+            id: 'search-feature', name: 'Search Feature', path: 'my-org/sample-product/search-feature',
+            meta: { title: 'Search Feature', status: 'Planning', owner: 'John Smith', priority: 'P1', deadline: null, lastUpdated: '2026-01-10', description: 'Full-text search across product catalog.', actionCount: 1, latestAction: { date: '2026-01-10', action: 'Requirements gathering', status: 'Planning' } },
           },
         ],
         isWcrProduct: true,
-        wcrMeta: { squad: 'Alpha Squad', tribe: 'Product', market: 'US' },
+        wcrMeta: { squad: 'Growth', tribe: 'Product', market: 'US' },
       },
       {
-        id: 'product-beta',
-        name: 'Product Beta Context',
-        org: 'products',
-        path: 'products/product-beta',
-        meta: { status: 'ACTIVE', owner: null, type: 'product', lastUpdated: '2026-03-27' },
+        id: 'platform',
+        name: 'Platform',
+        org: 'my-org',
+        path: 'my-org/platform',
+        meta: { status: 'ACTIVE', owner: null, type: null, lastUpdated: '2026-01-12' },
         features: [
           {
-            id: 'beta-redesign', name: 'Product Beta Redesign Context', path: 'products/product-beta/beta-redesign',
-            meta: { title: 'Product Beta Redesign Context', status: 'In Progress', owner: 'Team Lead', priority: 'P0', deadline: '2026-04-10', lastUpdated: '2026-03-27', description: 'UI redesign for Product Beta.', actionCount: 8, latestAction: { date: '2026-03-27', action: 'Completed design review', status: 'In Progress' } },
+            id: 'api-v2', name: 'API v2 Migration', path: 'my-org/platform/api-v2',
+            meta: { title: 'API v2 Migration', status: 'In Progress', owner: 'Alex Chen', priority: 'P0', deadline: '2026-03-01', lastUpdated: '2026-01-12', description: 'Migrate all endpoints to API v2 with improved auth.', actionCount: 5, latestAction: { date: '2026-01-12', action: 'Completed auth module', status: 'In Progress' } },
           },
           {
-            id: 'beta-cross-sell', name: 'Cross-Sell Integration', path: 'products/product-beta/beta-cross-sell',
-            meta: { title: 'Cross-Sell Integration', status: 'Context v2 — Deep Research Complete', owner: 'PM Lead', priority: 'P2', deadline: null, lastUpdated: '2026-03-03', description: 'Cross-selling products across product lines.', actionCount: 4, latestAction: { date: '2026-03-03', action: 'Deep research phase completed', status: 'Complete' } },
+            id: 'monitoring', name: 'Observability Stack', path: 'my-org/platform/monitoring',
+            meta: { title: 'Observability Stack', status: 'Discovery', owner: 'Alex Chen', priority: 'P1', deadline: null, lastUpdated: '2026-01-08', description: 'Unified logging, metrics, and tracing.', actionCount: 0, latestAction: null },
           },
           {
-            id: 'beta-merchandising', name: 'Better Merchandising & Marketing Context', path: 'products/product-beta/beta-merchandising',
-            meta: { title: 'Better Merchandising & Marketing Context', status: 'Deprioritized', owner: 'PM Lead', priority: 'P2', deadline: null, lastUpdated: '2026-02-25', description: 'Merchandising improvements for Product Beta pages.', actionCount: 0, latestAction: null },
-          },
-        ],
-        isWcrProduct: true,
-        wcrMeta: { squad: 'Beta Squad', tribe: 'Product', market: 'US' },
-      },
-      {
-        id: 'product-gamma',
-        name: 'Product Gamma Context',
-        org: 'products',
-        path: 'products/product-gamma',
-        meta: { status: 'ACTIVE', owner: null, type: 'product', lastUpdated: '2026-03-27' },
-        features: [
-          {
-            id: 'gamma-ai', name: 'AI Integrations Context', path: 'products/product-gamma/gamma-ai',
-            meta: { title: 'AI Integrations Context', status: 'In Progress', owner: 'Product Manager', priority: 'P0', deadline: '2026-04-30', lastUpdated: '2026-03-27', description: 'AI integrations for product ecosystem.', actionCount: 6, latestAction: { date: '2026-03-27', action: 'Submitted integration for review', status: 'In Progress' } },
-          },
-          {
-            id: 'gamma-api', name: 'API Integration', path: 'products/product-gamma/gamma-api',
-            meta: { title: 'API Integration', status: 'In Progress — Parallel Tracks (Read-Only Phase 1)', owner: 'PM Lead', priority: 'P0', deadline: '2026-03-30', lastUpdated: '2026-02-26', description: 'Third-party API integration for data enrichment.', actionCount: 3, latestAction: { date: '2026-02-26', action: 'Completed read-only API integration', status: 'In Progress' } },
-          },
-          {
-            id: 'gamma-compliance', name: 'Compliance Context', path: 'products/product-gamma/gamma-compliance',
-            meta: { title: 'Compliance Context', status: 'In Discovery', owner: 'PM Lead', priority: 'P1', deadline: null, lastUpdated: '2026-03-27', description: 'Regulatory compliance integration.', actionCount: 1, latestAction: { date: '2026-03-27', action: 'Initial discovery research started', status: 'Discovery' } },
+            id: 'ci-pipeline', name: 'CI Pipeline Optimization', path: 'my-org/platform/ci-pipeline',
+            meta: { title: 'CI Pipeline Optimization', status: 'Complete', owner: 'John Smith', priority: 'P2', deadline: null, lastUpdated: '2026-01-05', description: 'Reduce CI build times from 12min to under 5min.', actionCount: 4, latestAction: { date: '2026-01-05', action: 'Deployed optimized pipeline', status: 'Complete' } },
           },
         ],
         isWcrProduct: false,

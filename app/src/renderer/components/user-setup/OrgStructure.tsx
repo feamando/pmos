@@ -25,14 +25,13 @@ interface OrgStructureProps {
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 12px',
-  background: '#0a1929',
-  border: '1px solid #ff008844',
+  background: '#ffffff',
+  border: '1px solid #cccccc',
   borderRadius: 4,
   fontSize: 14,
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "'Source Sans Pro', sans-serif",
   boxSizing: 'border-box' as const,
   outline: 'none',
-  color: '#ffffff',
 }
 
 const labelStyle: React.CSSProperties = {
@@ -41,7 +40,7 @@ const labelStyle: React.CSSProperties = {
   fontWeight: 600,
   color: 'var(--text-primary)',
   marginBottom: 4,
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: "'Source Sans Pro', sans-serif",
 }
 
 export default function OrgStructure({ data, onChange }: OrgStructureProps) {
@@ -53,7 +52,7 @@ export default function OrgStructure({ data, onChange }: OrgStructureProps) {
 
   return (
     <div>
-      <h3 style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Krub', sans-serif", marginBottom: 16, marginTop: 24 }}>
+      <h3 style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", marginBottom: 16, marginTop: 24 }}>
         Organization
       </h3>
 
@@ -64,7 +63,7 @@ export default function OrgStructure({ data, onChange }: OrgStructureProps) {
           type="text"
           value={data.mega_alliance}
           onChange={(e) => onChange({ ...data, mega_alliance: e.target.value })}
-          placeholder="e.g. Platform & Growth"
+          placeholder="e.g. New Ventures & Ecosystems"
           style={inputStyle}
         />
       </div>
@@ -79,7 +78,7 @@ export default function OrgStructure({ data, onChange }: OrgStructureProps) {
         onRemove={(i) => onChange({ ...data, tribes: data.tribes.filter((_, idx) => idx !== i) })}
         onUpdate={(i, tribe) => updateTribe(i, tribe)}
         renderItem={(tribe, tribeIndex, onTribeUpdate) => (
-          <div style={{ padding: 16, border: '1px solid #ff008844', borderRadius: 6, marginBottom: 8 }}>
+          <div style={{ padding: 16, border: '1px solid #e0e0e0', borderRadius: 6, marginBottom: 8 }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
               <div>
                 <label style={labelStyle}>Tribe Name</label>
@@ -104,7 +103,7 @@ export default function OrgStructure({ data, onChange }: OrgStructureProps) {
             </div>
 
             {/* Squads within tribe */}
-            <div style={{ marginLeft: 16, borderLeft: '2px solid #ff008844', paddingLeft: 16 }}>
+            <div style={{ marginLeft: 16, borderLeft: '2px solid #e0e0e0', paddingLeft: 16 }}>
               <label style={{ ...labelStyle, fontSize: 12, marginBottom: 8 }}>Squads</label>
               <DynamicList
                 items={tribe.squads}

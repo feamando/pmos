@@ -6,7 +6,7 @@ const mockHandle = vi.fn()
 const mockOn = vi.fn()
 
 vi.mock('electron', () => ({
-  app: { getVersion: () => '0.10.0-20260331', getPath: () => path.join(os.tmpdir(), 'pmos-ipc-test') },
+  app: { getVersion: () => '0.10.0-20260331', getPath: () => path.join(os.tmpdir(), 'helloai-ipc-test') },
   ipcMain: { handle: mockHandle, on: mockOn, removeHandler: vi.fn() },
   BrowserWindow: { getAllWindows: () => [] },
   shell: { openPath: vi.fn() },
@@ -42,7 +42,7 @@ describe('telemetry IPC handlers', () => {
     const result = await handler![1]()
     expect(result.success).toBe(true)
     expect(typeof result.data).toBe('string')
-    expect(result.data).toContain('--- PM-OS Diagnostic ---')
+    expect(result.data).toContain('--- HelloAI Diagnostic ---')
   })
 
   it('log-telemetry-click calls handler without error', () => {

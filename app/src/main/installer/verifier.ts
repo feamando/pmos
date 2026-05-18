@@ -96,7 +96,7 @@ async function checkConfig(pmosPath: string): Promise<VerifyCheck[]> {
   if (fs.existsSync(mcpPath)) {
     try {
       const config = JSON.parse(fs.readFileSync(mcpPath, 'utf-8'))
-      const hasBrain = !!config.mcpServers?.brain
+      const hasBrain = !!config.mcpServers?.brain || !!config.mcpServers?.['pm-os-brain']
       results.push(check('.mcp.json', 'config', hasBrain, hasBrain ? 'Brain server configured' : 'No brain server'))
     } catch (err: any) {
       results.push(check('.mcp.json', 'config', false, `Parse error: ${err.message}`))
@@ -169,8 +169,10 @@ async function checkTools(pmosPath: string): Promise<VerifyCheck[]> {
     results.push(check('Pipeline definitions', 'tools', false, 'pipelines/ not found'))
   }
 
-  // Count command .md files
-  const commandsDir = path.join(pmosPath, 'common', '.claude', 'commands')
+  // Count command .md files (check both plugin install path and legacy common/ path)
+  const pluginCommandsDir = path.join(pmosPath, '.claude', 'commands')
+  const legacyCommandsDir = path.join(pmosPath, 'common', '.claude', 'commands')
+  const commandsDir = fs.existsSync(pluginCommandsDir) ? pluginCommandsDir : legacyCommandsDir
   if (fs.existsSync(commandsDir)) {
     const countMd = (dir: string): number => {
       let count = 0

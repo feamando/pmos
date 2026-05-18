@@ -1,4 +1,4 @@
-# Releasing PM-OS
+# Releasing HelloAI
 
 ## Prerequisites
 
@@ -23,12 +23,12 @@ This runs the full pipeline: build → upload to GDrive → update manifest → 
 bash scripts/build-release.sh 0.8.0
 ```
 
-Output: `dist/PM-OS-0.8.0-YYYYMMDD-mac.zip`
+Output: `dist/HelloAI-0.8.0-YYYYMMDD-mac.zip`
 
 ### 2. Upload to GDrive
 
 ```bash
-bash scripts/upload-to-gdrive.sh dist/PM-OS-0.8.0-YYYYMMDD-mac.zip [FOLDER_ID]
+bash scripts/upload-to-gdrive.sh dist/HelloAI-0.8.0-YYYYMMDD-mac.zip [FOLDER_ID]
 ```
 
 Returns the GDrive file ID.
@@ -36,10 +36,10 @@ Returns the GDrive file ID.
 ### 3. Update Manifest
 
 ```bash
-bash scripts/update-manifest.sh 0.8.0-YYYYMMDD <FILE_ID> dist/PM-OS-0.8.0-YYYYMMDD-mac.zip
+bash scripts/update-manifest.sh 0.8.0-YYYYMMDD <FILE_ID> dist/HelloAI-0.8.0-YYYYMMDD-mac.zip
 ```
 
-Updates `common/releases/pmos-manifest.json` and commits.
+Updates `common/releases/helloai-manifest.json` and commits.
 
 ### 4. Push
 
@@ -51,7 +51,7 @@ cd /path/to/pm-os && git push origin main
 
 1. User clicks "Update App" in Settings → App
 2. App runs `git pull` on the PM-OS repo (updates manifest + tools)
-3. Reads `common/releases/pmos-manifest.json`
+3. Reads `common/releases/helloai-manifest.json`
 4. Compares versions — if newer, downloads zip from GDrive
 5. Verifies SHA256 checksum
 6. Replaces the `.app` bundle
@@ -72,8 +72,8 @@ Format: `{semver}-{YYYYMMDD}` (e.g., `0.8.0-20260331`)
 bash scripts/build-release.sh 0.8.0
 
 # Test the built app
-open dist/mac/PM-OS.app
+open dist/mac/HelloAI.app
 
 # Verify the zip
-unzip -t dist/PM-OS-*-mac.zip
+unzip -t dist/HelloAI-*-mac.zip
 ```

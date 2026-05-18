@@ -63,9 +63,14 @@ function buildPythonCandidates(): string[] {
     join(home, 'miniconda3/bin/python3'),
     join(home, 'anaconda3/bin/python3'),
     join(home, 'miniforge3/bin/python3'),
+    // 6. python.org framework installs (macOS)
+    '/Library/Frameworks/Python.framework/Versions/3.13/bin/python3',
+    '/Library/Frameworks/Python.framework/Versions/3.12/bin/python3',
+    '/Library/Frameworks/Python.framework/Versions/3.11/bin/python3',
+    '/Library/Frameworks/Python.framework/Versions/3.10/bin/python3',
   ]
 
-  // 6. Discover additional paths from user's login shell
+  // 7. Discover additional paths from user's login shell
   const shellPath = getUserShellPath()
   if (shellPath) {
     for (const dir of shellPath.split(':')) {
@@ -83,6 +88,8 @@ export async function checkPython(): Promise<{ found: boolean; version: string |
   const candidates = buildPythonCandidates()
   logInfo('installer', `Checking ${candidates.length} Python candidates`)
 
+  let bestOldVersion: string | null = null
+
   for (const p of candidates) {
     const result = await exec(p, ['--version'])
     if (result.code === 0) {
@@ -91,17 +98,23 @@ export async function checkPython(): Promise<{ found: boolean; version: string |
         const version = match[1]
         const [major, minor] = version.split('.').map(Number)
         if (major >= 3 && minor >= 10) {
-          // Resolve to absolute path
           const which = await exec('which', [p])
           const resolved = which.stdout || p
           logInfo('installer', `Python found: ${version} at ${resolved}`)
           return { found: true, version, path: resolved }
         }
+        if (major >= 3 && !bestOldVersion) {
+          bestOldVersion = version
+        }
       }
     }
   }
-  logInfo('installer', 'Python 3.10+ not found after checking all candidates')
-  return { found: false, version: null, path: null }
+  if (bestOldVersion) {
+    logInfo('installer', `Found Python ${bestOldVersion} but 3.10+ is required`)
+  } else {
+    logInfo('installer', 'Python not found after checking all candidates')
+  }
+  return { found: false, version: bestOldVersion, path: null }
 }
 
 export async function checkPip(): Promise<{ found: boolean; path: string | null }> {

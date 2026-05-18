@@ -13,6 +13,8 @@ import { registerIpcHandlers, setEnvPathInternal, getEnvPathInternal } from './i
 import { detectPmosPath } from './env/path-detector'
 import { migrateGithubToken } from './env/env-manager'
 import { startHealthPolling } from './connections/scheduler'
+import { startBackgroundSync } from './sync/background-scheduler'
+import { readSyncConfig } from './sync/sync-config'
 import { checkConnection } from './connections/health-checker'
 import { parseEnvFile, readAllEnvValues } from './env/env-manager'
 import { getAllEnvKeys, CONNECTION_CONFIGS } from '../shared/connection-configs'
@@ -23,12 +25,16 @@ import { runInstallation } from './installer/orchestrator'
 import { ensureVenv } from './installer/venv-ensure'
 import { logInfo, logError } from './installer/logger'
 import { logSessionStart, logMachineInfo, logPmosVersion, cleanupOldTelemetry } from './telemetry/telemetry-logger'
-import type { HealthStatus } from '../shared/types'
+import type { HealthStatus, SyncStatus, SyncConfig } from '../shared/types'
 
 let mainWindow: BrowserWindow | null = null
 let tray: Tray | null = null
 let stopPolling: (() => void) | null = null
+let stopBackgroundSync: (() => void) | null = null
 let latestStatuses: HealthStatus[] = []
+let latestSyncStatus: SyncStatus = {
+  lastRun: null, lastSuccess: false, lastMessage: 'Not started', running: false, nextRun: null,
+}
 
 const gotTheLock = app.requestSingleInstanceLock()
 
@@ -85,7 +91,7 @@ if (!gotTheLock) {
     const trayIcon = nativeImage.createFromPath(trayIconPath)
     trayIcon.setTemplateImage(true)
     tray = new Tray(trayIcon)
-    tray.setToolTip('PM-OS')
+    tray.setToolTip('HelloAI')
     updateTrayMenu()
 
     tray.on('click', () => {
@@ -101,7 +107,7 @@ if (!gotTheLock) {
 
     const healthy = latestStatuses.filter((s) => s.status === 'healthy').length
     const configured = latestStatuses.filter((s) => s.status !== 'unknown').length
-    const tooltipText = configured > 0 ? `PM-OS — ${healthy}/${configured} connections healthy` : 'PM-OS'
+    const tooltipText = configured > 0 ? `HelloAI — ${healthy}/${configured} connections healthy` : 'HelloAI'
     tray.setToolTip(tooltipText)
 
     const statusItems: Electron.MenuItemConstructorOptions[] = latestStatuses
@@ -112,10 +118,27 @@ if (!gotTheLock) {
         return { label: `${icon} ${config?.name || s.connectionId}`, enabled: false }
       })
 
+    // Sync status line
+    const syncLabel = latestSyncStatus.running
+      ? 'Syncing...'
+      : latestSyncStatus.lastRun
+        ? `Last sync: ${Math.round((Date.now() - latestSyncStatus.lastRun) / 60_000)}m ago${latestSyncStatus.lastSuccess ? '' : ' (failed)'}`
+        : 'Sync: not started'
+
     const template: Electron.MenuItemConstructorOptions[] = [
-      { label: 'Open PM-OS', click: () => { mainWindow?.show(); mainWindow?.focus() } },
+      { label: 'Open HelloAI', click: () => { mainWindow?.show(); mainWindow?.focus() } },
       { type: 'separator' },
       ...(statusItems.length > 0 ? [...statusItems, { type: 'separator' as const }] : []),
+      { label: syncLabel, enabled: false },
+      { label: 'Sync Now', click: () => {
+        const pmosPath = getEnvPathInternal() ? path.dirname(getEnvPathInternal()!) : null
+        if (pmosPath) {
+          import('./sync/background-scheduler').then(({ triggerImmediateSync }) => {
+            triggerImmediateSync(pmosPath, onSyncUpdate)
+          })
+        }
+      }},
+      { type: 'separator' },
       { label: 'Quit', click: () => { (app as any).isQuitting = true; app.quit() } },
     ]
 
@@ -127,6 +150,29 @@ if (!gotTheLock) {
     updateTrayMenu()
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('health-update', statuses)
+    }
+  }
+
+  function onSyncUpdate(status: SyncStatus) {
+    latestSyncStatus = status
+    ;(global as any).__syncStatus = status
+    updateTrayMenu()
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('sync-update', status)
+    }
+  }
+
+  function initBackgroundSync(pmosPath: string) {
+    const syncConfig = readSyncConfig(pmosPath)
+    if (syncConfig.enabled) {
+      stopBackgroundSync = startBackgroundSync(pmosPath, syncConfig, onSyncUpdate)
+    }
+    // Allow IPC handler to restart scheduler on config change
+    ;(global as any).__onSyncConfigChanged = (newConfig: SyncConfig) => {
+      if (stopBackgroundSync) { stopBackgroundSync(); stopBackgroundSync = null }
+      if (newConfig.enabled) {
+        stopBackgroundSync = startBackgroundSync(pmosPath, newConfig, onSyncUpdate)
+      }
     }
   }
 
@@ -151,6 +197,7 @@ if (!gotTheLock) {
     win.webContents.on('did-finish-load', () => {
       setTimeout(() => {
         stopPolling = startHealthPolling(envPath, onHealthUpdate)
+        initBackgroundSync(path.dirname(envPath))
       }, 1000)
     })
   }
@@ -297,7 +344,7 @@ if (!gotTheLock) {
 
     if (skipSplash) {
       // Skip splash — detect and go straight
-      const testEnvPath = process.env.PMOS_TEST_ENV_PATH
+      const testEnvPath = process.env.HELLOAI_TEST_ENV_PATH
       if (testEnvPath) {
         loadConnectionsManager(testEnvPath)
       } else {
@@ -312,7 +359,7 @@ if (!gotTheLock) {
       }
     } else {
       // Normal flow: splash → detect → onboarding or connections
-      const testEnvPath = process.env.PMOS_TEST_ENV_PATH
+      const testEnvPath = process.env.HELLOAI_TEST_ENV_PATH
 
       if (testEnvPath) {
         // Test override: splash → connections
@@ -324,7 +371,10 @@ if (!gotTheLock) {
         const envPath = testEnvPath
         if (mainWindow) {
           mainWindow.webContents.on('did-finish-load', () => {
-            setTimeout(() => { stopPolling = startHealthPolling(envPath, onHealthUpdate) }, 1000)
+            setTimeout(() => {
+              stopPolling = startHealthPolling(envPath, onHealthUpdate)
+              initBackgroundSync(path.dirname(envPath))
+            }, 1000)
           })
         }
       } else {
@@ -334,6 +384,7 @@ if (!gotTheLock) {
         if (detection.valid && detection.path) {
           // PM-OS found — normal splash → connections manager
           logInfo('app', `PM-OS found at ${detection.path}`)
+          setInstallConfig({ pmosPath: detection.path, installComplete: true })
           const envPath = path.join(detection.path, 'user', '.env')
           await migrateGithubToken(envPath)
 
@@ -346,10 +397,13 @@ if (!gotTheLock) {
             return win
           })
 
-          // Start health polling after main window loads
+          // Start health polling and background sync after main window loads
           if (mainWindow) {
             mainWindow.webContents.on('did-finish-load', () => {
-              setTimeout(() => { stopPolling = startHealthPolling(envPath, onHealthUpdate) }, 1000)
+              setTimeout(() => {
+                stopPolling = startHealthPolling(envPath, onHealthUpdate)
+                initBackgroundSync(detection.path!)
+              }, 1000)
             })
           }
         } else {
@@ -365,6 +419,7 @@ if (!gotTheLock) {
   app.on('before-quit', async () => {
     (app as any).isQuitting = true
     if (stopPolling) stopPolling()
+    if (stopBackgroundSync) stopBackgroundSync()
 
     // Dev mode cleanup prompt
     if (isDevMode()) {

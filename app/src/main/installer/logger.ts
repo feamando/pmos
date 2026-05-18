@@ -15,7 +15,7 @@ let logDir: string | null = null
 
 function getLogDir(): string {
   if (logDir) return logDir
-  logDir = path.join(app.getPath('logs'), 'PM-OS')
+  logDir = path.join(app.getPath('logs'), 'HelloAI')
   fs.mkdirSync(logDir, { recursive: true })
   return logDir
 }

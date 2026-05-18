@@ -39,7 +39,7 @@ export default function UserSetupStep6({ data, devConfig, onChange }: UserSetupS
     <div>
       <p style={{
         fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16,
-        fontFamily: "'Inter', sans-serif", lineHeight: 1.5,
+        fontFamily: "'Source Sans Pro', sans-serif", lineHeight: 1.5,
       }}>
         Configure your organization structure, team, and products. You can update these later in Settings.
       </p>

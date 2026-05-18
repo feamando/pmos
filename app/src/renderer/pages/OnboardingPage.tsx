@@ -229,7 +229,7 @@ export default function OnboardingPage() {
           fontWeight: 500,
           cursor: googleOAuthStatus === 'loading' ? 'not-allowed' : 'pointer',
           opacity: googleOAuthStatus === 'loading' ? 0.6 : 1,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}
       >
         {googleOAuthStatus === 'loading' ? 'Authenticating...' : 'Authenticate with Google'}
@@ -241,7 +241,7 @@ export default function OnboardingPage() {
   const renderGooglePmosOAuth = () => (
     <div>
       <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 16 }}>
-        Use the bundled PM-OS credentials to authenticate with Google. This will open your browser for consent.
+        Use the bundled HelloAI credentials to authenticate with Google. This will open your browser for consent.
       </p>
       <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 16 }}>
         Scopes requested: Calendar, Drive, Documents, Sheets, Gmail (read-only)
@@ -259,7 +259,7 @@ export default function OnboardingPage() {
           fontWeight: 500,
           cursor: googleOAuthStatus === 'loading' ? 'not-allowed' : 'pointer',
           opacity: googleOAuthStatus === 'loading' ? 0.6 : 1,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}
       >
         {googleOAuthStatus === 'loading' ? 'Authenticating...' : 'Authenticate with Google'}
@@ -271,14 +271,14 @@ export default function OnboardingPage() {
   const renderGoogleOAuthResult = () => {
     if (googleOAuthStatus === 'success') {
       return (
-        <div style={{ marginTop: 12, padding: '8px 12px', background: '#0a2a1a', border: '1px solid #bbf7d0', borderRadius: 4, fontSize: 13, color: '#4ade80' }}>
+        <div style={{ marginTop: 12, padding: '8px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 4, fontSize: 13, color: '#166534' }}>
           Google authentication successful
         </div>
       )
     }
     if (googleOAuthStatus === 'error') {
       return (
-        <div style={{ marginTop: 12, padding: '8px 12px', background: '#2a0a0a', border: '1px solid #fecaca', borderRadius: 4, fontSize: 13, color: '#dc2626' }}>
+        <div style={{ marginTop: 12, padding: '8px 12px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 4, fontSize: 13, color: '#dc2626' }}>
           {googleOAuthError}
         </div>
       )
@@ -290,7 +290,7 @@ export default function OnboardingPage() {
     <div style={{
       marginTop: 16,
       padding: 12,
-      background: '#0a1929',
+      background: '#f0f9ff',
       border: '1px solid #bae6fd',
       borderRadius: 4,
       fontSize: 13,
@@ -303,18 +303,18 @@ export default function OnboardingPage() {
   const renderClaudeConnectorsStep = () => (
     <div>
       <div style={{
-        padding: 16, background: '#0a2a1a', border: '1px solid #bbf7d0', borderRadius: 8,
+        padding: 16, background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8,
         marginBottom: 20,
       }}>
         <h4 style={{
           margin: '0 0 8px', fontSize: 14, fontWeight: 600,
-          fontFamily: "'Inter', sans-serif", color: '#166534',
+          fontFamily: "'Source Sans Pro', sans-serif", color: '#166534',
         }}>
           Claude Connectors (Primary)
         </h4>
         <p style={{
           margin: '0 0 12px', fontSize: 13, color: '#166534', lineHeight: 1.5,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           PM-OS v5.0 integrates directly with Claude via MCP servers. Configure your connections
           in Claude Settings to enable Brain, CCE, and other PM-OS capabilities.
@@ -327,7 +327,7 @@ export default function OnboardingPage() {
           style={{
             padding: '8px 16px', fontSize: 13, fontWeight: 600, border: 'none',
             borderRadius: 4, background: 'black', color: 'white', cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: "'Source Sans Pro', sans-serif",
           }}
         >
           Open Claude Settings
@@ -335,17 +335,17 @@ export default function OnboardingPage() {
       </div>
 
       <div style={{
-        padding: 16, background: '#0d2137', border: '1px solid var(--border)', borderRadius: 8,
+        padding: 16, background: '#f9fafb', border: '1px solid var(--border)', borderRadius: 8,
       }}>
         <h4 style={{
           margin: '0 0 8px', fontSize: 14, fontWeight: 600,
-          fontFamily: "'Inter', sans-serif", color: '#aabbcc',
+          fontFamily: "'Source Sans Pro', sans-serif", color: '#666',
         }}>
           API Tokens (Optional)
         </h4>
         <p style={{
           margin: 0, fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.5,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           API tokens for Jira, GitHub, Slack, and other services are configured in the following steps.
           These are optional if you use Claude Connectors.
@@ -404,7 +404,7 @@ export default function OnboardingPage() {
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <span style={{
-            fontFamily: "'Krub', sans-serif",
+            fontFamily: "'Agrandir', sans-serif",
             fontWeight: 700,
             fontSize: 16,
             color: 'var(--text-muted)',

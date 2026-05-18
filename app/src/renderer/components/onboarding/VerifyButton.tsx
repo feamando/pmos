@@ -64,7 +64,7 @@ export default function VerifyButton({ connectionIds, onVerify, fieldValues }: V
           fontWeight: 500,
           cursor: verifying ? 'not-allowed' : 'pointer',
           opacity: verifying ? 0.6 : 1,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           display: 'flex',
           alignItems: 'center',
           gap: 8,
@@ -86,10 +86,10 @@ export default function VerifyButton({ connectionIds, onVerify, fieldValues }: V
                 padding: '8px 12px',
                 marginBottom: 4,
                 borderRadius: 4,
-                background: r.success ? '#0a2a1a' : '#2a0a0a',
+                background: r.success ? '#f0fdf4' : '#fef2f2',
                 border: `1px solid ${r.success ? '#bbf7d0' : '#fecaca'}`,
                 fontSize: 13,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
               }}
             >
               {r.success ? (

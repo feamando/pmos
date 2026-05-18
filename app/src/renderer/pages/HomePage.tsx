@@ -14,8 +14,8 @@ const priorityStyle = (priority: string): React.CSSProperties => ({
   borderRadius: 4,
   fontSize: 11,
   fontWeight: 700,
-  fontFamily: "'Inter', sans-serif",
-  background: priority === 'P0' ? '#2a0a0a' : '#2a2200',
+  fontFamily: "'Source Sans Pro', sans-serif",
+  background: priority === 'P0' ? '#fef2f2' : '#fffbeb',
   color: priority === 'P0' ? '#dc2626' : '#ca8a04',
   marginRight: 8,
   flexShrink: 0,
@@ -57,13 +57,13 @@ export default function HomePage() {
       <div style={{ padding: '32px 32px 24px' }}>
         {/* Welcome header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Krub', sans-serif" }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0, fontFamily: "'Agrandir', sans-serif" }}>
             Welcome {userName}
           </h2>
           {devMode && (
             <span style={{
               fontSize: 10, fontWeight: 600, padding: '2px 6px', borderRadius: 4,
-              background: '#fef3c7', color: '#92400e', fontFamily: "'Inter', sans-serif",
+              background: '#fef3c7', color: '#92400e', fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               DEV MODE
             </span>
@@ -71,7 +71,7 @@ export default function HomePage() {
         </div>
         <p style={{
           color: 'var(--text-secondary)', fontSize: 14, marginBottom: 0,
-          fontFamily: "'Inter', sans-serif", lineHeight: 1.5,
+          fontFamily: "'Source Sans Pro', sans-serif", lineHeight: 1.5,
         }}>
           Today is {formatDate()}{contextData ? ', your last daily context is below.' : '.'}
         </p>
@@ -84,11 +84,11 @@ export default function HomePage() {
           </div>
         ) : error ? (
           <div style={{
-            padding: 20, background: '#2a0a0a', border: '1px solid #fecaca', borderRadius: 8,
+            padding: 20, background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8,
             fontSize: 13, color: '#dc2626', lineHeight: 1.6,
           }}>
             No daily context available. Run a context update from PM-OS to generate one.
-            <div style={{ marginTop: 8, fontSize: 12, color: '#778899' }}>{error}</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>{error}</div>
           </div>
         ) : contextData ? (
           <>
@@ -96,7 +96,7 @@ export default function HomePage() {
             {contextData.generatedAt && (
               <div style={{
                 fontSize: 12, color: 'var(--text-muted)', marginBottom: 16,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "'Source Sans Pro', sans-serif",
               }}>
                 Context from {contextData.date} ({contextData.generatedAt})
               </div>
@@ -113,11 +113,11 @@ export default function HomePage() {
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 0 }}>
                     <span style={priorityStyle(alert.priority)}>{alert.priority}</span>
                     <div>
-                      <div style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif", color: 'var(--text-primary)' }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Source Sans Pro', sans-serif", color: 'var(--text-primary)' }}>
                         {alert.title}
                       </div>
                       {alert.description && (
-                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2, lineHeight: 1.5, fontFamily: "'Source Sans Pro', sans-serif" }}>
                           {alert.description}
                         </div>
                       )}
@@ -137,15 +137,15 @@ export default function HomePage() {
                 {contextData.meetings.map((m, i) => (
                   <div key={i} style={{
                     display: 'flex', gap: 12, padding: '8px 0',
-                    borderBottom: i < contextData.meetings.length - 1 ? '1px solid #0d2137' : 'none',
+                    borderBottom: i < contextData.meetings.length - 1 ? '1px solid #f0f0f0' : 'none',
                   }}>
                     <span style={{
-                      fontSize: 12, color: 'var(--text-muted)', fontFamily: "'Inter', sans-serif",
+                      fontSize: 12, color: 'var(--text-muted)', fontFamily: "'Source Sans Pro', sans-serif",
                       minWidth: 90, flexShrink: 0, fontWeight: 500,
                     }}>
                       {m.time || '—'}
                     </span>
-                    <span style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--text-primary)' }}>
+                    <span style={{ fontSize: 13, fontFamily: "'Source Sans Pro', sans-serif", color: 'var(--text-primary)' }}>
                       {m.event}
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default function HomePage() {
                     <div key={group} style={{ marginBottom: 14 }}>
                       <div style={{
                         fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)',
-                        fontFamily: "'Inter', sans-serif", marginBottom: 6,
+                        fontFamily: "'Source Sans Pro', sans-serif", marginBottom: 6,
                         textTransform: 'uppercase', letterSpacing: 0.5,
                       }}>
                         {group}
@@ -176,7 +176,7 @@ export default function HomePage() {
                       {items.map((item, i) => (
                         <div key={i} style={{
                           display: 'flex', alignItems: 'flex-start', gap: 8, padding: '5px 0',
-                          fontSize: 13, fontFamily: "'Inter', sans-serif",
+                          fontSize: 13, fontFamily: "'Source Sans Pro', sans-serif",
                         }}>
                           <span style={{ color: 'var(--text-muted)', flexShrink: 0 }}>
                             <XCircle size={14} style={{ opacity: 0.3, marginTop: 2 }} />

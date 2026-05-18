@@ -74,7 +74,7 @@ export async function buildDiagnosticBundle(): Promise<string> {
   const release = os.release()
   const timestamp = new Date().toISOString()
 
-  sections.push('--- PM-OS Diagnostic ---')
+  sections.push('--- HelloAI Diagnostic ---')
   sections.push(`App Version: ${version}`)
   sections.push(`Electron: ${electronVersion}`)
   sections.push(`Platform: ${platform} ${arch}`)

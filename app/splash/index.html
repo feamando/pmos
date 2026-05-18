@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PM-OS</title>
+<title>HelloAI: PM-OS</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { overflow: hidden; background: #001122; }
+  body { overflow: hidden; background: #067a45; }
   canvas { display: block; width: 100vw; height: 100vh; }
 
   /* --- Shared overlay base --- */
@@ -26,7 +26,7 @@
 
   /* --- Title --- */
   .title {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 700;
     font-size: 56px;
     color: #ffffff;
@@ -40,16 +40,16 @@
     margin-top: 32px;
     font-family: 'SF Mono', 'Menlo', 'Monaco', monospace;
     font-size: 11px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.7);
     text-align: left;
     animation: fadeIn 1.2s ease-out;
     line-height: 1.8;
   }
   .check-item { transition: opacity 0.3s ease; }
-  .check-item.pending { opacity: 0.6; }
-  .check-item.running { opacity: 1.0; color: #ffffff; }
-  .check-item.done { opacity: 1.0; color: #eeeeff; }
-  .check-item.fail { opacity: 1.0; color: #ff9999; }
+  .check-item.pending { opacity: 0.4; }
+  .check-item.running { opacity: 1.0; color: rgba(255,255,255,0.9); }
+  .check-item.done { opacity: 0.7; color: #a0ffc0; }
+  .check-item.fail { opacity: 0.7; color: #ffb0a0; }
   .check-icon { display: inline-block; width: 16px; }
 
   /* --- Onboarding prompt --- */
@@ -58,14 +58,14 @@
     margin-top: 24px;
   }
   .onboard-prompt .question {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 500;
     font-size: 18px;
     color: #ffffff;
     margin-bottom: 28px;
   }
   .onboard-btn {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 500;
     font-size: 16px;
     color: #ffffff;
@@ -78,9 +78,9 @@
     transition: all 0.2s ease;
   }
   .onboard-btn:hover {
-    background: #ff0088;
-    color: #ffffff;
-    border-color: #ff0088;
+    background: rgba(255,255,255,0.9);
+    color: #064F38;
+    border-color: rgba(255,255,255,0.9);
   }
 
   /* --- Path input --- */
@@ -89,7 +89,7 @@
     margin-top: 24px;
   }
   .path-input-wrap .label {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 500;
     font-size: 16px;
     color: #ffffff;
@@ -106,7 +106,7 @@
     font-size: 14px;
     color: #ffffff;
     background: transparent;
-    border: 1.5px solid rgba(255,255,255,0.6);
+    border: 1.5px solid rgba(255,255,255,0.4);
     border-radius: 4px;
     padding: 10px 14px;
     width: 340px;
@@ -114,7 +114,7 @@
     transition: border-color 0.2s ease;
   }
   .path-input:focus { border-color: rgba(255,255,255,0.8); }
-  .path-input::placeholder { color: rgba(255,255,255,0.5); }
+  .path-input::placeholder { color: rgba(255,255,255,0.3); }
   .path-input.error {
     animation: shake 0.4s ease;
     border-color: rgba(255,100,100,0.8);
@@ -131,13 +131,13 @@
     transition: all 0.2s ease;
     display: flex; align-items: center; justify-content: center;
   }
-  .submit-btn:hover { background: #ff0088; color: #ffffff; border-color: #ff0088; }
+  .submit-btn:hover { background: rgba(255,255,255,0.9); color: #064F38; }
   .back-btn {
     position: absolute;
     top: 16px;
     left: 16px;
     font-size: 20px;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.6);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -174,14 +174,14 @@
   }
   .progress-bar-fill {
     height: 100%;
-    background: #ff0088;
+    background: #ffffff;
     width: 0%;
     transition: width 0.4s ease;
   }
   .progress-pct {
     font-family: 'SF Mono', 'Menlo', monospace;
     font-size: 12px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.6);
     margin-top: 8px;
   }
   .step-list {
@@ -190,11 +190,11 @@
     font-family: 'SF Mono', 'Menlo', monospace;
     font-size: 11px;
     line-height: 1.8;
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.5);
   }
-  .step-list .step-done { color: #eeeeff; }
+  .step-list .step-done { color: #a0ffc0; }
   .step-list .step-current { color: rgba(255,255,255,0.95); }
-  .step-list .step-error { color: #ff9999; }
+  .step-list .step-error { color: #ffb0a0; }
   .step-icon { display: inline-block; width: 16px; }
 
   /* --- Success overlay --- */
@@ -212,7 +212,7 @@
   }
   .success-white-fade.active { opacity: 1; }
   .success-wrap .success-text {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 700;
     font-size: 28px;
     color: #ffffff;
@@ -227,7 +227,7 @@
     width: 440px;
   }
   .error-wrap .error-title {
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Agrandir', -apple-system, sans-serif;
     font-weight: 700;
     font-size: 24px;
     color: #ffffff;
@@ -236,7 +236,7 @@
   .error-wrap .error-subtitle {
     font-family: -apple-system, sans-serif;
     font-size: 13px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.7);
     margin-bottom: 16px;
   }
   .error-box {
@@ -248,7 +248,7 @@
     text-align: left;
     font-family: 'SF Mono', 'Menlo', monospace;
     font-size: 11px;
-    color: #ffffff;
+    color: rgba(255,255,255,0.85);
     line-height: 1.6;
     white-space: pre-wrap;
     margin-bottom: 16px;
@@ -280,9 +280,9 @@
     animation: fadeIn 0.8s ease-out;
   }
   .pre-check-subtitle {
-    font-family: 'Krub', -apple-system, sans-serif;
+    font-family: 'Source Sans Pro', -apple-system, sans-serif;
     font-size: 16px;
-    color: #ffffff;
+    color: rgba(255,255,255,0.8);
     margin-bottom: 28px;
     text-align: center;
   }
@@ -315,18 +315,18 @@
   .pre-check-box::after {
     content: '';
     font-size: 14px;
-    color: #001122;
+    color: #064F38;
     font-weight: 700;
   }
   .pre-check-input:checked + .pre-check-box {
-    background: #ff0088;
-    border-color: #ff0088;
+    background: rgba(255,255,255,0.9);
+    border-color: rgba(255,255,255,0.9);
   }
   .pre-check-input:checked + .pre-check-box::after {
     content: '\2713';
   }
   .pre-check-label {
-    font-family: 'Krub', -apple-system, sans-serif;
+    font-family: 'Source Sans Pro', -apple-system, sans-serif;
     font-size: 15px;
     color: #ffffff;
     line-height: 1.5;
@@ -361,28 +361,18 @@
     40%, 80% { transform: translateX(6px); }
   }
   @font-face {
-    font-family: 'Inter';
-    src: url('../assets/fonts/Inter-Regular.woff2') format('woff2');
-    font-weight: 400;
-  }
-  @font-face {
-    font-family: 'Inter';
-    src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
-    font-weight: 500;
-  }
-  @font-face {
-    font-family: 'Inter';
-    src: url('../assets/fonts/Inter-Medium.woff2') format('woff2');
+    font-family: 'Agrandir';
+    src: url('../assets/fonts/Agrandir-HelloFresh_Medium.otf') format('opentype');
     font-weight: 700;
   }
   @font-face {
-    font-family: 'Krub';
-    src: url('../assets/fonts/Krub-Regular.woff2') format('woff2');
+    font-family: 'Source Sans Pro';
+    src: url('../assets/fonts/SourceSansPro-Regular.woff2') format('woff2');
     font-weight: 400;
   }
   @font-face {
-    font-family: 'Krub';
-    src: url('../assets/fonts/Krub-SemiBold.woff2') format('woff2');
+    font-family: 'Source Sans Pro';
+    src: url('../assets/fonts/SourceSansPro-SemiBold.woff2') format('woff2');
     font-weight: 600;
   }
 </style>
@@ -395,19 +385,19 @@
 
 <!-- Screen: Boot checklist (default) -->
 <div class="overlay visible" id="screen-boot">
-  <span class="title">PM-OS</span>
+  <span class="title">HelloAI: PM-OS</span>
   <div class="checklist" id="checklist">
-    <div class="check-item pending" id="chk-env"><span class="check-icon">&#9675;</span> Detecting environment</div>
-    <div class="check-item pending" id="chk-brain"><span class="check-icon">&#9675;</span> Loading Brain index</div>
-    <div class="check-item pending" id="chk-connections"><span class="check-icon">&#9675;</span> Validating connections</div>
-    <div class="check-item pending" id="chk-session"><span class="check-icon">&#9675;</span> Ensuring session</div>
-    <div class="check-item pending" id="chk-health"><span class="check-icon">&#9675;</span> Starting health monitor</div>
+    <div class="check-item pending" id="chk-env"><span class="check-icon">○</span> Detecting environment</div>
+    <div class="check-item pending" id="chk-brain"><span class="check-icon">○</span> Loading Brain index</div>
+    <div class="check-item pending" id="chk-connections"><span class="check-icon">○</span> Validating connections</div>
+    <div class="check-item pending" id="chk-session"><span class="check-icon">○</span> Ensuring session</div>
+    <div class="check-item pending" id="chk-health"><span class="check-icon">○</span> Starting health monitor</div>
   </div>
 </div>
 
 <!-- Screen: Pre-installation checklist (v0.9) -->
 <div class="overlay interactive hidden" id="screen-pre-check">
-  <span class="title">PM-OS</span>
+  <span class="title">HelloAI: PM-OS</span>
   <div class="pre-check-wrap">
     <div class="pre-check-subtitle">Before we begin, please confirm:</div>
     <label class="pre-check-item">
@@ -431,7 +421,7 @@
 
 <!-- Screen: Onboarding prompt -->
 <div class="overlay interactive hidden" id="screen-prompt">
-  <span class="title">PM-OS</span>
+  <span class="title">HelloAI: PM-OS</span>
   <div class="onboard-prompt">
     <div class="question">Do you have PM-OS installed?</div>
     <button class="onboard-btn" id="btn-yes">Yes</button>
@@ -441,13 +431,13 @@
 
 <!-- Screen: Path input -->
 <div class="overlay interactive hidden" id="screen-path">
-  <button class="back-btn" id="btn-back">&larr;</button>
-  <span class="title">PM-OS</span>
+  <button class="back-btn" id="btn-back">←</button>
+  <span class="title">HelloAI: PM-OS</span>
   <div class="path-input-wrap">
     <div class="label">Provide your PM-OS installation path</div>
     <div class="path-row">
       <input class="path-input" id="path-input" type="text" placeholder="~/pm-os" autofocus />
-      <button class="submit-btn" id="btn-submit-path">&rarr;</button>
+      <button class="submit-btn" id="btn-submit-path">→</button>
     </div>
     <div class="path-error-msg" id="path-error"></div>
   </div>
@@ -455,7 +445,7 @@
 
 <!-- Screen: Install progress -->
 <div class="overlay interactive hidden" id="screen-progress">
-  <span class="title">PM-OS</span>
+  <span class="title">HelloAI: PM-OS</span>
   <div class="progress-wrap">
     <div class="progress-step-name" id="progress-step-name">Preparing...</div>
     <div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
@@ -488,10 +478,10 @@
 
 <script>
 // ============================================================
-// WebGL2 Wave Dithering Shader
+// WebGL Shader (unchanged from v0)
 // ============================================================
 const canvas = document.getElementById('shader-canvas');
-const gl = canvas.getContext('webgl2');
+const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
 function resize() {
   canvas.width = window.innerWidth * window.devicePixelRatio;
@@ -501,63 +491,75 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
-const vsSource = `#version 300 es
-precision mediump float;
-layout(location = 0) in vec4 a_position;
-void main() {
-  gl_Position = a_position;
-}
+const vsSource = `
+  attribute vec2 a_position;
+  void main() { gl_Position = vec4(a_position, 0.0, 1.0); }
 `;
 
-const fsSource = `#version 300 es
-precision mediump float;
+const fsSource = `
+  precision highp float;
+  uniform float u_time;
+  uniform vec2 u_resolution;
+  uniform float u_brightness;
 
-uniform float u_time;
-uniform vec2 u_resolution;
-out vec4 fragColor;
+  #define FC gl_FragCoord.xy
+  #define T u_time
+  #define R u_resolution
 
-const int bayer8x8[64] = int[64](
-   0, 32,  8, 40,  2, 34, 10, 42,
-  48, 16, 56, 24, 50, 18, 58, 26,
-  12, 44,  4, 36, 14, 46,  6, 38,
-  60, 28, 52, 20, 62, 30, 54, 22,
-   3, 35, 11, 43,  1, 33,  9, 41,
-  51, 19, 59, 27, 49, 17, 57, 25,
-  15, 47,  7, 39, 13, 45,  5, 37,
-  63, 31, 55, 23, 61, 29, 53, 21
-);
+  float rnd(vec2 p) {
+    p = fract(p * vec2(12.9898, 78.233));
+    p += dot(p, p + 34.56);
+    return fract(p.x * p.y);
+  }
 
-float getBayerValue(vec2 uv) {
-  ivec2 pos = ivec2(mod(uv, 8.0));
-  int index = pos.y * 8 + pos.x;
-  return float(bayer8x8[index]) / 64.0;
-}
+  float noise(in vec2 p) {
+    vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+    float a = rnd(i), b = rnd(i + vec2(1, 0)),
+          c = rnd(i + vec2(0, 1)), d = rnd(i + 1.0);
+    return mix(mix(a, b, u.x), mix(c, d, u.x), u.y);
+  }
 
-void main() {
-  float t = 0.3 * u_time;
-  vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-  uv -= 0.5;
+  float fbm(vec2 p) {
+    float t = 0.0, a = 1.0;
+    mat2 m = mat2(1.0, -0.5, 0.2, 1.2);
+    for (int i = 0; i < 5; i++) {
+      t += a * noise(p);
+      p *= 2.0 * m;
+      a *= 0.5;
+    }
+    return t;
+  }
 
-  float pxSize = 3.0;
-  vec2 pxSizeUv = gl_FragCoord.xy / pxSize;
-  vec2 pixelizedUv = floor(pxSizeUv) * pxSize / u_resolution.xy - 0.5;
+  float clouds(vec2 p) {
+    float d = 1.0, t = 0.0;
+    for (float i = 0.0; i < 3.0; i++) {
+      float a = d * fbm(i * 10.0 + p.x * 0.2 + 0.2 * (1.0 + i) * p.y + d + i * i + p);
+      t = mix(t, d, a);
+      d = a;
+      p *= 2.0 / (i + 1.0);
+    }
+    return t;
+  }
 
-  // Wave shape
-  vec2 shape_uv = pixelizedUv * 4.0;
-  float wave = cos(0.5 * shape_uv.x - 2.0 * t) * sin(1.5 * shape_uv.x + t) * (0.75 + 0.25 * cos(3.0 * t));
-  float shape = 1.0 - smoothstep(-1.0, 1.0, shape_uv.y + wave);
-
-  // Bayer 8x8 dithering
-  float dithering = getBayerValue(pxSizeUv) - 0.5;
-  float res = step(0.5, shape + dithering);
-
-  // Colors: #001122 background, #ff0088 foreground
-  vec3 bgColor = vec3(0.0, 0.067, 0.133);
-  vec3 fgColor = vec3(1.0, 0.0, 0.533);
-
-  vec3 color = mix(bgColor, fgColor, res);
-  fragColor = vec4(color, 1.0);
-}
+  void main(void) {
+    float MN = min(R.x, R.y);
+    vec2 uv = (FC - 0.5 * R) / MN, st = uv * vec2(2, 1);
+    vec3 col = vec3(0);
+    float bg = clouds(vec2(st.x + T * 0.5, -st.y));
+    uv *= 1.0 - 0.3 * (sin(T * 0.2) * 0.5 + 0.5);
+    for (float i = 1.0; i < 12.0; i++) {
+      uv += 0.1 * cos(i * vec2(0.1 + 0.01 * i, 0.8) + i * i + T * 0.5 + 0.1 * uv.x);
+      vec2 p = uv;
+      float d = length(p);
+      col += 0.00125 / d * (cos(sin(i) * vec3(2.0, 3.5, 2.5)) + 1.0);
+      float b = noise(i + p + bg * 1.731);
+      col += 0.002 * b / length(max(p, vec2(b * p.x * 0.02, p.y)));
+      col = mix(col, vec3(bg * 0.05, bg * 0.25, bg * 0.12), d);
+    }
+    col *= vec3(0.4, 1.0, 0.55);
+    col *= u_brightness;
+    gl_FragColor = vec4(col, 1.0);
+  }
 `;
 
 function createShader(type, source) {
@@ -584,12 +586,15 @@ gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
 
 const timeLoc = gl.getUniformLocation(program, 'u_time');
 const resLoc = gl.getUniformLocation(program, 'u_resolution');
+const brightLoc = gl.getUniformLocation(program, 'u_brightness');
 
+let shaderBrightness = 1.0;
 const startTime = performance.now();
 function render() {
   const elapsed = (performance.now() - startTime) / 1000;
   gl.uniform1f(timeLoc, elapsed);
   gl.uniform2f(resLoc, canvas.width, canvas.height);
+  gl.uniform1f(brightLoc, shaderBrightness);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   requestAnimationFrame(render);
 }
@@ -612,20 +617,20 @@ function showScreen(id) {
 }
 
 // ============================================================
-// Boot checklist API (v0 -- unchanged)
+// Boot checklist API (v0 — unchanged)
 // ============================================================
 window.updateCheck = function(id, status) {
   const el = document.getElementById('chk-' + id);
   if (!el) return;
   const icon = el.querySelector('.check-icon');
   el.className = 'check-item ' + status;
-  if (status === 'running') icon.textContent = '\u25CE';
-  else if (status === 'done') icon.textContent = '\u2713';
-  else if (status === 'fail') icon.textContent = '\u2717';
+  if (status === 'running') icon.textContent = '◎';
+  else if (status === 'done') icon.textContent = '✓';
+  else if (status === 'fail') icon.textContent = '✗';
 };
 
 // ============================================================
-// Onboarding API (v0.1) -- called from main process
+// Onboarding API (v0.1) — called from main process
 // ============================================================
 let _onPreCheckContinue = null;
 let _onPromptAnswer = null;
@@ -693,10 +698,10 @@ window.updateProgress = function(stepName, pct, steps) {
   if (steps && steps.length > 0) {
     const list = document.getElementById('step-list');
     list.innerHTML = steps.map(s => {
-      let cls = '', icon = '\u25CB';
-      if (s.status === 'done') { cls = 'step-done'; icon = '\u2713'; }
-      else if (s.status === 'running') { cls = 'step-current'; icon = '\u25CE'; }
-      else if (s.status === 'error') { cls = 'step-error'; icon = '\u2717'; }
+      let cls = '', icon = '○';
+      if (s.status === 'done') { cls = 'step-done'; icon = '✓'; }
+      else if (s.status === 'running') { cls = 'step-current'; icon = '◎'; }
+      else if (s.status === 'error') { cls = 'step-error'; icon = '✗'; }
       return `<div class="${cls}"><span class="step-icon">${icon}</span> ${s.name}</div>`;
     }).join('');
   }

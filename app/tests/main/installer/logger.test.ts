@@ -7,7 +7,7 @@ import * as os from 'os'
 vi.mock('electron', () => ({
   app: {
     getPath: (name: string) => {
-      if (name === 'logs') return path.join(os.tmpdir(), 'pmos-test-logs')
+      if (name === 'logs') return path.join(os.tmpdir(), 'helloai-test-logs')
       return os.tmpdir()
     },
   },
@@ -19,12 +19,12 @@ describe('logger', () => {
   let testLogDir: string
 
   beforeEach(() => {
-    testLogDir = path.join(os.tmpdir(), 'pmos-test-logs', 'PM-OS')
+    testLogDir = path.join(os.tmpdir(), 'helloai-test-logs', 'HelloAI')
     fs.mkdirSync(testLogDir, { recursive: true })
   })
 
   afterEach(() => {
-    fs.rmSync(path.join(os.tmpdir(), 'pmos-test-logs'), { recursive: true, force: true })
+    fs.rmSync(path.join(os.tmpdir(), 'helloai-test-logs'), { recursive: true, force: true })
   })
 
   it('formats log lines correctly', () => {

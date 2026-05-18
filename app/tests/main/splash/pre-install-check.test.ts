@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock('electron', () => ({
-  app: { getVersion: () => '0.9.0', getPath: () => '/tmp/pmos-test' },
+  app: { getVersion: () => '0.9.0', getPath: () => '/tmp/helloai-test' },
   BrowserWindow: vi.fn(),
   ipcMain: { handle: vi.fn() },
   shell: { openPath: vi.fn() },

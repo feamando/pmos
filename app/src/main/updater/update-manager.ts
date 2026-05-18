@@ -9,7 +9,7 @@ import type { UpdateManifest, UpdateCheckResult } from '../../shared/types'
 type ProgressCallback = (status: string, percent: number, message: string) => void
 
 export function readManifest(pmosPath: string): UpdateManifest {
-  const manifestPath = path.join(pmosPath, 'common', 'releases', 'pmos-manifest.json')
+  const manifestPath = path.join(pmosPath, 'common', 'releases', 'helloai-manifest.json')
   if (!existsSync(manifestPath)) {
     throw new Error('Update manifest not found')
   }
@@ -142,7 +142,7 @@ export async function performUpdate(
   await replaceApp(destPath)
 
   // Step 6: Relaunch
-  sendProgress('relaunching', 100, 'Relaunching PM-OS...')
+  sendProgress('relaunching', 100, 'Relaunching HelloAI...')
   // Small delay so the UI can show the status
   await new Promise((r) => setTimeout(r, 1000))
   relaunchApp()

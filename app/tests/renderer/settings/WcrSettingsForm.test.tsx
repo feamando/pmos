@@ -5,7 +5,7 @@ import WcrSettingsForm from '../../../src/renderer/components/settings/WcrSettin
 describe('WcrSettingsForm', () => {
   const baseData = {
     products: {
-      organization: { name: 'Acme Corp', jira_project: 'AC' },
+      organization: { name: 'HelloFresh', jira_project: 'HF' },
       items: [
         { id: 'p1', name: 'Factor', type: 'brand', market: 'US', status: 'active' },
         { id: 'p2', name: 'EveryPlate', type: 'brand', market: 'Global', status: 'active' },
@@ -23,7 +23,7 @@ describe('WcrSettingsForm', () => {
   it('renders organization fields', () => {
     render(<WcrSettingsForm data={baseData} onChange={vi.fn()} />)
     expect(screen.getByText('Organization')).toBeDefined()
-    expect(screen.getByDisplayValue('Acme Corp')).toBeDefined()
+    expect(screen.getByDisplayValue('HelloFresh')).toBeDefined()
   })
 
   it('renders products as collapsible items', () => {

@@ -10,7 +10,7 @@ interface SettingsFieldProps {
 export function SettingsField({ label, value, onChange, type = 'text', placeholder, note }: SettingsFieldProps) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Source Sans Pro', sans-serif" }}>
         {label}
       </label>
       <input
@@ -21,17 +21,16 @@ export function SettingsField({ label, value, onChange, type = 'text', placehold
         style={{
           width: '100%',
           padding: '8px 10px',
-          background: '#0a1929',
-          border: '1px solid #ff008844',
+          background: '#ffffff',
+          border: '1px solid #cccccc',
           borderRadius: 4,
           fontSize: 13,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           boxSizing: 'border-box' as const,
           outline: 'none',
-          color: '#ffffff',
         }}
       />
-      {note && <p style={{ fontSize: 11, fontStyle: 'italic', color: '#778899', marginTop: 2, marginBottom: 0 }}>{note}</p>}
+      {note && <p style={{ fontSize: 11, fontStyle: 'italic', color: '#999', marginTop: 2, marginBottom: 0 }}>{note}</p>}
     </div>
   )
 }
@@ -45,7 +44,7 @@ interface SettingsToggleProps {
 export function SettingsToggle({ label, checked, onChange }: SettingsToggleProps) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, padding: '4px 0' }}>
-      <span style={{ fontSize: 13, fontFamily: "'Inter', sans-serif" }}>{label}</span>
+      <span style={{ fontSize: 13, fontFamily: "'Source Sans Pro', sans-serif" }}>{label}</span>
       <label style={{ position: 'relative', display: 'inline-block', width: 36, height: 20, cursor: 'pointer' }}>
         <input
           type="checkbox"
@@ -56,7 +55,7 @@ export function SettingsToggle({ label, checked, onChange }: SettingsToggleProps
         <span style={{
           position: 'absolute',
           inset: 0,
-          background: checked ? '#ff0088' : '#778899',
+          background: checked ? '#111111' : '#cccccc',
           borderRadius: 10,
           transition: 'background 0.2s',
         }}>
@@ -86,7 +85,7 @@ interface SettingsSelectProps {
 export function SettingsSelect({ label, value, onChange, options }: SettingsSelectProps) {
   return (
     <div style={{ marginBottom: 12 }}>
-      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4, fontFamily: "'Source Sans Pro', sans-serif" }}>
         {label}
       </label>
       <select
@@ -95,15 +94,14 @@ export function SettingsSelect({ label, value, onChange, options }: SettingsSele
         style={{
           width: '100%',
           padding: '8px 10px',
-          background: '#0a1929',
-          border: '1px solid #ff008844',
+          background: '#ffffff',
+          border: '1px solid #cccccc',
           borderRadius: 4,
           fontSize: 13,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           boxSizing: 'border-box' as const,
           outline: 'none',
           cursor: 'pointer',
-          color: '#ffffff',
         }}
       >
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -115,7 +113,7 @@ export function SettingsSelect({ label, value, onChange, options }: SettingsSele
 export function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ marginBottom: 24 }}>
-      <h4 style={{ fontSize: 14, fontWeight: 700, fontFamily: "'Krub', sans-serif", marginBottom: 12, marginTop: 0, color: 'var(--text-primary)' }}>
+      <h4 style={{ fontSize: 14, fontWeight: 700, fontFamily: "'Agrandir', sans-serif", marginBottom: 12, marginTop: 0, color: 'var(--text-primary)' }}>
         {title}
       </h4>
       {children}

@@ -81,7 +81,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
         transform: 'translate(-50%, -50%)',
         width: 520,
         maxHeight: '80vh',
-        background: '#0a1929',
+        background: 'white',
         borderRadius: 8,
         boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
         zIndex: 25,
@@ -99,8 +99,8 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
             margin: 0,
             fontSize: 18,
             fontWeight: 700,
-            fontFamily: "'Inter', sans-serif",
-            color: '#ffffff',
+            fontFamily: "'Source Sans Pro', sans-serif",
+            color: 'black',
           }}>
             Report a Bug
           </h3>
@@ -110,8 +110,8 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
               width: 28,
               height: 28,
               borderRadius: 4,
-              border: '1px solid #ff008844',
-              background: '#0a1929',
+              border: '1px solid #e5e7eb',
+              background: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -119,7 +119,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
               padding: 0,
             }}
           >
-            <X size={14} color="#aabbcc" />
+            <X size={14} color="#666" />
           </button>
         </div>
 
@@ -127,8 +127,8 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
         <div style={{
           padding: '0 24px 16px',
           fontSize: 14,
-          color: '#aabbcc',
-          fontFamily: "'Inter', sans-serif",
+          color: '#666',
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           Describe your issue and post this in #pm-os-support
         </div>
@@ -147,7 +147,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
             <div style={{
               color: 'white',
               fontSize: 13,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               Loading diagnostic data...
             </div>
@@ -155,7 +155,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
             <div style={{
               color: 'white',
               fontSize: 13,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               {error}
             </div>
@@ -175,7 +175,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
             <div style={{
               color: 'white',
               fontSize: 13,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}>
               No recent logs available
             </div>
@@ -198,7 +198,7 @@ export default function BugReportPopup({ isOpen, onClose }: BugReportPopupProps)
               fontWeight: 600,
               cursor: diagnosticData && !loading ? 'pointer' : 'not-allowed',
               opacity: diagnosticData && !loading ? 1 : 0.5,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "'Source Sans Pro', sans-serif",
             }}
           >
             {copied ? 'Copied!' : 'Copy to Clipboard'}

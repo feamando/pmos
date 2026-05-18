@@ -16,7 +16,7 @@ export default function SelectField({ label, value, onChange, options, required,
         fontWeight: 600,
         color: 'var(--text-primary)',
         marginBottom: 6,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "'Source Sans Pro', sans-serif",
       }}>
         {label}
         {required && <span style={{ color: '#ef4444', marginLeft: 2 }}>*</span>}
@@ -27,15 +27,15 @@ export default function SelectField({ label, value, onChange, options, required,
         style={{
           width: '100%',
           padding: '10px 12px',
-          background: '#0a1929',
-          border: '1px solid #ff008844',
+          background: '#ffffff',
+          border: '1px solid #cccccc',
           borderRadius: 4,
           fontSize: 14,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
           boxSizing: 'border-box' as const,
           outline: 'none',
           cursor: 'pointer',
-          color: value ? '#ffffff' : '#778899',
+          color: value ? 'var(--text-primary)' : '#999',
         }}
       >
         {placeholder && <option value="">{placeholder}</option>}

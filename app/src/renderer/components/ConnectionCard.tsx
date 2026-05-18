@@ -11,7 +11,9 @@ export default function ConnectionCard({ connection, onClick }: ConnectionCardPr
   const { active, name, brandColor, health, fields } = connection
   const subtitle = active
     ? (fields.JIRA_URL || fields.GITHUB_ORG || fields.FIGMA_ACCESS_TOKEN ? getSubtitle(connection) : 'Configured')
-    : 'Not configured'
+    : health.status === 'healthy'
+      ? (health.message || 'Auto-detected')
+      : 'Not configured'
 
   return (
     <button
@@ -23,9 +25,9 @@ export default function ConnectionCard({ connection, onClick }: ConnectionCardPr
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        background: '#0a1929',
+        background: 'white',
         cursor: 'pointer',
-        opacity: active ? 1 : 0.6,
+        opacity: (active || health.status === 'healthy') ? 1 : 0.6,
         transition: 'box-shadow 0.15s, opacity 0.15s',
         width: '100%',
         textAlign: 'left',

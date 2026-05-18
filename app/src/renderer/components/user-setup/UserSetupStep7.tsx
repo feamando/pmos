@@ -53,7 +53,7 @@ export default function UserSetupStep7() {
         </div>
 
         <h1 style={{
-          fontFamily: "'Krub', sans-serif",
+          fontFamily: "'Agrandir', sans-serif",
           fontWeight: 700,
           fontSize: 24,
           marginBottom: 16,
@@ -67,11 +67,11 @@ export default function UserSetupStep7() {
           color: 'var(--text-secondary)',
           lineHeight: 1.6,
           marginBottom: 24,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: "'Source Sans Pro', sans-serif",
         }}>
           You can now open Claude Code in your terminal and launch the command{' '}
           <code style={{
-            background: '#0d2137',
+            background: '#f3f4f6',
             padding: '2px 8px',
             borderRadius: 4,
             fontSize: 14,
@@ -85,7 +85,7 @@ export default function UserSetupStep7() {
           <div style={{
             textAlign: 'left',
             padding: 12,
-            background: '#2a0a0a',
+            background: '#fef2f2',
             border: '1px solid #fecaca',
             borderRadius: 6,
             marginBottom: 12,
@@ -100,7 +100,7 @@ export default function UserSetupStep7() {
           <div style={{
             textAlign: 'left',
             padding: 12,
-            background: '#2a2200',
+            background: '#fffbeb',
             border: '1px solid #fed7aa',
             borderRadius: 6,
             marginBottom: 12,
@@ -115,19 +115,19 @@ export default function UserSetupStep7() {
         <div style={{
           marginTop: 24,
           height: 4,
-          background: '#0d2137',
+          background: '#e5e7eb',
           borderRadius: 2,
           overflow: 'hidden',
         }}>
           <div style={{
             height: '100%',
-            background: '#ff0088',
+            background: '#111111',
             width: `${((5 - countdown) / 5) * 100}%`,
             transition: 'width 1s linear',
             borderRadius: 2,
           }} />
         </div>
-        <p style={{ fontSize: 12, color: '#778899', marginTop: 8, fontFamily: "'Inter', sans-serif" }}>
+        <p style={{ fontSize: 12, color: '#999', marginTop: 8, fontFamily: "'Source Sans Pro', sans-serif" }}>
           Continuing in {countdown}s...
         </p>
       </div>

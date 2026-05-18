@@ -7,8 +7,9 @@ import IntegrationSettingsForm from './IntegrationSettingsForm'
 import PmosSettingsForm from './PmosSettingsForm'
 import WcrSettingsForm from './WcrSettingsForm'
 import AppSettingsForm from './AppSettingsForm'
+import SyncSettingsForm from './SyncSettingsForm'
 
-export type SettingsCategory = 'user' | 'integrations' | 'pmos' | 'wcr' | 'app'
+export type SettingsCategory = 'user' | 'integrations' | 'pmos' | 'wcr' | 'sync' | 'app'
 
 interface SettingsPanelProps {
   isOpen: boolean
@@ -74,10 +75,9 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   }
 
   const renderContent = () => {
-    // App tab doesn't depend on config.yaml — skip loading/error states
-    if (activeCategory === 'app') {
-      return <AppSettingsForm />
-    }
+    // App and Sync tabs don't depend on config.yaml editor — skip loading/error states
+    if (activeCategory === 'app') return <AppSettingsForm />
+    if (activeCategory === 'sync') return <SyncSettingsForm />
 
     if (loading) {
       return <div style={{ padding: 24, color: 'var(--text-muted)', textAlign: 'center' }}>Loading settings...</div>
@@ -88,7 +88,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         <div style={{ padding: 24 }}>
           <div style={{
             padding: 16,
-            background: '#2a0a0a',
+            background: '#fef2f2',
             border: '1px solid #fecaca',
             borderRadius: 6,
             fontSize: 13,
@@ -96,7 +96,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             lineHeight: 1.6,
           }}>
             config.yaml configuration does not match. Please edit config.yaml file directly.
-            <div style={{ marginTop: 8, fontSize: 12, color: '#778899' }}>{error}</div>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#999' }}>{error}</div>
           </div>
         </div>
       )
@@ -136,7 +136,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         top: 0,
         bottom: 0,
         width: 480,
-        background: '#0a1929',
+        background: 'white',
         boxShadow: isOpen ? '-4px 0 24px rgba(0,0,0,0.12)' : 'none',
         transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 0.2s ease-out',
@@ -160,7 +160,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
               height: 28,
               borderRadius: 'var(--radius)',
               border: '1px solid var(--border)',
-              background: '#0a1929',
+              background: 'white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

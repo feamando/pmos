@@ -9,6 +9,7 @@ import { distributeGoogleCredentials } from './scaffolder'
 import { distributePmos } from './distributor'
 import { runPostSetup } from './post-setup'
 import { runVerification } from './verifier'
+import { installAllPlugins } from '../plugin-manager'
 import { logInfo, logError, logOk } from './logger'
 import { isDevMode, getTargetPmosPath } from './dev-mode'
 import { setInstallConfig } from './config-store'
@@ -29,6 +30,7 @@ function makeSteps(): InstallStep[] {
     { id: 'scaffold', name: 'Creating folder structure', status: 'pending', pct: 0 },
     { id: 'config', name: 'Generating configuration files', status: 'pending', pct: 0 },
     { id: 'distribute', name: 'Unpacking PM-OS tools', status: 'pending', pct: 0 },
+    { id: 'plugins', name: 'Installing plugins', status: 'pending', pct: 0 },
     { id: 'post-setup', name: 'Configuring PM-OS', status: 'pending', pct: 0 },
     { id: 'verify', name: 'Verifying installation', status: 'pending', pct: 0 },
   ]
@@ -142,6 +144,9 @@ export async function runInstallation(
   if (!configResult.success) errors.push(configResult.message)
   report('config')
 
+  // Persist pmosPath early so the app can find config.yaml even if later steps fail
+  setInstallConfig({ pmosPath: targetPath })
+
   // Step 7: Distribute PM-OS
   updateStep(steps, 'distribute', 'running')
   report('distribute')
@@ -153,7 +158,23 @@ export async function runInstallation(
   // Step 7.5: Distribute Google credentials
   await distributeGoogleCredentials(targetPath, bundlePath)
 
-  // Step 8: Post-setup
+  // Step 8: Install plugins (commands, skills, MCP to .claude/)
+  updateStep(steps, 'plugins', 'running')
+  report('plugins')
+  const pluginResult = installAllPlugins(targetPath)
+  if (pluginResult.success) {
+    logOk('installer', `Installed ${pluginResult.installed.length} plugins: ${pluginResult.installed.join(', ')}`)
+    updateStep(steps, 'plugins', 'done', 100)
+  } else {
+    for (const err of pluginResult.errors) {
+      logError('installer', `Plugin error: ${err}`)
+    }
+    errors.push(...pluginResult.errors)
+    updateStep(steps, 'plugins', 'error', 100)
+  }
+  report('plugins')
+
+  // Step 9: Post-setup
   updateStep(steps, 'post-setup', 'running')
   report('post-setup')
   const postResult = await runPostSetup(targetPath)
